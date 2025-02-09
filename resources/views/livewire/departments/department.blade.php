@@ -1,0 +1,81 @@
+<div class="mt-n4">
+    <div class="card">
+        <div class="card-header">
+            <div class="d-flex justify-content-between">
+                <div>
+                    <h4 class="mb-2">
+                        <span class="text-muted fw-light">الاعدادات<span
+                                class="mdi mdi-chevron-left mdi-24px"></span></span>
+                        الاقسام
+                    </h4>
+                </div>
+                <div>
+                    @can('department-create')
+                        <button wire:click='AddDepartmentModalShow' class="mb-3 add-new btn btn-primary mb-md-0"
+                            data-bs-toggle="modal" data-bs-target="#adddepartmentModal">أضــافــة</button>
+                        @include('livewire.departments.modals.add-department')
+                    @endcan
+                </div>
+            </div>
+        </div>
+        @can('department-list')
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th class="text-center">اسم الدائرة</th>
+                            <th class="text-center">العملية</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th class="text-center">
+                                <input type="text" wire:model.debounce.300ms="search.department_name"
+                                    class="form-control text-center" placeholder="الدائرة"
+                                    wire:key="search_department_name">
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            $i = $links->perPage() * ($links->currentPage() - 1) + 1;
+                        @endphp
+                        @foreach ($Departments as $Department)
+                            <tr>
+                                <td>{{ $i++ }}</td>
+                                <td class="text-center">{{ $Department->department_name }}</td>
+                                <td class="text-center">
+                                    <div class="btn-group" role="group" aria-label="First group">
+                                        @can('department-edit')
+                                            <button wire:click="GetDepartment({{ $Department->id }})"
+                                                class="p-0 px-1 btn btn-text-primary waves-effect" data-bs-toggle="modal"
+                                                data-bs-target="#editdepartmentModal">
+                                                <i class="mdi mdi-text-box-edit-outline fs-3"></i>
+                                            </button>
+                                        @endcan
+                                        @can('department-delete')
+                                            <strong style="margin: 0 10px;">|</strong>
+                                            <button wire:click="GetDepartment({{ $Department->id }})"
+                                                class="p-0 px-1 btn btn-text-danger waves-effect {{ $Department->active ? 'disabled' : '' }}"
+                                                data-bs-toggle = "modal" data-bs-target="#removedepartmentModal">
+                                                <i class="tf-icons mdi mdi-delete-outline fs-3"></i>
+                                            </button>
+                                        @endcan
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="mt-2 d-flex justify-content-center">
+                    {{ $links->onEachSide(0)->links() }}
+                </div>
+            </div>
+            <!-- Modal -->
+            @include('livewire.departments.modals.edit-department')
+            @include('livewire.departments.modals.remove-department')
+            <!-- Modal -->
+        @endcan
+    </div>
+</div>
