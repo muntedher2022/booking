@@ -51,7 +51,7 @@
                         <option value="داخلي">داخلي</option>
                         <option value="خارجي">خارجي</option>
                     </select>
-                </div>
+                </div> 
                 <div class="mb-3 col">
                     <input type="text" wire:model.debounce.300ms="search.recipient_id"
                         class="form-control text-center" placeholder=" ابحث عن الجهة المرسل اليها الكتاب.." wire:key="search_recipient_id">
