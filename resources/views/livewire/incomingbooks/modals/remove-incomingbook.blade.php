@@ -4,18 +4,31 @@
         <div class="p-4 modal-content p-md-5">
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body p-md-0">
-                <div class="mb-4 text-center mt-n4">
-                    <h3 class="pb-1 mb-2">حذف الكتاب الوارد</h3>
-                    <p>نافذة الحذف</p>
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold mb-2">
+                        <span class="text-danger">حذف</span> الكتاب
+                    </h3>
+                    <p class="text-muted">
+                        <i class="mdi mdi-delete-outline me-1"></i>
+                        هل أنت متأكد من حذف هذا الكتاب؟
+                    </p>
                 </div>
                 <hr class="mt-n2">
                 <div wire:loading.remove wire:target="destroy, GetIncomingbook">
                     <form id="removeIncomingbookModalForm" onsubmit="return false" autocomplete="off">
                         <div class="row">
-                            <div class="col text-center">
-                                <div class="text-danger">
+                            <div class="col-12 d-flex justify-content-between">
+                                <div class="text-danger me-3 col text-center">
                                     <label for="modalIncomingbookbook_number">رقم الكتاب</label>
                                     <div class="form-control-plaintext mt-n2">{{ $book_number }}</div>
+                                </div>
+                                <div class="text-danger me-3 col text-center">
+                                    <label for="modalIncomingbookbook_date">تاريخ الكتاب</label>
+                                    <div class="form-control-plaintext mt-n2">{{ $book_date }}</div>
+                                </div>
+                                <div class="text-danger me-3 col text-center">
+                                    <label for="modalIncomingbooksubject">موضوع الكتاب</label>
+                                    <div class="form-control-plaintext mt-n2">{{ $subject }}</div>
                                 </div>
                             </div>
                         </div>

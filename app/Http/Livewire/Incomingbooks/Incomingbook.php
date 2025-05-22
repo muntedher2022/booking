@@ -33,6 +33,7 @@ class Incomingbook extends Component
         'GetSenderId',
         'GetDepAndSec',
         'showIncomingbookbook' => 'handleBookDateUpdated',
+        'showError',  // إضافة المستمع الجديد
     ];
 
     public function hydrate()
@@ -83,7 +84,7 @@ class Incomingbook extends Component
                 $query->where('content', 'LIKE', $contentSearch);
             })
             ->when($this->search['related_book_id'], function ($query) use ($related_book_idSearch) {
-                $query->whereHas('Getoutgoingbook', function ($q) use ($related_book_idSearch) {
+                $query->whereHas('relatedBook', function ($q) use ($related_book_idSearch) {
                     $q->where('book_number', 'LIKE', $related_book_idSearch);
                 });
             })
@@ -268,12 +269,18 @@ class Incomingbook extends Component
     {
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment');
         $this->resetValidation();
+
+        $this->Incomingbook = Incomingbooks::with('relatedBook')->find($IncomingbookId);
+
+        if (!$this->Incomingbook) {
+            return;
+        }
+
         $this->dispatchBrowserEvent('editincomingbookModal');
 
-        $this->Incomingbook = Incomingbooks::find($IncomingbookId);
+
         $this->IncomingbookId = $this->Incomingbook->id;
         $this->book_number = $this->Incomingbook->book_number;
-        // Format the date when retrieving
         $this->book_date = Carbon::parse($this->Incomingbook->book_date)->format('d/m/Y');
         $this->subject = $this->Incomingbook->subject;
         $this->content = $this->Incomingbook->content;
@@ -392,5 +399,13 @@ class Incomingbook extends Component
                 'title' => 'الحذف'
             ]);
         }
+    }
+
+    public function showError()
+    {
+        $this->dispatchBrowserEvent('error', [
+            'message' => 'لا يمكن حذف هذا الكتاب لوجود كتاب مرتبط به',
+            'title' => 'خطأ'
+        ]);
     }
 }

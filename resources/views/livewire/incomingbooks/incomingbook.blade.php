@@ -109,11 +109,38 @@
                                 <td class="text-center text-nowrap">{{ $Incomingbook->book_date }}</td>
                                 <td class="text-center">{{ $Incomingbook->subject }}</td>
                                 <td class="text-center">{{ $Incomingbook->content }}</td>
-                                <td class="text-center">{{ $Incomingbook->Getoutgoingbook->book_number ?? 'لا يوجد' }}
+                                <td class="text-center">
+                                    @if($Incomingbook->related_book_id)
+                                        <button wire:click="GetIncomingbook({{ $Incomingbook->related_book_id }})"
+                                            class="p-0 px-1 btn btn-text-primary waves-effect"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editincomingbookModal">
+                                            {{ $Incomingbook->relatedBook->book_number ?? $Incomingbook->related_book_id }}
+                                        </button>
+                                    @else
+                                        لا يوجد
+                                    @endif
                                 </td>
                                 <td class="text-center">{{ $Incomingbook->book_type }}</td>
                                 <td class="text-center">{{ $Incomingbook->sender_type }}</td>
-                                <td class="text-center">{{ $Incomingbook->importance }}</td>
+                                <td class="text-center">
+                                    @switch($Incomingbook->importance)
+                                        @case('عادي')
+                                            <span><i class="mdi mdi-circle-outline me-2"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+                                        @case('عاجل')
+                                            <span><i class="mdi mdi-alert me-2 text-warning"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+                                        @case('سري')
+                                            <span><i class="mdi mdi-lock me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+                                        @case('سري للغاية')
+                                            <span><i class="mdi mdi-lock-alert me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+                                        @default
+                                            {{ $Incomingbook->importance }}
+                                    @endswitch
+                                </td>
                                 <td class="text-center position-relative" style="max-width: 200px; min-width: 150px;">
                                     @php
                                         $departmentNames = $Incomingbook->Getdepartment()->pluck('department_name');
@@ -147,9 +174,16 @@
                                         @endcan
                                         @can('incomingbook-delete')
                                             <strong style="margin: 0 10px;">|</strong>
-                                            <button wire:click="GetIncomingbook({{ $Incomingbook->id }})"
+                                            <button
+                                                @if($Incomingbook->related_book_id)
+                                                    wire:click="$emit('showError')"
+                                                @else
+                                                    wire:click="GetIncomingbook({{ $Incomingbook->id }})"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#removeincomingbookModal"
+                                                @endif
                                                 class="p-0 px-1 btn btn-text-danger waves-effect {{ $Incomingbook->active ? 'disabled' : '' }}"
-                                                data-bs-toggle = "modal" data-bs-target="#removeincomingbookModal">
+                                            >
                                                 <i class="tf-icons mdi mdi-delete-outline fs-3"></i>
                                             </button>
                                         @endcan

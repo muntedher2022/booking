@@ -4,8 +4,15 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body p-md-0">
                 <div class="mb-4 text-center mt-n4">
-                    <h3 class="pb-1 mb-2">اضافة الكتاب الوارد</h3>
-                    <p>نافذة الأضافة </p>
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2">
+                            <span class="text-primary">اضافة</span> كتاب جديد
+                        </h3>
+                        <p class="text-muted">
+                            <i class="mdi mdi-file-document-outline me-1"></i>
+                            قم بإدخال تفاصيل الكتاب في النموذج أدناه
+                        </p>
+                    </div>
                 </div>
                 <hr class="mt-n2">
                 <div wire:loading.remove wire:target="store, GetIncomingbook">
