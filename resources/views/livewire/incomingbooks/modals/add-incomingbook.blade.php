@@ -75,7 +75,7 @@
 
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
-                                            <select wire:model="sender_type" id="modalIncomingbooksender_type"
+                                            <select wire:model.defer="sender_type" id="modalIncomingbooksender_type"
                                                 class="form-select @error('sender_type') is-invalid is-filled @enderror">
                                                 <option value="">اختر</option>
                                                 <option value="داخلي">داخلي</option>
@@ -160,7 +160,9 @@
                                                 <option value=""></option>
                                                 @foreach ($incomingbooks as $incomingbook)
                                                     <option value="{{ $incomingbook->id }}">
-                                                        رقم الكتاب: {{ $incomingbook->book_number }} - {{ $incomingbook->book_type }} - {{ $incomingbook->sender_type }}
+                                                        رقم الكتاب: {{ $incomingbook->book_number }} -
+                                                        {{ $incomingbook->book_type }} -
+                                                        {{ $incomingbook->sender_type }}
                                                     </option>
                                                 @endforeach
                                             </select>

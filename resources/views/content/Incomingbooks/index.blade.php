@@ -269,6 +269,7 @@
                     dateFormat: "d/m/Y",
                     allowInput: true,
                     placeholder: 'يوم / شهر / سنة',
+                    defaultDate: null,
                     onChange: function(selectedDates, dateStr, instance) {
                         livewire.emit(eventName, dateStr);
                     }

@@ -34,9 +34,9 @@
                                     </div>
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
-                                            <input wire:ignore wire:model.defer='book_date' type="date"
+                                            <input wire:model.defer='book_date' type="text"
                                                 id="editIncomingbookbook_date" placeholder="تاريخ الكتاب"
-                                                class="form-control @error('book_date') is-invalid is-filled @enderror" />
+                                                class="form-control flatpickr @error('book_date') is-invalid is-filled @enderror" />
                                             <label for="modalIncomingbookbook_date">تاريخ الكتاب</label>
                                         </div>
                                         @error('book_date')
@@ -76,7 +76,7 @@
 
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
-                                            <select wire:model="sender_type" id="modalIncomingbooksender_type"
+                                            <select wire:model.defer="sender_type" id="modalIncomingbooksender_type"
                                                 class="form-select @error('sender_type') is-invalid is-filled @enderror">
                                                 <option value="">اختر</option>
                                                 <option value="داخلي">داخلي</option>

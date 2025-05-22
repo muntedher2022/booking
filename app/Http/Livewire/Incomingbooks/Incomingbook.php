@@ -186,13 +186,60 @@ class Incomingbook extends Component
         $this->dispatchBrowserEvent('IncomingbookModalShow');
     }
 
+    public function GetIncomingbook($IncomingbookId)
+    {
+        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment');
+        $this->resetValidation();
+
+        $this->Incomingbook = Incomingbooks::with('relatedBook')->find($IncomingbookId);
+
+        if (!$this->Incomingbook) {
+            return;
+        }
+
+        $this->dispatchBrowserEvent('editincomingbookModal');
+
+        $this->IncomingbookId = $this->Incomingbook->id;
+        $this->book_number = $this->Incomingbook->book_number;
+        $this->book_date = Carbon::parse($this->Incomingbook->book_date)->format('d/m/Y');
+        $this->subject = $this->Incomingbook->subject;
+        $this->content = $this->Incomingbook->content;
+        $this->keywords = $this->Incomingbook->keywords;
+        $this->related_book_id = $this->Incomingbook->related_book_id;
+        $this->sender_type = $this->Incomingbook->sender_type;
+
+        // تحويل البيانات المخزنة إلى الصيغة المناسبة للعرض في النموذج
+        $senderData = json_decode($this->Incomingbook->sender_id, true) ?? [];
+        $formattedSenderIds = array_map(function($item) {
+            return $item['type'] . '_' . $item['id'];
+        }, $senderData);
+        $this->sender_id = $formattedSenderIds;
+
+        $this->book_type = $this->Incomingbook->book_type;
+        $this->importance = $this->Incomingbook->importance;
+
+        if ($this->Incomingbook->attachment) {
+            $year = date('Y', strtotime($this->Incomingbook->book_date));
+            $this->previewIncomingbookImage = Storage::url('public/Incomingbooks/' . $year . '/' . $this->book_number . '/' . $this->Incomingbook->attachment);
+        } else {
+            $this->previewIncomingbookImage = null;
+        }
+
+        $this->dispatchBrowserEvent('initEditSelect2', [
+            'selector' => '#editIncomingbooksender_id',
+            'values' => $this->sender_id
+        ]);
+    }
+
     private function formatDate($date)
     {
         if (!$date) return null;
         try {
+            // محاولة تحويل التاريخ من صيغة d/m/Y إلى Y-m-d
             return Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
         } catch (\Exception $e) {
             try {
+                // محاولة تحويل التاريخ من أي صيغة إلى Y-m-d
                 return Carbon::parse($date)->format('Y-m-d');
             } catch (\Exception $e) {
                 return null;
@@ -280,52 +327,6 @@ class Incomingbook extends Component
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
             'title' => 'اضافه'
-        ]);
-    }
-
-    public function GetIncomingbook($IncomingbookId)
-    {
-        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment');
-        $this->resetValidation();
-
-        $this->Incomingbook = Incomingbooks::with('relatedBook')->find($IncomingbookId);
-
-        if (!$this->Incomingbook) {
-            return;
-        }
-
-        $this->dispatchBrowserEvent('editincomingbookModal');
-
-
-        $this->IncomingbookId = $this->Incomingbook->id;
-        $this->book_number = $this->Incomingbook->book_number;
-        $this->book_date = Carbon::parse($this->Incomingbook->book_date)->format('d/m/Y');
-        $this->subject = $this->Incomingbook->subject;
-        $this->content = $this->Incomingbook->content;
-        $this->keywords = $this->Incomingbook->keywords;
-        $this->related_book_id = $this->Incomingbook->related_book_id;
-        $this->sender_type = $this->Incomingbook->sender_type;
-
-        // تحويل البيانات المخزنة إلى الصيغة المناسبة للعرض في النموذج
-        $senderData = json_decode($this->Incomingbook->sender_id, true) ?? [];
-        $formattedSenderIds = array_map(function($item) {
-            return $item['type'] . '_' . $item['id'];
-        }, $senderData);
-        $this->sender_id = $formattedSenderIds;
-
-        $this->book_type = $this->Incomingbook->book_type;
-        $this->importance = $this->Incomingbook->importance;
-
-        if ($this->Incomingbook->attachment) {
-            $year = date('Y', strtotime($this->Incomingbook->book_date));
-            $this->previewIncomingbookImage = Storage::url('public/Incomingbooks/' . $year . '/' . $this->book_number . '/' . $this->Incomingbook->attachment);
-        } else {
-            $this->previewIncomingbookImage = null;
-        }
-
-        $this->dispatchBrowserEvent('initEditSelect2', [
-            'selector' => '#editIncomingbooksender_id',
-            'values' => $this->sender_id
         ]);
     }
 
