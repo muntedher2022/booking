@@ -4,8 +4,8 @@
             <div class="d-flex justify-content-between">
                 <div>
                     <h4 class="mb-2">
-                        <span class="text-muted fw-light">الصادر والوارد<span
-                                class="mdi mdi-chevron-left mdi-24px"></span></span>الواردة
+                        <span class="text-muted fw-light">برنامج ادارة المراسلات<span
+                                class="mdi mdi-chevron-left mdi-24px"></span></span>الصادر والوارد
                     </h4>
                 </div>
                 <div>
@@ -24,9 +24,11 @@
                 </div>
                 <div class="mb-3 col">
                     <div class="input-group">
-                        <input type="date" wire:model.debounce.300ms="search.book_date" class="form-control text-center"
-                            placeholder="تاريخ الكتاب.." id="showIncomingbookbook_date" wire:key="search_book_date">
-                        <button class="btn btn-outline-secondary" type="button" id="showIncomingbookbook_date-clear">مسح</button>
+                        <input type="date" wire:model.debounce.300ms="search.book_date"
+                            class="form-control text-center" placeholder="تاريخ الكتاب.." id="showIncomingbookbook_date"
+                            wire:key="search_book_date">
+                        <button class="btn btn-outline-secondary" type="button"
+                            id="showIncomingbookbook_date-clear">مسح</button>
                     </div>
                 </div>
                 <div class="mb-3 col">
@@ -40,21 +42,41 @@
             </div>
             <div class="row">
                 <div class="mb-3 col">
-                    <input type="text" wire:model.debounce.300ms="search.related_book_id"
-                        class="form-control text-center" placeholder=" ابحث عن الرقم المرتبط.."
-                        wire:key="search_related_book_id">
+                    <select wire:model.debounce.300ms="search.book_type" class="form-select text-center"
+                        wire:key="search_book_type">
+                        <option value="">نوع الكتاب</option>
+                        <option value="صادر">صادر</option>
+                        <option value="وارد">وارد</option>
+                    </select>
                 </div>
                 <div class="mb-3 col">
                     <select wire:model.debounce.300ms="search.sender_type" class="form-select"
                         wire:key="search_sender_type">
-                        <option value="">اختر</option>
+                        <option value="">نطاق الكتاب</option>
                         <option value="داخلي">داخلي</option>
                         <option value="خارجي">خارجي</option>
                     </select>
                 </div>
                 <div class="mb-3 col">
-                    <input type="text" wire:model.debounce.300ms="search.sender_id"
-                        class="form-control text-center" placeholder=" ابحث عن الجهة المرسل اليها الكتاب.." wire:key="search_sender_id">
+                    <select wire:model.debounce.300ms="search.importance" class="form-select text-center"
+                        wire:key="search_importance">
+                        <option value="">درجة الاهمية</option>
+                        <option value="عادي">عادي</option>
+                        <option value="عاجل">عاجل</option>
+                        <option value="سري">سري</option>
+                        <option value="سري للغاية">سري للغاية</option>
+                    </select>
+                </div>
+                <div class="mb-3 col">
+                    <input type="text" wire:model.debounce.300ms="search.related_book_id"
+                        class="form-control text-center" placeholder=" ابحث عن الرقم الكتاب المرتبط.."
+                        wire:key="search_related_book_id">
+                </div>
+            </div>
+            <div class="row">
+                <div class="mb-3 col">
+                    <input type="text" wire:model.debounce.300ms="search.sender_id" class="form-control text-center"
+                        placeholder=" ابحث عن الجهة المرسل اليها الكتاب.." wire:key="search_sender_id">
                 </div>
             </div>
         </div>
@@ -70,49 +92,11 @@
                             <th class="text-center">جزء من المتن</th>
                             <th class="text-center">رقم الكتاب المرتبط</th>
                             <th class="text-center">نوع الكتاب</th>
+                            <th class="text-center">نطاق الكتاب</th>
+                            <th class="text-center">درجة الاهمية</th>
                             <th class="text-center">الجهة</th>
                             <th class="text-center">العملية</th>
                         </tr>
-                        {{-- <tr>
-                            <th></th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.book_number"
-                                    class="form-control text-center" placeholder="رقم الكتاب" wire:key="search_book_number">
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.book_date"
-                                    class="form-control text-center" placeholder="تاريخ الكتاب.."
-                                    wire:key="search_book_date">
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.subject"
-                                    class="form-control text-center" placeholder="ابحث بموضوع الكتاب.."
-                                    wire:key="search_subject">
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.content"
-                                    class="form-control text-center" placeholder="ابحث بالمتن.." wire:key="search_content">
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.related_book_id"
-                                    class="form-control text-center" placeholder=" ابحث عن الرقم.."
-                                    wire:key="search_related_book_id">
-                            </th>
-                            <th>
-                                <select wire:model.debounce.300ms="search.sender_type" class="form-select"
-                                    wire:key="search_sender_type">
-                                    <option value="">اختر</option>
-                                    <option value="داخلي">داخلي</option>
-                                    <option value="خارجي">خارجي</option>
-                                </select>
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.sender_id"
-                                    class="form-control text-center" placeholder=" ابحث عن الجهة.."
-                                    wire:key="search_sender_id">
-                            </th>
-                            <th></th>
-                        </tr> --}}
                     </thead>
                     <tbody>
                         @php
@@ -127,8 +111,10 @@
                                 <td class="text-center">{{ $Incomingbook->content }}</td>
                                 <td class="text-center">{{ $Incomingbook->Getoutgoingbook->book_number ?? 'لا يوجد' }}
                                 </td>
+                                <td class="text-center">{{ $Incomingbook->book_type }}</td>
                                 <td class="text-center">{{ $Incomingbook->sender_type }}</td>
-                                <td class="text-center">
+                                <td class="text-center">{{ $Incomingbook->importance }}</td>
+                                <td class="text-center position-relative" style="max-width: 200px; min-width: 150px;">
                                     @php
                                         $departmentNames = $Incomingbook->Getdepartment()->pluck('department_name');
                                         $badgeClasses = [
@@ -139,13 +125,14 @@
                                             'bg-label-success',
                                         ];
                                     @endphp
-                                    <ul>
+                                    <ul class="list-unstyled m-0 d-flex flex-wrap gap-1 justify-content-center">
                                         @forelse ($departmentNames as $name)
-                                            <li class="badge rounded-pill {{ $badgeClasses[$loop->index % count($badgeClasses)] }} me-1">
+                                            <li class="badge rounded-pill {{ $badgeClasses[$loop->index % count($badgeClasses)] }}"
+                                                style="white-space: normal; margin-bottom: 3px;">
                                                 {{ $name }}
                                             </li>
                                         @empty
-                                            <li class="badge rounded-pill bg-label-danger me-1">لم يتم اختيار أي جهة.</li>
+                                            <li class="badge rounded-pill bg-label-danger">لم يتم اختيار أي جهة.</li>
                                         @endforelse
                                     </ul>
                                 </td>

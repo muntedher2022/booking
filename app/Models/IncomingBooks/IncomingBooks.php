@@ -27,9 +27,4 @@ class Incomingbooks extends Model
     {
         return $this->belongsTo(Sections::class, 'sender_id');
     }
-
-    public function Getoutgoingbook()
-    {
-        return $this->belongsTo(OutgoingBooks::class, 'related_book_id');
-    }
 }

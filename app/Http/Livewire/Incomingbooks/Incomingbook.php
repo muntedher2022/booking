@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Departments\Departments;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Incomingbooks\Incomingbooks;
-use App\Models\Outgoingbooks\Outgoingbooks;
+use Carbon\Carbon;
 
 class Incomingbook extends Component
 {
@@ -22,13 +22,12 @@ class Incomingbook extends Component
 
     public $Incomingbooks = [];
     public $departments = [];
-    public $outgoingbooks = [];
     public $sender_id = [];
     public $sender_type = '';
     public $Incomingbook, $IncomingbookId;
-    public $book_number, $book_date, $subject, $content, $keywords, $related_book_id, $attachment;
+    public $book_number, $book_date, $subject, $content, $keywords, $related_book_id, $attachment, $book_type, $importance;
     public $filePreview, $previewIncomingbookImage;
-    public $search = ['book_number' => '', 'book_date' => '', 'subject' => '', 'content' => '', 'related_book_id' => '', 'sender_type' => '', 'sender_id' => ''];
+    public $search = ['book_number' => '', 'book_date' => '', 'subject' => '', 'content' => '', 'related_book_id' => '', 'sender_type' => '', 'sender_id' => '', 'book_type' => '', 'importance' => ''];
 
     protected $listeners = [
         'GetSenderId',
@@ -45,7 +44,6 @@ class Incomingbook extends Component
     public function mount()
     {
         $this->departments = Departments::all();
-        $this->outgoingbooks = Outgoingbooks::all();
     }
 
     public function handleBookDateUpdated($value)
@@ -111,9 +109,12 @@ class Incomingbook extends Component
         $links = $Incomingbooks;
         $this->Incomingbooks = collect($Incomingbooks->items());
 
+        $incomingbooks = Incomingbooks::all();
+
         return view('livewire.incomingbooks.incomingbook', [
             'Departments' => $Incomingbooks,
-            'links' => $links
+            'links' => $links,
+            'incomingbooks' => $incomingbooks
         ]);
     }
 
@@ -128,7 +129,7 @@ class Incomingbook extends Component
 
     public function GetSenderId($RelatedBookIdID)
     {
-        $related_book_id = Outgoingbooks::find($RelatedBookIdID);
+        $related_book_id = Incomingbooks::find($RelatedBookIdID);
         if ($related_book_id) {
             $this->related_book_id = $RelatedBookIdID;
         } else {
@@ -181,6 +182,20 @@ class Incomingbook extends Component
         $this->dispatchBrowserEvent('IncomingbookModalShow');
     }
 
+    private function formatDate($date)
+    {
+        if (!$date) return null;
+        try {
+            return Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+        } catch (\Exception $e) {
+            try {
+                return Carbon::parse($date)->format('Y-m-d');
+            } catch (\Exception $e) {
+                return null;
+            }
+        }
+    }
+
     public function store()
     {
         $this->resetValidation();
@@ -200,6 +215,8 @@ class Incomingbook extends Component
             'sender_id' => 'required|array',
             'sender_id.*' => 'required|integer',
             'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:1024',
+            'book_type' => 'required|in:صادر,وارد',
+            'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
         ], [
             'book_number.required' => 'حقل رقم الكتاب الوارد مطلوب',
             'book_number.unique' => 'رقم الكتاب الوارد مكرر خلال السنة الحالية',
@@ -208,23 +225,27 @@ class Incomingbook extends Component
             //'content.required' => 'حقل جزء من المتن مطلوب',
             //'keywords.required' => 'حقل كلمات مفتاحية مطلوب',
             //'related_book_id.required' => 'حقل رقم الكتاب المرتبط مطلوب',
-            'sender_type.required' => 'حقل نوع المرسل مطلوب',
+            'sender_type.required' => 'حقل نطاق الكتاب مطلوب',
             'sender_id.required' => 'حقل الجهة المرسلة للكتاب مطلوب',
             'sender_id.array' => 'يجب اختيار جهة واحدة على الأقل',
             'sender_id.*.integer' => 'يجب أن تكون القيم المختارة صحيحة',
             'attachment.required' => 'ملف الكتاب الوارد مطلوب',
             'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 1024 كيلوبايت.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
+            'book_type.required' => 'حقل نوع الكتاب مطلوب',
+            'book_type.in' => 'قيمة نوع الكتاب غير صحيحة',
+            'importance.required' => 'حقل درجة الأهمية مطلوب',
+            'importance.in' => 'قيمة درجة الأهمية غير صحيحة',
         ]);
 
-        $year = date('Y', strtotime($this->book_date));
+        $year = date('Y', strtotime($this->formatDate($this->book_date)));
 
         $this->attachment->store('public/Incomingbooks/' . $year . '/' . $this->book_number);
 
         Incomingbooks::create([
             'user_id' => Auth::User()->id,
             'book_number' => $this->book_number,
-            'book_date' => $this->book_date,
+            'book_date' => $this->formatDate($this->book_date),
             'subject' => $this->subject,
             'content' => $this->content,
             'keywords' => $this->keywords,
@@ -232,6 +253,8 @@ class Incomingbook extends Component
             'sender_type' => $this->sender_type,
             'sender_id' => json_encode($this->sender_id),
             'attachment' => $this->attachment->hashName(),
+            'book_type' => $this->book_type,
+            'importance' => $this->importance,
         ]);
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
@@ -250,13 +273,16 @@ class Incomingbook extends Component
         $this->Incomingbook = Incomingbooks::find($IncomingbookId);
         $this->IncomingbookId = $this->Incomingbook->id;
         $this->book_number = $this->Incomingbook->book_number;
-        $this->book_date = $this->Incomingbook->book_date;
+        // Format the date when retrieving
+        $this->book_date = Carbon::parse($this->Incomingbook->book_date)->format('d/m/Y');
         $this->subject = $this->Incomingbook->subject;
         $this->content = $this->Incomingbook->content;
         $this->keywords = $this->Incomingbook->keywords;
         $this->related_book_id = $this->Incomingbook->related_book_id;
         $this->sender_type = $this->Incomingbook->sender_type;
         $this->sender_id = $this->Incomingbook->sender_id ? json_decode($this->Incomingbook->sender_id, true) : [];
+        $this->book_type = $this->Incomingbook->book_type;
+        $this->importance = $this->Incomingbook->importance;
 
         if ($this->Incomingbook->attachment) {
             $year = date('Y', strtotime($this->Incomingbook->book_date));
@@ -274,6 +300,12 @@ class Incomingbook extends Component
     public function update()
     {
         $this->resetValidation();
+        $formatted_date = $this->formatDate($this->book_date);
+        if (!$formatted_date) {
+            $this->addError('book_date', 'التاريخ غير صالح');
+            return;
+        }
+
         $this->validate([
             'book_number' => [
                 'required',
@@ -290,6 +322,8 @@ class Incomingbook extends Component
             'sender_id' => 'required|array',
             'sender_id.*' => 'required|integer',
             'attachment' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:1024',
+            'book_type' => 'required|in:صادر,وارد',
+            'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
         ], [
             'book_number.required' => 'حقل رقم الكتاب الوارد مطلوب',
             'book_number.unique' => 'رقم الكتاب الوارد مكرر خلال السنة الحالية',
@@ -298,17 +332,20 @@ class Incomingbook extends Component
             //'content.required' => 'حقل جزء من المتن مطلوب',
             //'keywords.required' => 'حقل كلمات مفتاحية مطلوب',
             //'related_book_id.required' => 'حقل رقم الكتاب المرتبط مطلوب',
-            'sender_type.required' => 'حقل نوع المرسل مطلوب',
+            'sender_type.required' => 'حقل نطاق الكتاب مطلوب',
             'sender_id.required' => 'حقل الجهة المرسلة للكتاب مطلوب',
             'sender_id.array' => 'يجب اختيار جهة واحدة على الأقل',
             'sender_id.*.integer' => 'يجب أن تكون القيم المختارة صحيحة',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
             'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 1024 كيلوبايت.',
+            'book_type.required' => 'حقل نوع الكتاب مطلوب',
+            'book_type.in' => 'قيمة نوع الكتاب غير صحيحة',
+            'importance.required' => 'حقل درجة الأهمية مطلوب',
+            'importance.in' => 'قيمة درجة الأهمية غير صحيحة',
         ]);
 
         $Incomingbooks = Incomingbooks::find($this->IncomingbookId);
-
-        $year = date('Y', strtotime($this->book_date));
+        $year = date('Y', strtotime($formatted_date));
 
         if ($this->attachment) {
             if ($Incomingbooks->attachment) {
@@ -321,13 +358,15 @@ class Incomingbook extends Component
         $Incomingbooks->update([
             'user_id' => Auth::User()->id,
             'book_number' => $this->book_number,
-            'book_date' => $this->book_date,
+            'book_date' => $formatted_date,
             'subject' => $this->subject,
             'content' => $this->content,
             'keywords' => $this->keywords,
             'related_book_id' => $this->related_book_id,
             'sender_type' => $this->sender_type,
             'sender_id' => json_encode($this->sender_id),
+            'book_type' => $this->book_type,
+            'importance' => $this->importance,
         ]);
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');

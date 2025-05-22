@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sections\SectionsController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Emaillists\EmaillistsController;
 use App\Http\Controllers\Departments\DepartmentsController;
 use App\Http\Controllers\Incomingbooks\IncomingbooksController;
 use App\Http\Controllers\OutgoingBooks\OutgoingBooksController;
@@ -31,7 +32,7 @@ Route::middleware(['auth', config('jetstream.auth_session'), 'verified'])->group
 Route::GET('Sections', [SectionsController::class, 'index'])->name('Sections');
 // الدوائر
 Route::GET('Departments', [DepartmentsController::class, 'index'])->name('Departments');
-//الكتب الصادرة
-Route::GET('OutgoingBooks', [OutgoingBooksController::class, 'index'])->name('OutgoingBooks');
 //الكتب الواردة
 Route::GET('Incomingbooks', [IncomingbooksController::class, 'index'])->name('Incomingbooks');
+// البريد الالكتروني للاقسام
+Route::RESOURCE('Emaillists', EmaillistsController::class);

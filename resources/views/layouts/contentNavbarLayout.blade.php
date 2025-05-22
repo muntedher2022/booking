@@ -74,28 +74,21 @@
                                 </a>
                             </li>
 
-                            <li
-                                class="menu-item {{ request()->is('OutgoingBooks','Incomingbooks') ? 'open active' : '' }}">
+                            <li class="menu-item {{ request()->is('OutgoingBooks', 'Incomingbooks') ? 'open active' : '' }}">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                                     <i class='menu-icon tf-icons mdi mdi-text-box-multiple-outline'></i>
-                                    <span class="menu-title">الصادر والوارد</span>
+                                    <span class="menu-title">ادارة المخاطبات</span>
                                 </a>
                                 <ul class="menu-sub">
-                                    <li Class="menu-item {{ request()->Is('OutgoingBooks') ? 'active' : '' }}">
-                                        <a href = "{{ Route('OutgoingBooks') }}" Class="menu-link">
-                                            <div>الصادرة</div>
-                                        </a>
-                                    </li>
                                     <li Class="menu-item {{ request()->Is('Incomingbooks') ? 'active' : '' }}">
                                         <a href = "{{ Route('Incomingbooks') }}" Class="menu-link">
-                                            <div>الواردة</div>
+                                            <div>الصادر والوارد</div>
                                         </a>
                                     </li>
                                 </ul>
                             </li>
 
-                            <li
-                                class="menu-item {{ request()->is('Sections','Departments') ? 'open active' : '' }}">
+                            <li class="menu-item {{ request()->is('Sections', 'Departments','Emaillists') ? 'open active' : '' }}">
                                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                                     <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                     <span class="menu-title">الاعدادات</span>
@@ -112,7 +105,17 @@
                                             <div>الدوائر</div>
                                         </a>
                                     </li>
+                                    @can('emaillists')
+                                        {{-- البريد الالكتروني --}}
+                                        <li Class="menu-item {{ request()->Is('Emaillists') ? 'active' : '' }}">
+                                            <a href="{{ Route('Emaillists.index') }}" Class="menu-link">
+                                                <i Class=""></i>
+                                                <div>البريد الألكتروني</div>
+                                            </a>
+                                        </li>
+                                    @endcan
                                 </ul>
+
                             </li>
 
                             {{-- المستخدمين --}}

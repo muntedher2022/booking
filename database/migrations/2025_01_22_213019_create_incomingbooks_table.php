@@ -21,6 +21,8 @@ return new class extends Migration
             $table->text('keywords')->nullable()->comment('كلمات مفتاحية');
             $table->unsignedBigInteger('related_book_id')->nullable()->constrained('outgoing_books')->comment('رقم الكتاب المرتبط');
             $table->string('sender_type')->nullable()->comment('نوع الكتاب داخلي او خارجي');
+            $table->string('book_type')->default('وارد')->comment('نوع الكتاب (صادر/وارد)');
+            $table->string('importance')->default('عادي')->comment('درجة الأهمية');
             $table->text('sender_id')->comment('الجهة الوارد منها الكتاب');
             $table->string('attachment')->nullable()->comment('صورة الكتاب الوارد');
             $table->timestamps();

@@ -49,6 +49,23 @@
                                             <small class='text-danger inputerror'> {{ $message }} </small>
                                         @enderror
                                     </div>
+                                </div>
+
+                                <div Class="row">
+                                    <div class="mb-3 col">
+                                        <div class="form-floating form-floating-outline">
+                                            <select wire:model="book_type" id="editIncomingbookbook_type"
+                                                class="form-select @error('book_type') is-invalid is-filled @enderror">
+                                                <option value="">اختر</option>
+                                                <option value="صادر">صادر</option>
+                                                <option value="وارد">وارد</option>
+                                            </select>
+                                            <label for="editIncomingbookbook_type">نوع الكتاب</label>
+                                        </div>
+                                        @error('book_type')
+                                            <small class="text-danger inputerror">{{ $message }}</small>
+                                        @enderror
+                                    </div>
 
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
@@ -58,9 +75,39 @@
                                                 <option value="داخلي">داخلي</option>
                                                 <option value="خارجي">خارجي</option>
                                             </select>
-                                            <label for="modalIncomingbooksender_type">نوع الكتاب</label>
+                                            <label for="modalIncomingbooksender_type">نطاق الكتاب</label>
                                         </div>
                                         @error('sender_type')
+                                            <small class="text-danger inputerror">{{ $message }}</small>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3 col">
+                                        <div class="form-floating form-floating-outline">
+                                            <button type="button" wire:model.defer="importance"
+                                                id="editIncomingbookimportance"
+                                                class="form-select text-start @error('importance') is-invalid is-filled @enderror"
+                                                data-bs-toggle="dropdown" aria-expanded="false">
+                                                {{ $importance ?: 'اختر' }}
+                                            </button>
+                                            <ul class="dropdown-menu w-100" aria-labelledby="importanceDropdown">
+                                                <li><a class="dropdown-item" wire:click="$set('importance', 'عادي')">
+                                                        <i class="mdi mdi-circle-outline me-2"></i>عادي
+                                                    </a></li>
+                                                <li><a class="dropdown-item" wire:click="$set('importance', 'عاجل')">
+                                                        <i class="mdi mdi-alert me-2 text-warning"></i>عاجل
+                                                    </a></li>
+                                                <li><a class="dropdown-item" wire:click="$set('importance', 'سري')">
+                                                        <i class="mdi mdi-lock me-2 text-danger"></i>سري
+                                                    </a></li>
+                                                <li><a class="dropdown-item"
+                                                        wire:click="$set('importance', 'سري للغاية')">
+                                                        <i class="mdi mdi-lock-alert me-2 text-danger"></i>سري للغاية
+                                                    </a></li>
+                                            </ul>
+                                            <label for="editIncomingbookimportance">درجة الأهمية</label>
+                                        </div>
+                                        @error('importance')
                                             <small class="text-danger inputerror">{{ $message }}</small>
                                         @enderror
                                     </div>
@@ -79,7 +126,9 @@
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <label for="editIncomingbooksender_id">الجهة المرسل منها</label>
+                                            <label for="editIncomingbooksender_id">
+                                                {{ $book_type ? ($book_type == 'صادر' ? 'الجهة الصادر اليها' : 'الجهة الوارد منها') : 'الجهة' }}
+                                            </label>
                                         </div>
                                         @error('sender_id')
                                             <small class='text-danger inputerror'>{{ $message }}</small>
@@ -94,13 +143,15 @@
                                                 id="editIncomingbookrelated_book_id"
                                                 class="form-select @error('related_book_id') is-invalid is-filled @enderror">
                                                 <option value=""></option>
-                                                @foreach ($outgoingbooks as $outgoingbook)
-                                                    <option value="{{ $outgoingbook->id }}">
-                                                        {{ $outgoingbook->book_number }}
+                                                @foreach ($incomingbooks as $incomingbook)
+                                                    <option value="{{ $incomingbook->id }}">
+                                                        رقم الكتاب: {{ $incomingbook->book_number }} - {{ $incomingbook->book_type }} - {{ $incomingbook->sender_type }}
                                                     </option>
                                                 @endforeach
                                             </select>
-                                            <label for="modalIncomingbookrelated_book_id">رقم الكتاب المرتبط</label>
+                                            <label for="modalIncomingbookrelated_book_id">
+                                                {{ $book_type ? ($book_type == 'صادر' ? 'رقم الكتاب المرتبط الصادر' : 'رقم الكتاب المرتبط الوارد') : 'رقم الكتاب المرتبط' }}
+                                            </label>
                                         </div>
                                         @error('related_book_id')
                                             <small class='text-danger inputerror'>{{ $message }}</small>
@@ -140,7 +191,9 @@
                                         <input wire:model.defer='attachment' type="file" id="attachment"
                                             accept=".jpeg,.png,.jpg,.pdf"
                                             class="form-control @error('attachment') is-invalid is-filled @enderror" />
-                                        <label for="attachment">صورة الكتاب الوارد</label>
+                                        <label for="addIncomingbooksender_id">
+                                            {{ $book_type ? ($book_type == 'صادر' ? 'صورة الكتاب الصادر' : 'صورة الكتاب الوارد') : 'صورة الكتاب' }}
+                                        </label>
                                     </div>
                                     @error('attachment')
                                         <small class='text-danger inputerror'> {{ $message }} </small>

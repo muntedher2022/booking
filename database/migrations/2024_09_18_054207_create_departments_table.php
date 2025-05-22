@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable()->comment('رقم المستخدم');
             $table->string('department_name')->nullable()->comment('اسم الدائرة');
-            $table->string('recipient_type')->nullable()->comment('نوع الكتاب داخلي او خارجي');
             $table->timestamps();
 
             $table->index('department_name');
