@@ -126,10 +126,20 @@
                                                 class="form-select @error('sender_id') is-invalid is-filled @enderror"
                                                 multiple wire:ignore>
                                                 <option value=""></option>
-                                                @foreach ($departments as $department)
-                                                    <option value="{{ $department->id }}">
-                                                        {{ $department->department_name }}</option>
-                                                @endforeach
+                                                <optgroup label="الدوائر">
+                                                    @foreach ($departments as $department)
+                                                        <option value="dep_{{ $department->id }}">
+                                                            {{ $department->department_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </optgroup>
+                                                <optgroup label="الأقسام">
+                                                    @foreach ($sections as $section)
+                                                        <option value="sec_{{ $section->id }}">
+                                                            {{ $section->section_name }}
+                                                        </option>
+                                                    @endforeach
+                                                </optgroup>
                                             </select>
                                             <label for="addIncomingbooksender_id">
                                                 {{ $book_type ? ($book_type == 'صادر' ? 'الجهة الصادر اليها' : 'الجهة الوارد منها') : 'الجهة' }}

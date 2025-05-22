@@ -144,6 +144,7 @@
                                 <td class="text-center position-relative" style="max-width: 200px; min-width: 150px;">
                                     @php
                                         $departmentNames = $Incomingbook->Getdepartment()->pluck('department_name');
+                                        $sectionNames = $Incomingbook->Getsection()->pluck('section_name');
                                         $badgeClasses = [
                                             'bg-label-primary',
                                             'bg-label-danger',
@@ -156,11 +157,22 @@
                                         @forelse ($departmentNames as $name)
                                             <li class="badge rounded-pill {{ $badgeClasses[$loop->index % count($badgeClasses)] }}"
                                                 style="white-space: normal; margin-bottom: 3px;">
-                                                {{ $name }}
+                                                <i class="mdi mdi-office-building-outline me-1"></i>{{ $name }}
                                             </li>
                                         @empty
-                                            <li class="badge rounded-pill bg-label-danger">لم يتم اختيار أي جهة.</li>
                                         @endforelse
+
+                                        @forelse ($sectionNames as $name)
+                                            <li class="badge rounded-pill {{ $badgeClasses[($loop->index + count($departmentNames)) % count($badgeClasses)] }}"
+                                                style="white-space: normal; margin-bottom: 3px;">
+                                                <i class="mdi mdi-domain me-1"></i>{{ $name }}
+                                            </li>
+                                        @empty
+                                        @endforelse
+
+                                        @if($departmentNames->isEmpty() && $sectionNames->isEmpty())
+                                            <li class="badge rounded-pill bg-label-danger">لم يتم اختيار أي جهة.</li>
+                                        @endif
                                     </ul>
                                 </td>
                                 <td class="text-center">

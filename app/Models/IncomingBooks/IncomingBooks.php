@@ -16,16 +16,30 @@ class Incomingbooks extends Model
 
     public function Getdepartment()
     {
-        $senderIds = json_decode($this->sender_id, true);
-        if (is_array($senderIds) && !empty($senderIds)) {
-            return Departments::whereIn('id', $senderIds)->get();
+        $senderData = json_decode($this->sender_id, true);
+        if (!is_array($senderData)) {
+            return collect();
         }
-        return collect();
+
+        $departmentIds = array_values(array_filter(array_map(function($item) {
+            return isset($item['type']) && $item['type'] === 'dep' ? $item['id'] : null;
+        }, $senderData)));
+
+        return empty($departmentIds) ? collect() : Departments::whereIn('id', $departmentIds)->get();
     }
 
     public function Getsection()
     {
-        return $this->belongsTo(Sections::class, 'sender_id');
+        $senderData = json_decode($this->sender_id, true);
+        if (!is_array($senderData)) {
+            return collect();
+        }
+
+        $sectionIds = array_values(array_filter(array_map(function($item) {
+            return isset($item['type']) && $item['type'] === 'sec' ? $item['id'] : null;
+        }, $senderData)));
+
+        return empty($sectionIds) ? collect() : Sections::whereIn('id', $sectionIds)->get();
     }
 
     public function relatedBook()

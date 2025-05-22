@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Departments\Departments;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Incomingbooks\Incomingbooks;
+use App\Models\Sections\Sections; // Add this at the top with other uses
 use Carbon\Carbon;
 
 class Incomingbook extends Component
@@ -22,6 +23,7 @@ class Incomingbook extends Component
 
     public $Incomingbooks = [];
     public $departments = [];
+    public $sections = [];
     public $sender_id = [];
     public $sender_type = '';
     public $Incomingbook, $IncomingbookId;
@@ -44,6 +46,7 @@ class Incomingbook extends Component
 
     public function mount()
     {
+        $this->sections = Sections::all();
         $this->departments = Departments::all();
     }
 
@@ -200,11 +203,18 @@ class Incomingbook extends Component
     public function store()
     {
         $this->resetValidation();
+        $formatted_date = $this->formatDate($this->book_date);
+
+        if (!$formatted_date) {
+            $this->addError('book_date', 'التاريخ غير صالح');
+            return;
+        }
+
         $this->validate([
             'book_number' => [
                 'required',
-                Rule::unique('incomingbooks')->where(function ($query) {
-                    return $query->whereYear('book_date', date('Y', strtotime($this->book_date)));
+                Rule::unique('incomingbooks')->where(function ($query) use ($formatted_date) {
+                    return $query->whereYear('book_date', Carbon::parse($formatted_date)->year);
                 }),
             ],
             'book_date' => 'required',
@@ -214,7 +224,7 @@ class Incomingbook extends Component
             //'related_book_id' => 'required',
             'sender_type' => 'required',
             'sender_id' => 'required|array',
-            'sender_id.*' => 'required|integer',
+            'sender_id.*' => ['required', 'string', 'regex:/^(dep|sec)_[0-9]+$/'],
             'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:1024',
             'book_type' => 'required|in:صادر,وارد',
             'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
@@ -239,20 +249,28 @@ class Incomingbook extends Component
             'importance.in' => 'قيمة درجة الأهمية غير صحيحة',
         ]);
 
-        $year = date('Y', strtotime($this->formatDate($this->book_date)));
-
+        $year = date('Y', strtotime($formatted_date));
         $this->attachment->store('public/Incomingbooks/' . $year . '/' . $this->book_number);
+
+        // معالجة sender_id قبل الحفظ
+        $processed_sender_ids = array_map(function($id) {
+            $parts = explode('_', $id);
+            return [
+                'type' => $parts[0],
+                'id' => intval($parts[1])
+            ];
+        }, $this->sender_id);
 
         Incomingbooks::create([
             'user_id' => Auth::User()->id,
             'book_number' => $this->book_number,
-            'book_date' => $this->formatDate($this->book_date),
+            'book_date' => $formatted_date,
             'subject' => $this->subject,
             'content' => $this->content,
             'keywords' => $this->keywords,
             'related_book_id' => $this->related_book_id,
             'sender_type' => $this->sender_type,
-            'sender_id' => json_encode($this->sender_id),
+            'sender_id' => json_encode($processed_sender_ids),
             'attachment' => $this->attachment->hashName(),
             'book_type' => $this->book_type,
             'importance' => $this->importance,
@@ -287,7 +305,14 @@ class Incomingbook extends Component
         $this->keywords = $this->Incomingbook->keywords;
         $this->related_book_id = $this->Incomingbook->related_book_id;
         $this->sender_type = $this->Incomingbook->sender_type;
-        $this->sender_id = $this->Incomingbook->sender_id ? json_decode($this->Incomingbook->sender_id, true) : [];
+
+        // تحويل البيانات المخزنة إلى الصيغة المناسبة للعرض في النموذج
+        $senderData = json_decode($this->Incomingbook->sender_id, true) ?? [];
+        $formattedSenderIds = array_map(function($item) {
+            return $item['type'] . '_' . $item['id'];
+        }, $senderData);
+        $this->sender_id = $formattedSenderIds;
+
         $this->book_type = $this->Incomingbook->book_type;
         $this->importance = $this->Incomingbook->importance;
 
@@ -316,8 +341,8 @@ class Incomingbook extends Component
         $this->validate([
             'book_number' => [
                 'required',
-                Rule::unique('incomingbooks')->where(function ($query) {
-                    return $query->whereYear('book_date', date('Y', strtotime($this->book_date)));
+                Rule::unique('incomingbooks')->where(function ($query) use ($formatted_date) {
+                    return $query->whereYear('book_date', Carbon::parse($formatted_date)->year);
                 })->ignore($this->IncomingbookId),
             ],
             'book_date' => 'required',
@@ -327,7 +352,7 @@ class Incomingbook extends Component
             //'related_book_id' => 'required',
             'sender_type' => 'required',
             'sender_id' => 'required|array',
-            'sender_id.*' => 'required|integer',
+            'sender_id.*' => ['required', 'string', 'regex:/^(dep|sec)_[0-9]+$/'],
             'attachment' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:1024',
             'book_type' => 'required|in:صادر,وارد',
             'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
@@ -362,6 +387,15 @@ class Incomingbook extends Component
             $Incomingbooks->attachment = basename($filePath);
         }
 
+        // معالجة sender_id قبل التحديث
+        $processed_sender_ids = array_map(function($id) {
+            $parts = explode('_', $id);
+            return [
+                'type' => $parts[0],
+                'id' => intval($parts[1])
+            ];
+        }, $this->sender_id);
+
         $Incomingbooks->update([
             'user_id' => Auth::User()->id,
             'book_number' => $this->book_number,
@@ -371,7 +405,7 @@ class Incomingbook extends Component
             'keywords' => $this->keywords,
             'related_book_id' => $this->related_book_id,
             'sender_type' => $this->sender_type,
-            'sender_id' => json_encode($this->sender_id),
+            'sender_id' => json_encode($processed_sender_ids),
             'book_type' => $this->book_type,
             'importance' => $this->importance,
         ]);
