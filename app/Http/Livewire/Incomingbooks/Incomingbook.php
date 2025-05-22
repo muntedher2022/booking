@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Departments\Departments;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Incomingbooks\Incomingbooks;
-use App\Models\Sections\Sections; // Add this at the top with other uses
+use App\Models\Sections\Sections;
 use Carbon\Carbon;
 
 class Incomingbook extends Component
@@ -35,7 +35,7 @@ class Incomingbook extends Component
         'GetSenderId',
         'GetDepAndSec',
         'showIncomingbookbook' => 'handleBookDateUpdated',
-        'showError',  // إضافة المستمع الجديد
+        'showError',
     ];
 
     public function hydrate()
@@ -438,7 +438,7 @@ class Incomingbook extends Component
     public function showError()
     {
         $this->dispatchBrowserEvent('error', [
-            'message' => 'لا يمكن حذف هذا الكتاب لوجود كتاب مرتبط به',
+            'message' => 'لا يمكن حذف هذا الكتاب لوجود كتاب مرتبط اخر به',
             'title' => 'خطأ'
         ]);
     }
