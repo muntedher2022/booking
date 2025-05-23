@@ -58,7 +58,7 @@ class Incomingbook extends Component
 
     public function updatedSearch($value, $key)
     {
-        if (in_array($key, ['book_number', 'subject', 'content', 'related_book_id', 'sender_type', 'sender_id'])) {
+        if (in_array($key, ['book_number', 'subject', 'content', 'related_book_id', 'sender_type', 'sender_id', 'book_type'])) {
             $this->resetPage();
         }
     }
@@ -72,6 +72,7 @@ class Incomingbook extends Component
         $related_book_idSearch = '%' . $this->search['related_book_id'] . '%';
         $sender_typeSearch = '%' . $this->search['sender_type'] . '%';
         $sender_idSearch = '%' . $this->search['sender_id'] . '%';
+        $book_typeSearch = '%' . $this->search['book_type'] . '%';
 
         $Incomingbooks = Incomingbooks::query()
             ->when($this->search['book_number'], function ($query) use ($book_numberSearch) {
@@ -94,17 +95,35 @@ class Incomingbook extends Component
             ->when($this->search['sender_type'], function ($query) use ($sender_typeSearch) {
                 $query->where('sender_type', 'LIKE', $sender_typeSearch);
             })
+            ->when($this->search['book_type'], function ($query) use ($book_typeSearch) {
+                $query->where('book_type', 'LIKE', $book_typeSearch);
+            })
             ->when($this->search['sender_id'], function ($query) use ($sender_idSearch) {
                 $query->where(function ($subQuery) use ($sender_idSearch) {
-                    $departmentIds = Departments::where('department_name', 'LIKE', '%' . $sender_idSearch . '%')
+                    // البحث في الأقسام
+                    $sectionIds = Sections::where('section_name', 'LIKE', '%' . $this->search['sender_id'] . '%')
                         ->pluck('id')
+                        ->map(function ($id) {
+                            return ['type' => 'sec', 'id' => $id];
+                        })
                         ->toArray();
 
-                    $subQuery->where(function ($q) use ($departmentIds) {
-                        foreach ($departmentIds as $id) {
-                            $q->orWhereJsonContains('sender_id', (string) $id);
+                    // البحث في الإدارات
+                    $departmentIds = Departments::where('department_name', 'LIKE', '%' . $this->search['sender_id'] . '%')
+                        ->pluck('id')
+                        ->map(function ($id) {
+                            return ['type' => 'dep', 'id' => $id];
+                        })
+                        ->toArray();
+
+                    $allIds = array_merge($sectionIds, $departmentIds);
+
+                    if (!empty($allIds)) {
+                        foreach ($allIds as $item) {
+                            $jsonPattern = '%"type":"' . $item['type'] . '","id":' . $item['id'] . '%';
+                            $subQuery->orWhere('sender_id', 'LIKE', $jsonPattern);
                         }
-                    });
+                    }
                 });
             })
             ->orderBy('id', 'ASC')

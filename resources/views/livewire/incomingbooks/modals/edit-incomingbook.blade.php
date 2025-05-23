@@ -121,7 +121,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="mb-3 col" wire:key="select">
+                                    <div class="mb-3 col-8">
                                         <div class="form-floating form-floating-outline">
                                             <select wire:model.defer="sender_id" id="editIncomingbooksender_id"
                                                 class="form-select @error('sender_id') is-invalid is-filled @enderror"
@@ -149,6 +149,20 @@
                                         @error('sender_id')
                                             <small class='text-danger inputerror'>{{ $message }}</small>
                                         @enderror
+                                    </div>
+                                    <div class="mb-3 col-4">
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ route('Departments') }}"
+                                               class="btn btn-primary"
+                                               onclick="$('#editincomingbookModal').modal('hide')">
+                                                <i class="mdi mdi-plus me-1"></i>دائرة
+                                            </a>
+                                            <a href="{{ route('Sections') }}"
+                                               class="btn btn-primary"
+                                               onclick="$('#editincomingbookModal').modal('hide')">
+                                                <i class="mdi mdi-plus me-1"></i>قسم
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
 
