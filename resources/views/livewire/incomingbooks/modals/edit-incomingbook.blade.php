@@ -20,7 +20,7 @@
                     <form id="editIncomingbookModalForm" autocomplete="off">
                         <div class="row">
                             <div class="col-8">
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <input wire:model.defer='book_number' type="text"
@@ -44,7 +44,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <input wire:model.defer='subject' type="text"
@@ -58,7 +58,7 @@
                                     </div>
                                 </div>
 
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <select wire:model="book_type" id="editIncomingbookbook_type"
@@ -152,7 +152,7 @@
                                     </div>
                                 </div>
 
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <select wire:model.defer='related_book_id'
@@ -186,7 +186,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <input wire:model.defer='content' type="text"

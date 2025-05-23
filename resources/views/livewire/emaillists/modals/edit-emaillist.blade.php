@@ -5,8 +5,15 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body p-md-0">
                 <div class="mb-4 text-center mt-n4">
-                    <h3 class="pb-1 mb-2">تعديل البريد الالكتروني للقسم</h3>
-                    <p>نافذة التعديل</p>
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2">
+                            <span class="text-warning">تعديل</span> البريد الالكتروني للقسم
+                        </h3>
+                        <p class="text-muted">
+                            <i class="mdi mdi-email-outline me-1"></i>
+                            قم بتعديل تفاصيل البريد الالكتروني في النموذج أدناه
+                        </p>
+                    </div>
                 </div>
                 <hr class="mt-n2">
                 <h5 wire:loading wire:target="Getemaillist"
@@ -16,19 +23,25 @@
 
                 <div wire:loading.remove>
                     <form id="editemaillistModalForm" autocomplete="off">
-                        <div Class="row">
-                            <div class="mb-3 col">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" wire:model="type" id="sectionTypeEdit" value="section">
-                                    <label class="form-check-label" for="sectionTypeEdit">قسم</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" wire:model="type" id="departmentTypeEdit" value="department">
-                                    <label class="form-check-label" for="departmentTypeEdit">دائرة</label>
+                        <div class="row">
+                            <div class="col-12 mb-4">
+                                <div class="d-flex justify-content-center gap-4">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" wire:model="type" id="sectionTypeEdit" value="section">
+                                        <label class="form-check-label" for="sectionTypeEdit">
+                                            <i class="mdi mdi-office-building-outline me-1"></i>قسم
+                                        </label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" wire:model="type" id="departmentTypeEdit" value="department">
+                                        <label class="form-check-label" for="departmentTypeEdit">
+                                            <i class="mdi mdi-domain me-1"></i>دائرة
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div Class="row">
+                        <div class="row">
                             <div class="mb-3 col">
                                 <div class="form-floating form-floating-outline">
                                     <select wire:model.defer='department' id="editEmaillistdepartment"
@@ -51,7 +64,7 @@
                                 @enderror
                             </div>
                         </div>
-                        <div Class="row">
+                        <div class="row">
                             <div class="mb-3 col">
                                 <div class="form-floating form-floating-outline">
                                     <input wire:model.defer='email' type="email" id="modalemaillistemail"
@@ -80,7 +93,7 @@
                         <hr class="my-0">
                         <div class="text-center col-12 demo-vertical-spacing mb-n4">
                             <button wire:click='update' wire:loading.attr="disabled" type="button"
-                                class="btn btn-primary me-sm-3 me-1">تعديل</button>
+                                class="btn btn-warning me-sm-3 me-1">تعديل</button>
                             <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                                 aria-label="Close">تجاهل</button>
                         </div>

@@ -3,10 +3,16 @@
         <div class="card-header">
             <div class="d-flex justify-content-between">
                 <div>
-                    <h4 class="mb-2">
-                        <span class="text-muted fw-light">الاعدادات<span
-                                class="mdi mdi-chevron-left mdi-24px"></span></span>
-                        الاقسام
+                    <h4 class="d-flex align-items-center gap-2">
+                        <span class="text-muted d-flex align-items-center">
+                            <i class="mdi mdi-cog-outline fs-4"></i>
+                            <span class="ms-1">الاعدادات</span>
+                        </span>
+                        <i class="mdi mdi-chevron-left text-primary"></i>
+                        <span class="fw-bold text-primary d-flex align-items-center">
+                            <i class="mdi mdi-office-building-outline me-1"></i>
+                            <span class="ms-1">الدوائر</span>
+                        </span>
                     </h4>
                 </div>
                 <div>

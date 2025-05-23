@@ -4,9 +4,14 @@
         <div class="p-4 modal-content p-md-5">
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body p-md-0">
-                <div class="mb-4 text-center mt-n4">
-                    <h3 class="pb-1 mb-2">حذف اسم الدائرة</h3>
-                    <p>نافذة الحذف</p>
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold mb-2">
+                        <span class="text-danger">حذف</span> القسم
+                    </h3>
+                    <p class="text-muted">
+                        <i class="mdi mdi-delete-outline me-1"></i>
+                        هل أنت متأكد من حذف هذا القسم؟
+                    </p>
                 </div>
                 <hr class="mt-n2">
                 <div wire:loading.remove wire:target="destroy, GetSection">

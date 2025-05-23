@@ -19,7 +19,7 @@
                     <form id="addincomingbookModalForm" autocomplete="off">
                         <div class="row">
                             <div class="col-8">
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <input wire:model.defer='book_number' type="text"
@@ -43,7 +43,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <input wire:model.defer='subject' type="text"
@@ -57,7 +57,7 @@
                                     </div>
                                 </div>
 
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <select wire:model="book_type" id="addIncomingbookbook_type"
@@ -120,7 +120,7 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="mb-3 col" wire:key="select">
+                                    <div class="mb-3 col-8">
                                         <div class="form-floating form-floating-outline">
                                             <select wire:model.defer='sender_id' id="addIncomingbooksender_id"
                                                 class="form-select @error('sender_id') is-invalid is-filled @enderror"
@@ -149,9 +149,23 @@
                                             <small class='text-danger inputerror'>{{ $message }}</small>
                                         @enderror
                                     </div>
+                                    <div class="mb-3 col-4">
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ route('Departments') }}"
+                                               class="btn btn-primary"
+                                               onclick="$('#addincomingbookModal').modal('hide')">
+                                                <i class="mdi mdi-plus me-1"></i>دائرة
+                                            </a>
+                                            <a href="{{ route('Sections') }}"
+                                               class="btn btn-primary"
+                                               onclick="$('#addincomingbookModal').modal('hide')">
+                                                <i class="mdi mdi-plus me-1"></i>قسم
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <select wire:model.defer='related_book_id'
@@ -187,7 +201,7 @@
                                         @enderror
                                     </div>
                                 </div>
-                                <div Class="row">
+                                <div class="row">
                                     <div class="mb-3 col">
                                         <div class="form-floating form-floating-outline">
                                             <input wire:model.defer='content' type="text"

@@ -5,24 +5,37 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body p-md-0">
                 <div class="mb-4 text-center mt-n4">
-                    <h3 class="pb-1 mb-2">اضافة بريد الكتروني لقسم جديد</h3>
-                    <p>نافذة الأضافة </p>
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2">
+                            <span class="text-primary">اضافة</span> بريد الكتروني جديد
+                        </h3>
+                        <p class="text-muted">
+                            <i class="mdi mdi-email-outline me-1"></i>
+                            قم بإدخال تفاصيل البريد الالكتروني في النموذج أدناه
+                        </p>
+                    </div>
                 </div>
                 <hr class="mt-n2">
                 <form id="addemaillistModalForm" autocomplete="off">
-                    <div Class="row">
-                        <div class="mb-3 col">
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" wire:model="type" id="sectionType" value="section">
-                                <label class="form-check-label" for="sectionType">قسم</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" wire:model="type" id="departmentType" value="department">
-                                <label class="form-check-label" for="departmentType">دائرة</label>
+                    <div class="row">
+                        <div class="col-12 mb-4">
+                            <div class="d-flex justify-content-center gap-4">
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" wire:model="type" id="sectionType" value="section">
+                                    <label class="form-check-label" for="sectionType">
+                                        <i class="mdi mdi-office-building-outline me-1"></i>قسم
+                                    </label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" wire:model="type" id="departmentType" value="department">
+                                    <label class="form-check-label" for="departmentType">
+                                        <i class="mdi mdi-domain me-1"></i>دائرة
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div Class="row">
+                    <div class="row">
                         <div class="mb-3 col">
                             <div class="form-floating form-floating-outline">
                                 <select wire:model.defer='department' id="addEmaillistdepartment"
@@ -45,7 +58,7 @@
                             @enderror
                         </div>
                     </div>
-                    <div Class="row">
+                    <div class="row">
                         <div class="mb-3 col">
                             <div class="form-floating form-floating-outline">
                                 <input wire:model.defer='email' type="email" id="modalemaillistemail"

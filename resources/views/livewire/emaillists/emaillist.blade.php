@@ -2,10 +2,19 @@
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between">
-                <h4 class="mb-2">
-                    <span class="text-muted fw-light">الاعدادات<span class="mdi mdi-chevron-left mdi-24px"></span></span>
-                    البريد الالكتروني
-                </h4>
+                <div>
+                    <h4 class="d-flex align-items-center gap-2">
+                        <span class="text-muted d-flex align-items-center">
+                            <i class="mdi mdi-cog-outline fs-4"></i>
+                            <span class="ms-1">الاعدادات</span>
+                        </span>
+                        <i class="mdi mdi-chevron-left text-primary"></i>
+                        <span class="fw-bold text-primary d-flex align-items-center">
+                            <i class="mdi mdi-email-outline fs-4 me-1"></i>
+                            <span class="ms-1">البريد الالكتروني</span>
+                        </span>
+                    </h4>
+                </div>
                 <div>
                     @can('emaillist-create')
                         <button wire:click='AddemaillistModalShow' class="mb-3 add-new btn btn-primary mb-md-0"

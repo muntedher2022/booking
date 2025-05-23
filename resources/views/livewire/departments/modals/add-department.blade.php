@@ -5,13 +5,20 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body p-md-0">
                 <div class="mb-4 text-center mt-n4">
-                    <h3 class="pb-1 mb-2">اضافة دائرة جديدة</h3>
-                    <p>نافذة الأضافة </p>
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2">
+                            <span class="text-primary">اضافة</span> دائرة جديدة
+                        </h3>
+                        <p class="text-muted">
+                            <i class="mdi mdi-office-building-outline me-1"></i>
+                            قم بإدخال تفاصيل الدائرة في النموذج أدناه
+                        </p>
+                    </div>
                 </div>
                 <hr class="mt-n2">
                 <div wire:loading.remove wire:target="store, GetDepartment">
                     <form id="adddepartmentModalForm" autocomplete="off">
-                        <div Class="row">
+                        <div class="row">
                             <div class="mb-3 col">
                                 <div class="form-floating form-floating-outline">
                                     <input wire:model.defer='department_name' type="text"

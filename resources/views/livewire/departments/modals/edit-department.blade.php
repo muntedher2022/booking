@@ -5,13 +5,20 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body p-md-0">
                 <div class="mb-4 text-center mt-n4">
-                    <h3 class="pb-1 mb-2">تعديل اسم الدائرة</h3>
-                    <p>نافذة التعديل</p>
+                    <div class="text-center mb-4">
+                        <h3 class="fw-bold mb-2">
+                            <span class="text-warning">تعديل</span> اسم الدائرة
+                        </h3>
+                        <p class="text-muted">
+                            <i class="mdi mdi-office-building-outline me-1"></i>
+                            قم بتعديل تفاصيل الدائرة في النموذج أدناه
+                        </p>
+                    </div>
                 </div>
                 <hr class="mt-n2">
                 <div wire:loading.remove wire:target="update, GetDepartment">
                     <form id="editDepartmentModalForm" autocomplete="off">
-                        <div Class="row">
+                        <div class="row">
                             <div class="mb-3 col">
                                 <div class="form-floating form-floating-outline">
                                     <input wire:model.defer='department_name' type="text"
@@ -28,7 +35,7 @@
                         <hr class="my-0">
                         <div class="text-center col-12 demo-vertical-spacing mb-n4">
                             <button wire:click='update' wire:loading.attr="disabled" type="button"
-                                class="btn btn-primary me-sm-3 me-1">تعديل</button>
+                                class="btn btn-warning me-sm-3 me-1">تعديل</button>
                             <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                                 aria-label="Close">تجاهل</button>
                         </div>

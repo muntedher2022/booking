@@ -3,9 +3,16 @@
         <div class="card-header">
             <div class="d-flex justify-content-between">
                 <div>
-                    <h4 class="mb-2">
-                        <span class="text-muted fw-light">برنامج ادارة المراسلات<span
-                                class="mdi mdi-chevron-left mdi-24px"></span></span>الصادر والوارد
+                    <h4 class="d-flex align-items-center gap-2">
+                        <span class="text-muted d-flex align-items-center">
+                            <i class="mdi mdi-cog-outline fs-4"></i>
+                            <span class="ms-1">ادارة المخاطبات</span>
+                        </span>
+                        <i class="mdi mdi-chevron-left text-primary"></i>
+                        <span class="fw-bold text-primary d-flex align-items-center">
+                            <i class="mdi mdi-file-document-multiple-outline me-1 fs-4"></i>
+                            <span class="ms-1">الصادر والوارد</span>
+                        </span>
                     </h4>
                 </div>
                 <div>
