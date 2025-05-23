@@ -97,11 +97,11 @@ class Emaillist extends Component
             'department' => 'required',
             'email' => 'required|email|unique:emaillists,email',
         ], [
-            'type.required' => 'يرجى اختيار النوع',
-            'department.required' => 'حقل القسم/الدائرة مطلوب',
-            'email.required' => 'حقل البريد الإلكتروني مطلوب',
-            'email.email' => 'الرجاء إدخال بريد إلكتروني صحيح.',
-            'email.unique' => 'البريد الإلكتروني موجود مسبقا',
+            'type.required' => 'عذراً، يرجى تحديد قسم أو دائرة',
+            'department.required' => 'عذراً، يرجى اختيار القسم / الدائرة',
+            'email.required' => 'عذراً، يرجى إدخال البريد الإلكتروني',
+            'email.email' => 'عذراً، يرجى إدخال بريد إلكتروني صحيح',
+            'email.unique' => 'عذراً، هذا البريد الإلكتروني مسجل مسبقاً'
         ]);
 
         Emaillists::create([
@@ -140,11 +140,11 @@ class Emaillist extends Component
             'department' => 'required',
             'email' => 'required|email|unique:emaillists,email,' . $this->emaillistId,
         ], [
-            'type.required' => 'يرجى اختيار النوع',
-            'department.required' => 'حقل القسم/الدائرة مطلوب',
-            'email.required' => 'حقل البريد الإلكتروني مطلوب',
-            'email.email' => 'الرجاء إدخال بريد إلكتروني صحيح.',
-            'email.unique' => 'البريد الإلكتروني موجود مسبقا',
+            'type.required' => 'عذراً، يرجى تحديد قسم أو دائرة',
+            'department.required' => 'عذراً، يرجى اختيار القسم / الدائرة',
+            'email.required' => 'عذراً، يرجى إدخال البريد الإلكتروني',
+            'email.email' => 'عذراً، يرجى إدخال بريد إلكتروني صحيح',
+            'email.unique' => 'عذراً، هذا البريد الإلكتروني مسجل مسبقاً'
         ]);
 
         $Emaillists = Emaillists::find($this->emaillistId);

@@ -61,8 +61,8 @@ class section extends Component
             'section_name' => 'required|unique:sections,section_name',
 
         ], [
-            'section_name.required' => 'حقل اسم القسم مطلوب',
-            'section_name.unique' => 'حقل اسم القسم موجود',
+            'section_name.required' => 'عذراً، يرجى إدخال اسم القسم',
+            'section_name.unique' => 'عذراً، هذا القسم موجود بالفعل'
         ]);
 
 
@@ -94,8 +94,8 @@ class section extends Component
             'section_name' => 'required|unique:sections,section_name',
 
         ], [
-            'section_name.required' => 'حقل اسم القسم مطلوب',
-            'section_name.unique' => 'حقل اسم القسم موجود',
+            'section_name.required' => 'عذراً، يرجى إدخال اسم القسم',
+            'section_name.unique' => 'عذراً، هذا القسم موجود بالفعل'
         ]);
 
         $Sections = Sections::find($this->sectionId);

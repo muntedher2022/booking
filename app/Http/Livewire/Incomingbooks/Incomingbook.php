@@ -179,8 +179,8 @@ class Incomingbook extends Component
         $this->validate([
             'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:20480',
         ], [
-            'attachment.required' => 'ملف الكتاب الوارد مطلوب.',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب الوارد عن 20480 كيلوبايت.',
+            'attachment.required' => 'ملف الكتاب مطلوب.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب عن 20 ميجا.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
         ]);
         $this->filePreview = $this->attachment->temporaryUrl();
@@ -191,8 +191,8 @@ class Incomingbook extends Component
         $this->validate([
             'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:20480',
         ], [
-            'attachment.required' => 'ملف الكتاب الوارد مطلوب.',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب الوارد عن 20480 كيلوبايت.',
+            'attachment.required' => 'ملف الكتاب مطلوب.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب عن 20 ميجا.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
         ]);
         $this->filePreview = $this->attachment->temporaryUrl();
@@ -229,7 +229,7 @@ class Incomingbook extends Component
 
         // تحويل البيانات المخزنة إلى الصيغة المناسبة للعرض في النموذج
         $senderData = json_decode($this->Incomingbook->sender_id, true) ?? [];
-        $formattedSenderIds = array_map(function($item) {
+        $formattedSenderIds = array_map(function ($item) {
             return $item['type'] . '_' . $item['id'];
         }, $senderData);
         $this->sender_id = $formattedSenderIds;
@@ -292,16 +292,16 @@ class Incomingbook extends Component
             'book_type' => 'required|in:صادر,وارد',
             'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
         ], [
-            'book_number.required' => 'حقل رقم الكتاب الوارد مطلوب',
-            'book_number.unique' => 'رقم الكتاب الوارد مكرر خلال السنة الحالية',
+            'book_number.required' => 'حقل رقم الكتاب مطلوب',
+            'book_number.unique' => 'رقم الكتاب مكرر خلال السنة الحالية',
             'book_date.required' => 'حقل تاريخ الكتاب مطلوب',
             'subject.required' => 'حقل موضوع الكتاب مطلوب',
             'sender_type.required' => 'حقل نطاق الكتاب مطلوب',
             'sender_id.required' => 'حقل الجهة المرسلة للكتاب مطلوب',
             'sender_id.array' => 'يجب اختيار جهة واحدة على الأقل',
             'sender_id.*.integer' => 'يجب أن تكون القيم المختارة صحيحة',
-            'attachment.required' => 'ملف الكتاب الوارد مطلوب',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 20480 كيلوبايت.',
+            'attachment.required' => 'ملف الكتاب مطلوب',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب عن 20 ميجا.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
             'book_type.required' => 'حقل نوع الكتاب مطلوب',
             'book_type.in' => 'قيمة نوع الكتاب غير صحيحة',
@@ -313,7 +313,7 @@ class Incomingbook extends Component
         $this->attachment->store('public/Incomingbooks/' . $year . '/' . $this->book_number);
 
         // معالجة sender_id قبل الحفظ
-        $processed_sender_ids = array_map(function($id) {
+        $processed_sender_ids = array_map(function ($id) {
             $parts = explode('_', $id);
             return [
                 'type' => $parts[0],
@@ -347,6 +347,7 @@ class Incomingbook extends Component
     {
         $this->resetValidation();
         $formatted_date = $this->formatDate($this->book_date);
+
         if (!$formatted_date) {
             $this->addError('book_date', 'التاريخ غير صالح');
             return;
@@ -368,8 +369,8 @@ class Incomingbook extends Component
             'book_type' => 'required|in:صادر,وارد',
             'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
         ], [
-            'book_number.required' => 'حقل رقم الكتاب الوارد مطلوب',
-            'book_number.unique' => 'رقم الكتاب الوارد مكرر خلال السنة الحالية',
+            'book_number.required' => 'حقل رقم الكتاب مطلوب',
+            'book_number.unique' => 'رقم الكتاب مكرر خلال السنة الحالية',
             'book_date.required' => 'حقل تاريخ الكتاب مطلوب',
             'subject.required' => 'حقل موضوع الكتاب مطلوب',
             'sender_type.required' => 'حقل نطاق الكتاب مطلوب',
@@ -377,7 +378,7 @@ class Incomingbook extends Component
             'sender_id.array' => 'يجب اختيار جهة واحدة على الأقل',
             'sender_id.*.integer' => 'يجب أن تكون القيم المختارة صحيحة',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 20480 كيلوبايت.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب عن 20 ميجا.',
             'book_type.required' => 'حقل نوع الكتاب مطلوب',
             'book_type.in' => 'قيمة نوع الكتاب غير صحيحة',
             'importance.required' => 'حقل درجة الأهمية مطلوب',
@@ -396,7 +397,7 @@ class Incomingbook extends Component
         }
 
         // معالجة sender_id قبل التحديث
-        $processed_sender_ids = array_map(function($id) {
+        $processed_sender_ids = array_map(function ($id) {
             $parts = explode('_', $id);
             return [
                 'type' => $parts[0],
