@@ -152,14 +152,20 @@
                                     </div>
                                     <div class="mb-3 col-4">
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('Departments') }}"
-                                               class="btn btn-primary"
-                                               onclick="$('#editincomingbookModal').modal('hide')">
+                                            <a href="{{ route('Departments') }}" class="btn btn-primary position-relative"
+                                                data-bs-custom-class="tooltip-white-grey"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                data-bs-popper-placement="top"
+                                                data-bs-title="في حالة عدم وجود الدائرة اضغط هنا لإضافتها"
+                                                onclick="$('#editincomingbookModal').modal('hide')">
                                                 <i class="mdi mdi-plus me-1"></i>دائرة
                                             </a>
-                                            <a href="{{ route('Sections') }}"
-                                               class="btn btn-primary"
-                                               onclick="$('#editincomingbookModal').modal('hide')">
+                                            <a href="{{ route('Sections') }}" class="btn btn-primary position-relative"
+                                                data-bs-custom-class="tooltip-white-grey"
+                                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                                data-bs-popper-placement="top" 
+                                                data-bs-title="في حالة عدم وجود القسم اضغط هنا لإضافته"
+                                                onclick="$('#editincomingbookModal').modal('hide')">
                                                 <i class="mdi mdi-plus me-1"></i>قسم
                                             </a>
                                         </div>
@@ -232,7 +238,7 @@
                                     <div class="d-flex justify-content-center text-center">
                                         <div wire:loading wire:target='attachment' class="mt-3">
                                             <img src="{{ asset('assets/img/gif/Cube-Loading-Animated-3D.gif') }}"
-                                                style="height: 150px" alt="">
+                                                style="height: 300px" alt="">
                                         </div>
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
                                             @if ($filePreview)
