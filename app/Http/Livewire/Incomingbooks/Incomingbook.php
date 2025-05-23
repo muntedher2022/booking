@@ -158,10 +158,10 @@ class Incomingbook extends Component
     public function updatedIncomingbookImage()
     {
         $this->validate([
-            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:1024',
+            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:20480',
         ], [
             'attachment.required' => 'ملف الكتاب الوارد مطلوب.',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب الوارد عن 1024 كيلوبايت.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب الوارد عن 20480 كيلوبايت.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
         ]);
         $this->filePreview = $this->attachment->temporaryUrl();
@@ -170,10 +170,10 @@ class Incomingbook extends Component
     public function updatedAttachment()
     {
         $this->validate([
-            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:1024',
+            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:20480',
         ], [
             'attachment.required' => 'ملف الكتاب الوارد مطلوب.',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب الوارد عن 1024 كيلوبايت.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب الوارد عن 20480 كيلوبايت.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
         ]);
         $this->filePreview = $this->attachment->temporaryUrl();
@@ -272,7 +272,7 @@ class Incomingbook extends Component
             'sender_type' => 'required',
             'sender_id' => 'required|array',
             'sender_id.*' => ['required', 'string', 'regex:/^(dep|sec)_[0-9]+$/'],
-            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:1024',
+            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:20480',
             'book_type' => 'required|in:صادر,وارد',
             'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
         ], [
@@ -288,7 +288,7 @@ class Incomingbook extends Component
             'sender_id.array' => 'يجب اختيار جهة واحدة على الأقل',
             'sender_id.*.integer' => 'يجب أن تكون القيم المختارة صحيحة',
             'attachment.required' => 'ملف الكتاب الوارد مطلوب',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 1024 كيلوبايت.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 20480 كيلوبايت.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
             'book_type.required' => 'حقل نوع الكتاب مطلوب',
             'book_type.in' => 'قيمة نوع الكتاب غير صحيحة',
@@ -354,7 +354,7 @@ class Incomingbook extends Component
             'sender_type' => 'required',
             'sender_id' => 'required|array',
             'sender_id.*' => ['required', 'string', 'regex:/^(dep|sec)_[0-9]+$/'],
-            'attachment' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:1024',
+            'attachment' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:20480',
             'book_type' => 'required|in:صادر,وارد',
             'importance' => 'required|in:عادي,عاجل,سري,سري للغاية',
         ], [
@@ -370,7 +370,7 @@ class Incomingbook extends Component
             'sender_id.array' => 'يجب اختيار جهة واحدة على الأقل',
             'sender_id.*.integer' => 'يجب أن تكون القيم المختارة صحيحة',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 1024 كيلوبايت.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف السند العقاري عن 20480 كيلوبايت.',
             'book_type.required' => 'حقل نوع الكتاب مطلوب',
             'book_type.in' => 'قيمة نوع الكتاب غير صحيحة',
             'importance.required' => 'حقل درجة الأهمية مطلوب',
