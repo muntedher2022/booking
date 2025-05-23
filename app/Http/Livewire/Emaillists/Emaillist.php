@@ -5,7 +5,7 @@ namespace App\Http\Livewire\Emaillists;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Sections\Sections;
-use App\Models\Departments\Departments; // Changed from App\Models\Departments
+use App\Models\Departments\Departments;
 use App\Models\Emaillists\Emaillists;
 use Illuminate\Support\Facades\Auth;
 
@@ -97,11 +97,11 @@ class Emaillist extends Component
             'department' => 'required',
             'email' => 'required|email|unique:emaillists,email',
         ], [
-            'type.required' => 'عذراً، يرجى تحديد قسم أو دائرة',
-            'department.required' => 'عذراً، يرجى اختيار القسم / الدائرة',
-            'email.required' => 'عذراً، يرجى إدخال البريد الإلكتروني',
-            'email.email' => 'عذراً، يرجى إدخال بريد إلكتروني صحيح',
-            'email.unique' => 'عذراً، هذا البريد الإلكتروني مسجل مسبقاً'
+            'type.required' => 'يرجى تحديد قسم أو دائرة',
+            'department.required' => 'يرجى اختيار القسم / الدائرة',
+            'email.required' => 'يرجى إدخال البريد الإلكتروني',
+            'email.email' => 'يرجى إدخال بريد إلكتروني صحيح',
+            'email.unique' => 'هذا البريد الإلكتروني مسجل مسبقاً'
         ]);
 
         Emaillists::create([
@@ -140,11 +140,11 @@ class Emaillist extends Component
             'department' => 'required',
             'email' => 'required|email|unique:emaillists,email,' . $this->emaillistId,
         ], [
-            'type.required' => 'عذراً، يرجى تحديد قسم أو دائرة',
-            'department.required' => 'عذراً، يرجى اختيار القسم / الدائرة',
-            'email.required' => 'عذراً، يرجى إدخال البريد الإلكتروني',
-            'email.email' => 'عذراً، يرجى إدخال بريد إلكتروني صحيح',
-            'email.unique' => 'عذراً، هذا البريد الإلكتروني مسجل مسبقاً'
+            'type.required' => 'يرجى تحديد قسم أو دائرة',
+            'department.required' => 'يرجى اختيار القسم / الدائرة',
+            'email.required' => 'يرجى إدخال البريد الإلكتروني',
+            'email.email' => 'يرجى إدخال بريد إلكتروني صحيح',
+            'email.unique' => 'هذا البريد الإلكتروني مسجل مسبقاً'
         ]);
 
         $Emaillists = Emaillists::find($this->emaillistId);

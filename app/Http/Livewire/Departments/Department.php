@@ -61,8 +61,8 @@ class Department extends Component
             'department_name' => 'required|unique:departments,department_name',
 
         ], [
-            'department_name.required' => 'عذراً، يرجى إدخال اسم الدائرة',
-            'department_name.unique' => 'عذراً، هذه الدائرة موجودة بالفعل'
+            'department_name.required' => 'يرجى إدخال اسم الدائرة',
+            'department_name.unique' => 'هذه الدائرة موجودة بالفعل'
         ]);
 
 
@@ -95,8 +95,8 @@ class Department extends Component
 
 
         ], [
-            'department_name.required' => 'عذراً، يرجى إدخال اسم الدائرة',
-            'department_name.unique' => 'عذراً، هذه الدائرة موجودة بالفعل'
+            'department_name.required' => 'يرجى إدخال اسم الدائرة',
+            'department_name.unique' => 'هذه الدائرة موجودة بالفعل'
         ]);
 
         $Departments = Departments::find($this->departmentId);
