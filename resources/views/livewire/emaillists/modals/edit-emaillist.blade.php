@@ -53,7 +53,7 @@
                                             @endforeach
                                         @elseif($type == 'department')
                                             @foreach ($departments as $department)
-                                                <option value="{{ $department->id }}">{{ $department->section_name }}</option>
+                                                <option value="{{ $department->id }}">{{ $department->department_name }}</option>
                                             @endforeach
                                         @endif
                                     </select>
