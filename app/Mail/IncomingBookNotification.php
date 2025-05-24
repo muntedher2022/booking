@@ -23,8 +23,8 @@ class IncomingBookNotification extends Mailable
     {
         $mail = $this->subject($this->bookData['subject'] . ' - ' . $this->bookData['book_number'])
                     ->markdown('emails.incomingbook-notification');
-        
-        if ($this->attachmentPath && file_exists($this->attachmentPath)) {
+
+        if ($this->bookData['book_type'] === 'صادر' && $this->attachmentPath && file_exists($this->attachmentPath)) {
             $mail->attach($this->attachmentPath);
         }
 
