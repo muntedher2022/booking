@@ -1,7 +1,7 @@
 <div class="mt-n4">
     <div class="card">
         <div class="card-header">
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between align-items-center mb-3">
                 <div>
                     <h4 class="d-flex align-items-center gap-2">
                         <span class="text-muted d-flex align-items-center">
@@ -14,6 +14,20 @@
                             <span class="ms-1">الصادر والوارد</span>
                         </span>
                     </h4>
+                </div>
+                <div class="d-flex gap-3">
+                    <div class="badge bg-label-primary p-3 fs-5">
+                        <i class="mdi mdi-email-multiple me-1"></i>
+                        الحد اليومي: 450
+                    </div>
+                    <div class="badge bg-label-success p-3 fs-5">
+                        <i class="mdi mdi-email-check me-1"></i>
+                        المرسلة: {{ $todayEmailCount }}
+                    </div>
+                    <div class="badge bg-label-warning p-3 fs-5">
+                        <i class="mdi mdi-email-outline me-1"></i>
+                        المتبقية: {{ $remainingEmails }}
+                    </div>
                 </div>
                 <div>
                     @can('incomingbook-create')
@@ -117,10 +131,9 @@
                                 <td class="text-center">{{ $Incomingbook->subject }}</td>
                                 <td class="text-center">{{ $Incomingbook->content }}</td>
                                 <td class="text-center">
-                                    @if($Incomingbook->related_book_id)
+                                    @if ($Incomingbook->related_book_id)
                                         <button wire:click="GetIncomingbook({{ $Incomingbook->related_book_id }})"
-                                            class="p-0 px-1 btn btn-text-primary waves-effect"
-                                            data-bs-toggle="modal"
+                                            class="p-0 px-1 btn btn-text-primary waves-effect" data-bs-toggle="modal"
                                             data-bs-target="#editincomingbookModal">
                                             {{ $Incomingbook->relatedBook->book_number ?? $Incomingbook->related_book_id }}
                                         </button>
@@ -133,17 +146,25 @@
                                 <td class="text-center">
                                     @switch($Incomingbook->importance)
                                         @case('عادي')
-                                            <span><i class="mdi mdi-circle-outline me-2"></i>{{ $Incomingbook->importance }}</span>
-                                            @break
+                                            <span><i
+                                                    class="mdi mdi-circle-outline me-2"></i>{{ $Incomingbook->importance }}</span>
+                                        @break
+
                                         @case('عاجل')
-                                            <span><i class="mdi mdi-alert me-2 text-warning"></i>{{ $Incomingbook->importance }}</span>
-                                            @break
+                                            <span><i
+                                                    class="mdi mdi-alert me-2 text-warning"></i>{{ $Incomingbook->importance }}</span>
+                                        @break
+
                                         @case('سري')
-                                            <span><i class="mdi mdi-lock me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
-                                            @break
+                                            <span><i
+                                                    class="mdi mdi-lock me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
+                                        @break
+
                                         @case('سري للغاية')
-                                            <span><i class="mdi mdi-lock-alert me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
-                                            @break
+                                            <span><i
+                                                    class="mdi mdi-lock-alert me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
+                                        @break
+
                                         @default
                                             {{ $Incomingbook->importance }}
                                     @endswitch
@@ -177,7 +198,7 @@
                                         @empty
                                         @endforelse
 
-                                        @if($departmentNames->isEmpty() && $sectionNames->isEmpty())
+                                        @if ($departmentNames->isEmpty() && $sectionNames->isEmpty())
                                             <li class="badge rounded-pill bg-label-danger">لم يتم اختيار أي جهة.</li>
                                         @endif
                                     </ul>
@@ -194,15 +215,12 @@
                                         @can('incomingbook-delete')
                                             <strong style="margin: 0 10px;">|</strong>
                                             <button
-                                                @if($Incomingbook->related_book_id)
-                                                    wire:click="$emit('showError')"
+                                                @if ($Incomingbook->related_book_id) wire:click="$emit('showError')"
                                                 @else
                                                     wire:click="GetIncomingbook({{ $Incomingbook->id }})"
                                                     data-bs-toggle="modal"
-                                                    data-bs-target="#removeincomingbookModal"
-                                                @endif
-                                                class="p-0 px-1 btn btn-text-danger waves-effect {{ $Incomingbook->active ? 'disabled' : '' }}"
-                                            >
+                                                    data-bs-target="#removeincomingbookModal" @endif
+                                                class="p-0 px-1 btn btn-text-danger waves-effect {{ $Incomingbook->active ? 'disabled' : '' }}">
                                                 <i class="tf-icons mdi mdi-delete-outline fs-3"></i>
                                             </button>
                                         @endcan

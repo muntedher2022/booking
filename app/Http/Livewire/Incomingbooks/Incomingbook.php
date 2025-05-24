@@ -10,6 +10,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\Rule;
 use App\Models\Sections\Sections;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Emaillists\Emaillists;
@@ -34,6 +35,8 @@ class Incomingbook extends Component
     public $filePreview, $previewIncomingbookImage;
     public $search = ['book_number' => '', 'book_date' => '', 'subject' => '', 'content' => '', 'related_book_id' => '', 'sender_type' => '', 'sender_id' => '', 'book_type' => '', 'importance' => ''];
     public $sendEmail = false;
+    public $todayEmailCount = 0;
+    public $remainingEmails = 450;
 
     protected $listeners = [
         'GetSenderId',
@@ -52,6 +55,30 @@ class Incomingbook extends Component
     {
         $this->sections = Sections::all();
         $this->departments = Departments::all();
+        $this->updateEmailCounter();
+    }
+
+    private function updateEmailCounter()
+    {
+        $today = date('Y-m-d');
+        $count = DB::table('daily_email_counts')
+            ->where('date', $today)
+            ->value('count') ?? 0;
+
+        $this->todayEmailCount = $count;
+        $this->remainingEmails = 450 - $count;
+    }
+
+    private function incrementEmailCounter($count)
+    {
+        $today = date('Y-m-d');
+        DB::table('daily_email_counts')
+            ->updateOrInsert(
+                ['date' => $today],
+                ['count' => DB::raw("COALESCE(count, 0) + $count")]
+            );
+
+        $this->updateEmailCounter();
     }
 
     public function handleBookDateUpdated($value)
@@ -409,6 +436,16 @@ class Incomingbook extends Component
         ]);
 
         if ($this->sendEmail) {
+            $emailCount = count($processed_sender_ids);
+
+            if (($this->todayEmailCount + $emailCount) > 450) {
+                $this->dispatchBrowserEvent('error', [
+                    'message' => 'تم تجاوز الحد الأقصى للرسائل اليومية (450)',
+                    'title' => 'خطأ في الإرسال'
+                ]);
+                return;
+            }
+
             $bookData = [
                 'book_number' => $this->book_number,
                 'book_date' => $formatted_date,
@@ -423,6 +460,8 @@ class Incomingbook extends Component
                 'message' => 'تم ارسال نسخة من الكتاب عبر البريد الالكتروني',
                 'title' => 'البريد الالكتروني'
             ]);
+
+            $this->incrementEmailCounter($emailCount);
         }
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
