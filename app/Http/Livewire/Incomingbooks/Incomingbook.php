@@ -418,16 +418,11 @@ class Incomingbook extends Component
                 'attachment' => $this->attachment->hashName(),
             ];
 
-            try {
-                $emailResult = $this->sendEmailNotification($processed_sender_ids, $bookData);
-                // إرسال حدث للمتصفح لعرض رسالة متأخرة
-                $this->dispatchBrowserEvent('showDelayedMessage', [
-                    'message' => 'تم ارسال نسخة من الكتاب عبر البريد الالكتروني',
-                    'title' => 'البريد الالكتروني'
-                ]);
-            } catch (\Exception $e) {
-                // تجاهل الأخطاء
-            }
+            $emailResult = $this->sendEmailNotification($processed_sender_ids, $bookData);
+            $this->dispatchBrowserEvent('showDelayedMessage', [
+                'message' => 'تم ارسال نسخة من الكتاب عبر البريد الالكتروني',
+                'title' => 'البريد الالكتروني'
+            ]);
         }
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
