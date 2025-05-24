@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html dir="rtl" lang="ar">
+
 <head>
     <meta charset="UTF-8">
     <title>{{ $bookData['subject'] }} - {{ $bookData['book_number'] }}</title>
 </head>
+
 <body style="font-family: Arial, sans-serif;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
-        @if($bookData['book_type'] === 'صادر')
+        @if ($bookData['book_type'] === 'صادر')
             <p style="margin-bottom: 20px;">تحية طيبة،</p>
 
             <p style="margin-bottom: 20px;">نرافق لكم ربطاً صورة من الكتاب وتفاصيله كما يلي:</p>
@@ -30,4 +32,5 @@
         <p style="margin-top: 20px;">مع التقدير،</p>
     </div>
 </body>
+
 </html>
