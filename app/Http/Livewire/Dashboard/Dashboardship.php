@@ -26,8 +26,8 @@ class DashboardShip extends Component
     {
         $startDate = Carbon::now()->subDays(7);
 
-        $this->dailyStats = Incomingbooks::where('book_date', '>=', $startDate)
-            ->selectRaw('DATE(book_date) as date, book_type, COUNT(*) as count')
+        $this->dailyStats = Incomingbooks::where('created_at', '>=', $startDate)
+            ->selectRaw('DATE(created_at) as date, book_type, COUNT(*) as count')
             ->groupBy('date', 'book_type')
             ->orderBy('date')
             ->get()

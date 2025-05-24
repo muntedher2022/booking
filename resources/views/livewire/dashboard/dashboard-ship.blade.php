@@ -98,65 +98,48 @@
         });
     </script>
 
-    <!-- Daily Statistics Chart -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">احصائيات الكتب اليومية</h5>
+    <!-- Importance Distribution & Recent Books -->
+    <div class="row g-4">
+        <div class="col">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 pb-2">
+                    <h5 class="card-title mb-0 d-flex align-items-center">
+                        <i class="mdi mdi-clock-outline me-2 text-info"></i>
+                        آخر الكتب المضافة
+                    </h5>
                 </div>
-                <div class="card-body">
-                    <div id="dailyStatsChart" style="height: 300px;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-
-    <!-- Importance Distribution Chart & Recent Books -->
-    <div class="row">
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">توزيع درجة الأهمية</h5>
-                </div>
-                <div class="card-body">
-                    <div id="importanceChart" style="height: 300px;"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">آخر الكتب المضافة</h5>
-                </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
                                 <tr>
-                                    <th>رقم الكتاب</th>
-                                    <th>التاريخ</th>
-                                    <th>الموضوع</th>
-                                    <th>النوع</th>
-                                    <th>الأهمية</th>
+                                    <th class="border-0 px-4">رقم الكتاب</th>
+                                    <th class="border-0">التاريخ</th>
+                                    <th class="border-0">الموضوع</th>
+                                    <th class="border-0">النوع</th>
+                                    <th class="border-0">الأهمية</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach ($recentBooks as $book)
                                     <tr>
-                                        <td>{{ $book->book_number }}</td>
+                                        <td class="px-4">{{ $book->book_number }}</td>
                                         <td>{{ Carbon\Carbon::parse($book->book_date)->format('Y-m-d') }}</td>
                                         <td>{{ Str::limit($book->subject, 30) }}</td>
                                         <td>
-                                            <span
-                                                class="badge bg-{{ $book->book_type == 'وارد' ? 'primary' : 'success' }}">
+                                            <span class="badge bg-{{ $book->book_type == 'وارد' ? 'soft-primary' : 'soft-success' }} rounded-pill px-3">
                                                 {{ $book->book_type }}
                                             </span>
                                         </td>
                                         <td>
-                                            <span
-                                                class="badge bg-{{ $book->importance == 'عاجل' ? 'danger' : ($book->importance == 'سري' ? 'warning' : 'info') }}">
+                                            @php
+                                                $importanceClass = match($book->importance) {
+                                                    'عاجل' => 'soft-danger',
+                                                    'سري' => 'soft-warning',
+                                                    default => 'soft-info'
+                                                };
+                                            @endphp
+                                            <span class="badge bg-{{ $importanceClass }} rounded-pill px-3">
                                                 {{ $book->importance }}
                                             </span>
                                         </td>
@@ -170,57 +153,170 @@
         </div>
     </div>
 
+    <style>
+        .dashboard-container {
+            padding: 1.5rem;
+        }
+
+        .stat-card {
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-icon {
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(45deg, #4e73df, #224abe);
+        }
+
+        .bg-gradient-success {
+            background: linear-gradient(45deg, #1cc88a, #13855c);
+        }
+
+        .bg-soft-primary {
+            background-color: rgba(78, 115, 223, 0.1) !important;
+            color: #4e73df !important;
+        }
+
+        .bg-soft-success {
+            background-color: rgba(28, 200, 138, 0.1) !important;
+            color: #1cc88a !important;
+        }
+
+        .bg-soft-danger {
+            background-color: rgba(231, 74, 59, 0.1) !important;
+            color: #e74a3b !important;
+        }
+
+        .bg-soft-warning {
+            background-color: rgba(246, 194, 62, 0.1) !important;
+            color: #f6c23e !important;
+        }
+
+        .bg-soft-info {
+            background-color: rgba(54, 185, 204, 0.1) !important;
+            color: #36b9cc !important;
+        }
+
+        .counter-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
     @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-        <script>
-            // Daily Statistics Chart
-            var dailyStatsOptions = {
-                series: [{
-                    name: 'كتب واردة',
-                    data: @json($dailyStats->pluck('incoming'))
-                }, {
-                    name: 'كتب صادرة',
-                    data: @json($dailyStats->pluck('outgoing'))
-                }],
-                chart: {
-                    type: 'area',
-                    height: 300,
-                    toolbar: {
-                        show: false
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script>
+        // Daily Statistics Chart
+        var dailyStatsOptions = {
+            series: [{
+                name: 'كتب واردة',
+                data: @json($dailyStats->pluck('incoming'))
+            }, {
+                name: 'كتب صادرة',
+                data: @json($dailyStats->pluck('outgoing'))
+            }],
+            chart: {
+                type: 'area',
+                height: 350,
+                toolbar: {
+                    show: false
+                },
+                fontFamily: 'inherit',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
                     }
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    curve: 'smooth'
-                },
-                xaxis: {
-                    categories: @json($dailyStats->keys())
-                },
-                tooltip: {
-                    shared: true
                 }
-            };
-
-            var dailyStatsChart = new ApexCharts(document.querySelector("#dailyStatsChart"), dailyStatsOptions);
-            dailyStatsChart.render();
-
-            // Importance Distribution Chart
-            var importanceOptions = {
-                series: @json($importanceStats->pluck('count')),
-                labels: @json($importanceStats->pluck('importance')),
-                chart: {
-                    type: 'donut',
-                    height: 300
-                },
-                legend: {
-                    position: 'bottom'
+            },
+            colors: ['#4e73df', '#1cc88a'],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.4,
+                    opacityTo: 0.1,
+                    stops: [0, 90, 100]
                 }
-            };
+            },
+            xaxis: {
+                categories: @json($dailyStats->keys())
+            },
+            tooltip: {
+                shared: true,
+                theme: 'dark',
+                x: {
+                    format: 'yyyy-MM-dd'
+                }
+            }
+        };
 
-            var importanceChart = new ApexCharts(document.querySelector("#importanceChart"), importanceOptions);
-            importanceChart.render();
-        </script>
+        var dailyStatsChart = new ApexCharts(document.querySelector("#dailyStatsChart"), dailyStatsOptions);
+        dailyStatsChart.render();
+
+        // Importance Distribution Chart
+        var importanceOptions = {
+            series: @json($importanceStats->pluck('count')),
+            labels: @json($importanceStats->pluck('importance')),
+            chart: {
+                type: 'donut',
+                height: 300,
+                fontFamily: 'inherit',
+                animations: {
+                    enabled: true,
+                    easing: 'easeinout',
+                    speed: 800,
+                    animateGradually: {
+                        enabled: true,
+                        delay: 150
+                    }
+                }
+            },
+            colors: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b'],
+            legend: {
+                position: 'bottom',
+                fontFamily: 'inherit'
+            },
+            plotOptions: {
+                pie: {
+                    donut: {
+                        size: '70%'
+                    }
+                }
+            },
+            tooltip: {
+                theme: 'dark'
+            }
+        };
+
+        var importanceChart = new ApexCharts(document.querySelector("#importanceChart"), importanceOptions);
+        importanceChart.render();
+    </script>
     @endpush
 </div>
