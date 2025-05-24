@@ -2,18 +2,21 @@
 
 namespace App\Http\Livewire\Incomingbooks;
 
+use Carbon\Carbon;
+
+
 use Livewire\Component;
-
-
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\Rule;
+use App\Models\Sections\Sections;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Models\Emaillists\Emaillists;
+use App\Mail\IncomingBookNotification;
 use App\Models\Departments\Departments;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Incomingbooks\Incomingbooks;
-use App\Models\Sections\Sections;
-use Carbon\Carbon;
 
 class Incomingbook extends Component
 {
@@ -30,6 +33,7 @@ class Incomingbook extends Component
     public $book_number, $book_date, $subject, $content, $keywords, $related_book_id, $attachment, $book_type, $importance;
     public $filePreview, $previewIncomingbookImage;
     public $search = ['book_number' => '', 'book_date' => '', 'subject' => '', 'content' => '', 'related_book_id' => '', 'sender_type' => '', 'sender_id' => '', 'book_type' => '', 'importance' => ''];
+    public $sendEmail = false;
 
     protected $listeners = [
         'GetSenderId',
@@ -266,6 +270,74 @@ class Incomingbook extends Component
         }
     }
 
+    private function sendEmailNotification($processed_sender_ids, $bookData)
+    {
+        $sentEmails = [];
+        $failedEmails = [];
+
+        // إضافة مسار الملف المرفق
+        $year = date('Y', strtotime($bookData['book_date']));
+        $attachmentPath = storage_path('app/public/Incomingbooks/' . $year . '/' . $bookData['book_number'] . '/' . $bookData['attachment']);
+
+        foreach ($processed_sender_ids as $sender) {
+            $entityType = $sender['type'] == 'dep' ? 'department' : 'section';
+            $emails = Emaillists::where('type', $entityType)
+                              ->where('department', $sender['id'])
+                              ->get();
+
+            if ($emails->isEmpty()) {
+                $entityName = $entityType == 'department'
+                    ? optional(Departments::find($sender['id']))->department_name
+                    : optional(Sections::find($sender['id']))->section_name;
+                $failedEmails[] = "لا يوجد بريد إلكتروني مسجل لـ {$entityName}";
+                continue;
+            }
+
+            foreach ($emails as $emailRecord) {
+                try {
+                    Mail::to($emailRecord->email)
+                        ->send(new IncomingBookNotification($bookData, $attachmentPath));
+
+                    $sentEmails[] = [
+                        'email' => $emailRecord->email,
+                        'entity' => $entityType == 'department'
+                            ? optional(Departments::find($sender['id']))->department_name
+                            : optional(Sections::find($sender['id']))->section_name
+                    ];
+                } catch (\Exception $e) {
+                    $errorMessage = "فشل إرسال البريد إلى {$emailRecord->email}";
+                    if (str_contains($e->getMessage(), 'Failed to authenticate')) {
+                        $errorMessage .= " - خطأ في المصادقة";
+                    }
+                    $failedEmails[] = $errorMessage;
+                }
+            }
+        }
+
+        $message = '';
+        if (!empty($sentEmails)) {
+            $message .= "تم إرسال البريد بنجاح إلى:<br>";
+            foreach ($sentEmails as $sent) {
+                $message .= "- {$sent['entity']}: {$sent['email']}<br>";
+            }
+        }
+        if (!empty($failedEmails)) {
+            $message .= "<br>لم يتم الإرسال:<br>";
+            foreach ($failedEmails as $failed) {
+                $message .= "- {$failed}<br>";
+            }
+        }
+
+        if (empty($sentEmails) && empty($failedEmails)) {
+            $message = "لا توجد عناوين بريد إلكتروني للإرسال";
+        }
+
+        return [
+            'success' => !empty($sentEmails),
+            'message' => $message
+        ];
+    }
+
     public function store()
     {
         $this->resetValidation();
@@ -321,7 +393,7 @@ class Incomingbook extends Component
             ];
         }, $this->sender_id);
 
-        Incomingbooks::create([
+        $incomingBook = Incomingbooks::create([
             'user_id' => Auth::User()->id,
             'book_number' => $this->book_number,
             'book_date' => $formatted_date,
@@ -335,6 +407,38 @@ class Incomingbook extends Component
             'book_type' => $this->book_type,
             'importance' => $this->importance,
         ]);
+
+        if ($this->sendEmail) {
+            $bookData = [
+                'book_number' => $this->book_number,
+                'book_date' => $formatted_date,
+                'subject' => $this->subject,
+                'importance' => $this->importance,
+                'book_type' => $this->book_type,
+                'attachment' => $this->attachment->hashName(),
+            ];
+
+            try {
+                $emailResult = $this->sendEmailNotification($processed_sender_ids, $bookData);
+
+                if ($emailResult['success']) {
+                    $this->dispatchBrowserEvent('success', [
+                        'message' => $emailResult['message'],
+                        'title' => 'إرسال البريد'
+                    ]);
+                } else {
+                    $this->dispatchBrowserEvent('warning', [
+                        'message' => $emailResult['message'],
+                        'title' => 'تنبيه'
+                    ]);
+                }
+            } catch (\Exception $e) {
+                $this->dispatchBrowserEvent('error', [
+                    'message' => 'حدث خطأ أثناء إرسال البريد الإلكتروني: ' . $e->getMessage(),
+                    'title' => 'خطأ'
+                ]);
+            }
+        }
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
         $this->dispatchBrowserEvent('success', [

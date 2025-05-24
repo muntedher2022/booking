@@ -256,6 +256,15 @@
                         </div>
                         <hr class="my-0">
                         <div class="text-center col-12 demo-vertical-spacing mb-n4">
+                            <div class="form-check mb-3">
+                                <input wire:model="sendEmail" class="form-check-input" type="checkbox" id="sendEmailCheck">
+                                <label class="form-check-label" for="sendEmailCheck">
+                                    إرسال إشعار بالبريد الإلكتروني للجهات المحددة
+                                </label>
+                            </div>
+                            <div wire:loading wire:target="store" class="text-primary mb-2">
+                                جاري إرسال البريد الإلكتروني...
+                            </div>
                             <button wire:click='store' wire:loading.attr="disabled" type="button"
                                 class="btn btn-primary me-sm-3 me-1">اضافة</button>
                             <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
