@@ -62,11 +62,23 @@ class Incomingbook extends Component
     {
         $today = date('Y-m-d');
         $count = DB::table('daily_email_counts')
-            ->where('date', $today)
-            ->value('count') ?? 0;
-
-        $this->todayEmailCount = $count;
-        $this->remainingEmails = 450 - $count;
+            ->whereDate('date', $today)
+            ->first();
+            
+        if ($count) {
+            $this->todayEmailCount = $count->count;
+        } else {
+            // إذا لم يكن هناك سجل لهذا اليوم، نقوم بإنشاء واحد
+            DB::table('daily_email_counts')->insert([
+                'date' => $today,
+                'count' => 0,
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+            $this->todayEmailCount = 0;
+        }
+        
+        $this->remainingEmails = 450 - $this->todayEmailCount;
     }
 
     private function incrementEmailCounter($count)
@@ -96,6 +108,8 @@ class Incomingbook extends Component
 
     public function render()
     {
+        $this->updateEmailCounter();
+        
         $book_numberSearch = '%' . $this->search['book_number'] . '%';
         $book_dateSearch = '%' . $this->search['book_date'] . '%';
         $subjectSearch = '%' . $this->search['subject'] . '%';
@@ -564,6 +578,9 @@ class Incomingbook extends Component
             Storage::deleteDirectory('public/Incomingbooks/' . $year . '/' . $Incomingbooks->book_number);
 
             $Incomingbooks->delete();
+            
+            // تحديث العداد بعد الحذف
+            $this->updateEmailCounter();
 
             $this->reset();
             $this->dispatchBrowserEvent('success', [
