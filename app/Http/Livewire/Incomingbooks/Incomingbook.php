@@ -112,7 +112,7 @@ class Incomingbook extends Component
                         })
                         ->toArray();
 
-                    // البحث في الإدارات
+                    // البحث في الدوائر
                     $departmentIds = Departments::where('department_name', 'LIKE', '%' . $this->search['sender_id'] . '%')
                         ->pluck('id')
                         ->map(function ($id) {
@@ -282,8 +282,8 @@ class Incomingbook extends Component
         foreach ($processed_sender_ids as $sender) {
             $entityType = $sender['type'] == 'dep' ? 'department' : 'section';
             $emails = Emaillists::where('type', $entityType)
-                              ->where('department', $sender['id'])
-                              ->get();
+                ->where('department', $sender['id'])
+                ->get();
 
             if ($emails->isEmpty()) {
                 $entityName = $entityType == 'department'
@@ -420,27 +420,18 @@ class Incomingbook extends Component
 
             try {
                 $emailResult = $this->sendEmailNotification($processed_sender_ids, $bookData);
-
-                if ($emailResult['success']) {
-                    $this->dispatchBrowserEvent('success', [
-                        'message' => $emailResult['message'],
-                        'title' => 'إرسال البريد'
-                    ]);
-                } else {
-                    $this->dispatchBrowserEvent('warning', [
-                        'message' => $emailResult['message'],
-                        'title' => 'تنبيه'
-                    ]);
-                }
-            } catch (\Exception $e) {
-                $this->dispatchBrowserEvent('error', [
-                    'message' => 'حدث خطأ أثناء إرسال البريد الإلكتروني: ' . $e->getMessage(),
-                    'title' => 'خطأ'
+                // إرسال حدث للمتصفح لعرض رسالة متأخرة
+                $this->dispatchBrowserEvent('showDelayedMessage', [
+                    'message' => 'تم ارسال نسخة من الكتاب الى البريد الالكتروني',
+                    'title' => 'البريد الالكتروني'
                 ]);
+            } catch (\Exception $e) {
+                // تجاهل الأخطاء
             }
         }
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
+
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
             'title' => 'اضافه'

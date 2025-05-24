@@ -359,5 +359,14 @@
             })
 
         })
+
+        window.addEventListener('showDelayedMessage', event => {
+            setTimeout(() => {
+                Toast.fire({
+                    icon: 'success',
+                    title: event.detail.title + '<hr>' + event.detail.message,
+                });
+            }, 3000);
+        });
     </script>
 @endsection
