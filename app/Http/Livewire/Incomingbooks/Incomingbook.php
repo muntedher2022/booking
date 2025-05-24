@@ -422,7 +422,7 @@ class Incomingbook extends Component
                 $emailResult = $this->sendEmailNotification($processed_sender_ids, $bookData);
                 // إرسال حدث للمتصفح لعرض رسالة متأخرة
                 $this->dispatchBrowserEvent('showDelayedMessage', [
-                    'message' => 'تم ارسال نسخة من الكتاب الى البريد الالكتروني',
+                    'message' => 'تم ارسال نسخة من الكتاب عبر البريد الالكتروني',
                     'title' => 'البريد الالكتروني'
                 ]);
             } catch (\Exception $e) {
