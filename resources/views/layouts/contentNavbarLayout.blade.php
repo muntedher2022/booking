@@ -65,58 +65,72 @@
                         <div class="menu-inner-shadow"></div>
 
                         <ul class="py-1 menu-inner">
-
-                            {{-- Dashboard --}}
-                            <li class="menu-item {{ request()->is('/') ? 'active' : '' }}">
-                                <a href="{{ Route('Dashboard') }}" class="menu-link">
-                                    <i class="menu-icon tf-icons mdi mdi-home-outline"></i>
-                                    <div>{{ trans('sidebar.dashboard') }}</div>
-                                </a>
-                            </li>
-
-                            <li class="menu-item {{ request()->is('OutgoingBooks', 'Incomingbooks') ? 'open active' : '' }}">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                    <i class='menu-icon tf-icons mdi mdi-text-box-multiple-outline'></i>
-                                    <span class="menu-title">ادارة المخاطبات</span>
-                                </a>
-                                <ul class="menu-sub">
-                                    <li Class="menu-item {{ request()->Is('Incomingbooks') ? 'active' : '' }}">
-                                        <a href = "{{ Route('Incomingbooks') }}" Class="menu-link">
-                                            <div>الصادر والوارد</div>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                            <li class="menu-item {{ request()->is('Sections', 'Departments','Emaillists') ? 'open active' : '' }}">
-                                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                                    <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
-                                    <span class="menu-title">الاعدادات</span>
-                                </a>
-                                <ul class="menu-sub">
-                                    <li Class="menu-item {{ request()->Is('Sections') ? 'active' : '' }}">
-                                        <a href = "{{ Route('Sections') }}" Class="menu-link">
-                                            <div>الاقسام</div>
-                                        </a>
-                                    </li>
-                                    <li Class="menu-item {{ request()->Is('Departments') ? 'active' : '' }}">
-                                        <a href="{{ Route('Departments') }}" Class="menu-link">
-                                            <i Class=''></i>
-                                            <div>الدوائر</div>
-                                        </a>
-                                    </li>
-                                    @can('emaillists')
+                            @can('Dashboards')
+                                {{-- لوحة التحكم --}}
+                                <li class="menu-item {{ request()->is('/') ? 'active' : '' }}">
+                                    <a href="{{ Route('Dashboard') }}" class="menu-link">
+                                        <i class="menu-icon tf-icons mdi mdi-home-outline"></i>
+                                        <div>{{ trans('sidebar.dashboard') }}</div>
+                                    </a>
+                                </li>
+                            @endcan
+                            {{-- المخاطبات --}}
+                            @can('Correspondence Management')
+                                <li class="menu-item {{ request()->is('OutgoingBooks', 'Incomingbooks') ? 'open active' : '' }}">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class='menu-icon tf-icons mdi mdi-text-box-multiple-outline'></i>
+                                        <span class="menu-title">ادارة المخاطبات</span>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        {{-- الصادر والوارد --}}
+                                        @can('Incomingbooks')
+                                            <li Class="menu-item {{ request()->Is('Incomingbooks') ? 'active' : '' }}">
+                                                <a href = "{{ Route('Incomingbooks') }}" Class="menu-link">
+                                                    <div>الصادر والوارد</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                    </ul>
+                                </li>
+                            @endcan
+                            {{-- الاعدادات --}}
+                            @can('Settings')
+                                <li
+                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists') ? 'open active' : '' }}">
+                                    <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                        <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
+                                        <span class="menu-title">الاعدادات</span>
+                                    </a>
+                                    <ul class="menu-sub">
+                                        {{-- الاقسام --}}
+                                        @can('Sections')
+                                            <li Class="menu-item {{ request()->Is('Sections') ? 'active' : '' }}">
+                                                <a href = "{{ Route('Sections') }}" Class="menu-link">
+                                                    <div>الاقسام</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        {{-- الدوائر --}}
+                                        @can('Departments')
+                                            <li Class="menu-item {{ request()->Is('Departments') ? 'active' : '' }}">
+                                                <a href="{{ Route('Departments') }}" Class="menu-link">
+                                                    <i Class=''></i>
+                                                    <div>الدوائر</div>
+                                                </a>
+                                            </li>
+                                        @endcan
                                         {{-- البريد الالكتروني --}}
-                                        <li Class="menu-item {{ request()->Is('Emaillists') ? 'active' : '' }}">
-                                            <a href="{{ Route('Emaillists.index') }}" Class="menu-link">
-                                                <i Class=""></i>
-                                                <div>البريد الألكتروني</div>
-                                            </a>
-                                        </li>
-                                    @endcan
-                                </ul>
-
-                            </li>
+                                        @can('Emaillists')
+                                            <li Class="menu-item {{ request()->Is('Emaillists') ? 'active' : '' }}">
+                                                <a href="{{ Route('Emaillists.index') }}" Class="menu-link">
+                                                    <i Class=""></i>
+                                                    <div>البريد الألكتروني</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                    </ul>
+                                </li>
+                            @endcan
 
                             {{-- المستخدمين --}}
                             @can('users')

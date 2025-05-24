@@ -18,30 +18,41 @@ class AccountRoles extends Component
     public $name, $RoleID;
     public $TickAll, $CheckAll;
     public $SetPermission = [];
+    public $searchPermission = '';
 
     public function mount()
     {
-        if (Auth::User()->hasRole('OWNER'))
-        {
-            $this->Permissions = Permission::all();
-        }else{
+        /** @var \App\Models\User $user */
+        $user = Auth::User();
+
+        if ($user->hasRole('OWNER')) {
+            $this->Permissions = $this->filteredPermissions;
+        } else {
             $this->Permissions = Permission::whereNotIn('name', [
                 'permissions',
                 'permission-list',
                 'permission-create',
                 'permission-edit',
                 'permission-delete',
-            ])->get();
+            ])->orderBy('name', 'ASC')->get();
         }
+    }
 
+    public function getFilteredPermissionsProperty()
+    {
+        return Permission::where('name', 'like', '%' . $this->searchPermission . '%')
+            ->orWhere('explain_name', 'like', '%' . $this->searchPermission . '%')
+            ->get();
     }
 
     public function render()
     {
-        if (Auth::User()->hasRole('OWNER'))
-        {
+        /** @var \App\Models\User $user */
+        $user = Auth::User();
+
+        if ($user->hasRole('OWNER')) {
             $Roles = Role::paginate(5);
-        }else{
+        } else {
             $Roles = Role::whereNot('name', 'OWNER')->paginate(5);
         }
 
