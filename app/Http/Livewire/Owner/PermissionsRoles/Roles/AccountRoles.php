@@ -25,8 +25,9 @@ class AccountRoles extends Component
         /** @var \App\Models\User $user */
         $user = Auth::User();
 
-        if ($user->hasRole('OWNER')) {
-            $this->Permissions = $this->filteredPermissions;
+        // تعديل التحقق من الصلاحيات
+        if ($user->hasRole('OWNER') || $user->can('roles')) {
+            $this->Permissions = Permission::orderBy('name', 'ASC')->get();
         } else {
             $this->Permissions = Permission::whereNotIn('name', [
                 'permissions',
@@ -50,7 +51,8 @@ class AccountRoles extends Component
         /** @var \App\Models\User $user */
         $user = Auth::User();
 
-        if ($user->hasRole('OWNER')) {
+        // تعديل التحقق من الصلاحيات في العرض
+        if ($user->hasRole('OWNER') || $user->can('roles')) {
             $Roles = Role::paginate(5);
         } else {
             $Roles = Role::whereNot('name', 'OWNER')->paginate(5);

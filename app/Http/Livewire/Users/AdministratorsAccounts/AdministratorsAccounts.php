@@ -23,7 +23,7 @@ class AdministratorsAccounts extends Component
     public $SearchName, $SearchEmail, $SearchRole, $SearchStatus;
     public $RoleSelect, $StatusSelect;
 
-   protected $listeners = [
+    protected $listeners = [
         'SelectAdministratorRoles',
         'SelectAdministratorStatus',
     ];
@@ -41,30 +41,28 @@ class AdministratorsAccounts extends Component
     {
         $this->Roles = Role::all();
 
-        $SearchName = $this->SearchName.'%';
-        $SearchEmail = $this->SearchEmail.'%';
+        $SearchName = $this->SearchName . '%';
+        $SearchEmail = $this->SearchEmail . '%';
 
-        if($this->RoleSelect != NULL)
-        {
-            $AdministratorsByRole = DB::table('model_has_roles')->where('role_id',$this->RoleSelect)->pluck('model_id');
-        }else{
+        if ($this->RoleSelect != NULL) {
+            $AdministratorsByRole = DB::table('model_has_roles')->where('role_id', $this->RoleSelect)->pluck('model_id');
+        } else {
             $AdministratorsByRole = User::pluck('id');
         }
 
-        if($this->StatusSelect != NULL)
-        {
+        if ($this->StatusSelect != NULL) {
             $AdministratorsByStatus = User::where('status', $this->StatusSelect)->pluck('id');
-        }else{
+        } else {
             $AdministratorsByStatus = User::pluck('id');
         }
 
         $Administrators = User::whereIn('plan', ['Supervisor', 'Employee'])
-                        ->where('name','LIKE', $SearchName)
-                        ->where('email','LIKE', $SearchEmail)
-                        ->whereIn('id', $AdministratorsByRole)
-                        ->whereIn('id', $AdministratorsByStatus)
-                        ->orderBy('id','ASC')
-                        ->paginate(10);
+            ->where('name', 'LIKE', $SearchName)
+            ->where('email', 'LIKE', $SearchEmail)
+            ->whereIn('id', $AdministratorsByRole)
+            ->whereIn('id', $AdministratorsByStatus)
+            ->orderBy('id', 'ASC')
+            ->paginate(10);
 
         $links = $Administrators;
         $this->Administrators = collect($Administrators->items());
@@ -78,8 +76,7 @@ class AdministratorsAccounts extends Component
     {
         if ($AdministratorRolesId) {
             $this->RoleSelect = $AdministratorRolesId;
-        }
-        else{
+        } else {
             $this->reset('RoleSelect');
         }
     }
@@ -87,8 +84,7 @@ class AdministratorsAccounts extends Component
     {
         if ($AdministratorStatus) {
             $this->StatusSelect = $AdministratorStatus;
-        }
-        else{
+        } else {
             $this->reset('StatusSelect');
         }
     }
@@ -165,33 +161,35 @@ class AdministratorsAccounts extends Component
     {
         $this->resetValidation();
 
-        $this->validate([
-            'name' => 'required|unique:users,name,'.$this->AdministratorId,
-            'email' => 'required|email|unique:users,email,'.$this->AdministratorId,
-            'password' => 'nullable|min:8|same:ConfirmPassword',
-            'AdministratorRoles' => 'required',
-            'plan' => 'required',
-            'status' => 'required',
-        ],
-        [
-            'name.required' => 'أسم المشرف مطلوب.',
-            'name.unique' => 'تم أخذ أسم المشرف بالفعل',
-            'email.required' => 'البريد الالكتروني مطلوب.',
-            'email.email' => 'يجب التأكد من البريد الالكتروني.',
-            'email.unique' => 'البريد الالكتروني مسجل سابقاً',
-            'password.min' => 'يجب ألا تقل كلمة المرور عن 8 أحرف',
-            'password.same' => 'يجب أن تتطابق كلمة المرور مع تأكيد كلمة المرور',
-            'AdministratorRoles.required' => 'دور المشرف مطلوب.',
-            'plan.required' => 'يجب تحديد خطة المشرف مطلوب.',
-            'status.required' => 'يجب تحديد حالة المشرف مطلوب.',
-        ]);
+        $this->validate(
+            [
+                'name' => 'required|unique:users,name,' . $this->AdministratorId,
+                'email' => 'required|email|unique:users,email,' . $this->AdministratorId,
+                'password' => 'nullable|min:8|same:ConfirmPassword',
+                'AdministratorRoles' => 'required',
+                'plan' => 'required',
+                'status' => 'required',
+            ],
+            [
+                'name.required' => 'أسم المشرف مطلوب.',
+                'name.unique' => 'تم أخذ أسم المشرف بالفعل',
+                'email.required' => 'البريد الالكتروني مطلوب.',
+                'email.email' => 'يجب التأكد من البريد الالكتروني.',
+                'email.unique' => 'البريد الالكتروني مسجل سابقاً',
+                'password.min' => 'يجب ألا تقل كلمة المرور عن 8 أحرف',
+                'password.same' => 'يجب أن تتطابق كلمة المرور مع تأكيد كلمة المرور',
+                'AdministratorRoles.required' => 'دور المشرف مطلوب.',
+                'plan.required' => 'يجب تحديد خطة المشرف مطلوب.',
+                'status.required' => 'يجب تحديد حالة المشرف مطلوب.',
+            ]
+        );
 
         $Administrator = User::find($this->AdministratorId);
 
-        if(!empty($this->password)){
+        if (!empty($this->password)) {
             $this->password =  Hash::make($this->password);
-            } else {
-                $this->password = $Administrator->password;
+        } else {
+            $this->password = $Administrator->password;
         }
 
         $Administrator->update([
@@ -202,7 +200,7 @@ class AdministratorsAccounts extends Component
             'plan' => $this->plan,
         ]);
 
-        DB::table('model_has_roles')->where('model_id',$this->AdministratorId)->delete();
+        DB::table('model_has_roles')->where('model_id', $this->AdministratorId)->delete();
         $Administrator->assignRole($this->AdministratorRoles);
 
         $this->reset();
@@ -217,8 +215,7 @@ class AdministratorsAccounts extends Component
     public function destroy()
     {
         $User = User::find($this->AdministratorId);
-        if(!$User->status)
-        {
+        if (!$User->status) {
             User::find($this->AdministratorId)->delete();
 
             $this->reset();
@@ -227,8 +224,7 @@ class AdministratorsAccounts extends Component
                 'message' => 'تم حذف حساب المشرف بنجاح',
                 'title' => 'حذف حساب مشرف'
             ]);
-        }else
-        {
+        } else {
             $this->dispatchBrowserEvent('success', [
                 'message' => 'يجب ان تكون حالة المشرف "غير مفعل" لاتمام عملية الحذف ',
                 'title' => 'حساب مشرف'

@@ -90,9 +90,10 @@
 		window.addEventListener('success', event => {
 			$('#addAdministratorModal').modal('hide');
 			$('#EditAdministrator').modal('hide');
+			$('#RmoveAdministrator').modal('hide');
 			Toast.fire({
 				icon: 'success',
-				title: event.detail.message
+				title: event.detail.title + '<hr>' + event.detail.message,
 			})
         });
 	</script>

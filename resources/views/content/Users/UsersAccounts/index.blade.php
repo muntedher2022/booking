@@ -48,7 +48,7 @@
 		$(document).ready(function() {
             window.initAdministratorRolesDrop=()=>{
                 $('#SearchRole').select2({
-					placeholder: 'حدد دور المشرف' 
+					placeholder: 'حدد دور المشرف'
 				})
             }
             initAdministratorRolesDrop();
@@ -94,7 +94,7 @@
 		$(document).ready(function() {
             window.initAdministratorStatusDrop=()=>{
                 $('#SearchStatus').select2({
-					placeholder: 'حدد حالة الحساب' 
+					placeholder: 'حدد حالة الحساب'
 				})
             }
             initAdministratorStatusDrop();
@@ -105,7 +105,7 @@
                 initAdministratorStatusDrop();
             });
         });
-		
+
 		const Toast = Swal.mixin({
 			toast: true,
 			position: 'top-start',
@@ -119,18 +119,19 @@
 		})
 
 		window.addEventListener('success', event => {
+			$('#addUserModal').modal('hide');
 			$('#EditUserModal').modal('hide');
 			$('#RmoveUserModal').modal('hide');
 			Toast.fire({
 				icon: 'success',
-				title: event.detail.message
+				title: event.detail.title + '<hr>' + event.detail.message,
 			})
         })
 		window.addEventListener('error', event => {
 			$('#RmoveUserModal').modal('hide');
 			Toast.fire({
 				icon: 'error',
-				title: event.detail.message,
+				title: event.detail.title + '<hr>' + event.detail.message,
 				timer: 5000,
 			})
 			//$('#EditUserModal').modal('show');

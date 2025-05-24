@@ -3,11 +3,16 @@
 	<div class="modal-dialog modal-dialog-centered">
 		<div class="p-3 modal-content p-md-5">
 			<button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
-			<div class="modal-body p-md-0 mt-n4">
-				<div class="mb-4 text-center">
-					<h3 class="pb-1 mb-2 text-primary">تحرير بيانات المشرف</h3>
-					<p>تحرير بيانات المستخدم بصفة مشرف .</p>
-				</div>
+			<div class="mb-4 text-center mt-n4">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold mb-2">
+                        <span class="text-warning">تحرير</span> بيانات المشرف
+                    </h3>
+                    <p class="text-muted">
+                        <i class="mdi mdi-account-edit me-1"></i>
+                        تحرير بيانات المستخدم بصفة مشرف
+                    </p>
+                </div>
                 <hr class="text-primary mt-n2">
 
                 <h5 wire:loading wire:target="GetAdministratorsAccount" wire:loading.class="d-flex justify-content-center text-primary">جار معالجة البيانات...</h5>
@@ -101,7 +106,7 @@
                         <hr class="text-primary mt-n2">
 
                         <div class="text-center col-12 mb-n4">
-                            <button wire:click='update' type="submit" class="btn btn-primary me-sm-3 me-1">تعديل</button>
+                            <button wire:click='update' type="submit" class="btn btn-warning me-sm-3 me-1">تعديل</button>
                             <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"
                                 aria-label="Close">تجاهل</button>
                         </div>

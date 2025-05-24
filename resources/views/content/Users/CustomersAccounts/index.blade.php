@@ -121,16 +121,17 @@
 		window.addEventListener('success', event => {
 			$('#addCustomerModal').modal('hide');
 			$('#EditCustomerModal').modal('hide');
+			$('#RmoveCustomerModal').modal('hide');
 			Toast.fire({
 				icon: 'success',
-				title: event.detail.message
+				title: event.detail.title + '<hr>' + event.detail.message,
 			})
         })
 		window.addEventListener('error', event => {
 			$('#RmoveCustomerModal').modal('hide');
 			Toast.fire({
 				icon: 'error',
-				title: event.detail.message,
+				title: event.detail.title + '<hr>' + event.detail.message,
 				timer: 5000,
 			})
 			//$('#EditUserModal').modal('show');
