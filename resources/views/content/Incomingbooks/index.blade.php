@@ -15,6 +15,11 @@
     <link rel="stylesheet"
         href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
+
+
+    <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.css') }}">
+    <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.viewer.css') }}">
+
 @endsection
 @section('content')
 
@@ -40,6 +45,13 @@
     <script src=" {{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js"></script>
+
+
+    <script src="{{ asset('Resources/dynamsoft.webtwain.js') }}"></script>
+    <script src="{{ asset('Resources/dynamsoft.webtwain.install.js') }}"></script>
+    <script src="{{ asset('Resources/dynamsoft.webtwain.initiate.js') }}"></script>
+    <script src="{{ asset('Resources/dynamsoft.webtwain.config.js') }}"></script>
+    <script src="{{ asset('Resources/src/dynamsoft.webtwain.viewer.js') }}"></script>
 @endsection
 
 @section('page-script')
@@ -48,27 +60,27 @@
     <script src=" {{ asset('assets/js/form-basic-inputs.js') }}"></script>
     <script>
         /* function printFile(fileUrl) {
-            const fileExtension = fileUrl.split('.').pop().toLowerCase();
-            const isPDF = fileExtension === 'pdf';
+                            const fileExtension = fileUrl.split('.').pop().toLowerCase();
+                            const isPDF = fileExtension === 'pdf';
 
-            if (isPDF) {
-                printJS({
-                    printable: fileUrl,
-                    type: 'pdf',
-                    onError: function(error) {
-                        alert("خطأ في طباعة ملف PDF: " + error.message);
-                    }
-                });
-            } else {
-                printJS({
-                    printable: fileUrl,
-                    type: 'image',
-                    onError: function(error) {
-                        alert("خطأ في طباعة ملف PDF: " + error.message);
-                    }
-                });
-            }
-        } */
+                            if (isPDF) {
+                                printJS({
+                                    printable: fileUrl,
+                                    type: 'pdf',
+                                    onError: function(error) {
+                                        alert("خطأ في طباعة ملف PDF: " + error.message);
+                                    }
+                                });
+                            } else {
+                                printJS({
+                                    printable: fileUrl,
+                                    type: 'image',
+                                    onError: function(error) {
+                                        alert("خطأ في طباعة ملف PDF: " + error.message);
+                                    }
+                                });
+                            }
+                        } */
 
         function printFile(fileUrl) {
             const fileExtension = fileUrl.split('.').pop().toLowerCase();
@@ -367,6 +379,101 @@
                     title: event.detail.title + '<hr>' + event.detail.message,
                 });
             }, 3000);
+        });
+
+
+        // كود المسح الضوئي
+        let DWTObject = null;
+        let isInitialized = false;
+
+        function initializeScanner() {
+            if (!isInitialized) {
+                // عرض مؤشر التحميل
+                Toast.fire({
+                    icon: 'info',
+                    title: 'جاري تهيئة الماسح الضوئي...',
+                    showConfirmButton: false
+                });
+
+                // تهيئة المكتبة
+                Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function() {
+                    DWTObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
+                    isInitialized = true;
+                    $('#dwtcontrolContainer').show();
+
+                    // بدء المسح مباشرة
+                    AcquireImage();
+                });
+
+                Dynamsoft.DWT.Load();
+            } else {
+                // إذا كانت المكتبة مهيأة مسبقاً، نبدأ المسح مباشرة
+                $('#dwtcontrolContainer').show();
+                AcquireImage();
+            }
+        }
+
+        function AcquireImage() {
+            if (!DWTObject) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'لم يتم العثور على الماسح الضوئي',
+                });
+                return;
+            }
+
+            DWTObject.SelectSourceAsync()
+                .then(function() {
+                    return DWTObject.AcquireImageAsync({
+                        IfShowUI: true,
+                        IfFeederEnabled: false,
+                        IfDuplexEnabled: false,
+                        PixelType: Dynamsoft.DWT.EnumDWT_PixelType.TWPT_RGB,
+                        Resolution: 300,
+                        IfCloseSourceAfterAcquire: true
+                    });
+                })
+                .then(function() {
+                    // تحويل الصورة الممسوحة إلى ملف
+                    DWTObject.ConvertToBlob([0], Dynamsoft.DWT.EnumDWT_ImageType.IT_JPG)
+                        .then(function(blob) {
+                            // إنشاء ملف من البلوب
+                            const file = new File([blob], "scanned_image.jpg", {
+                                type: "image/jpeg"
+                            });
+
+                            // تحديث حقل الملف
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            document.querySelector('#attachment').files = dataTransfer.files;
+
+                            // إرسال حدث تغيير الملف
+                            document.querySelector('#attachment').dispatchEvent(new Event('change'));
+
+                            // إخفاء منطقة المسح
+                            $('#dwtcontrolContainer').hide();
+
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'تم المسح بنجاح',
+                            });
+                        });
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'حدث خطأ أثناء المسح',
+                        text: error.message
+                    });
+                });
+        }
+
+        // تنظيف عند إغلاق النافذة
+        $('#addincomingbookModal').on('hidden.bs.modal', function() {
+            if (DWTObject) {
+                $('#dwtcontrolContainer').hide();
+            }
         });
     </script>
 @endsection

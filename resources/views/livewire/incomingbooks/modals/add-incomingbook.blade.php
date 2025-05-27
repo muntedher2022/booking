@@ -151,18 +151,18 @@
                                     </div>
                                     <div class="mb-3 col-4">
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('Departments') }}" class="btn btn-primary position-relative"
-                                                data-bs-custom-class="tooltip-white-grey"
-                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                                data-bs-popper-placement="top"
+                                            <a href="{{ route('Departments') }}"
+                                                class="btn btn-primary position-relative"
+                                                data-bs-custom-class="tooltip-white-grey" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" data-bs-popper-placement="top"
                                                 data-bs-title="في حالة عدم وجود الدائرة اضغط هنا لإضافتها"
                                                 onclick="$('#addincomingbookModal').modal('hide')">
                                                 <i class="mdi mdi-plus me-1"></i>دائرة
                                             </a>
-                                            <a href="{{ route('Sections') }}" class="btn btn-primary position-relative"
-                                                data-bs-custom-class="tooltip-white-grey"
-                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                                data-bs-popper-placement="top"
+                                            <a href="{{ route('Sections') }}"
+                                                class="btn btn-primary position-relative"
+                                                data-bs-custom-class="tooltip-white-grey" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" data-bs-popper-placement="top"
                                                 data-bs-title="في حالة عدم وجود القسم اضغط هنا لإضافته"
                                                 onclick="$('#addincomingbookModal').modal('hide')">
                                                 <i class="mdi mdi-plus me-1"></i>قسم
@@ -231,16 +231,28 @@
                                         <label for="addIncomingbooksender_id">
                                             {{ $book_type ? ($book_type == 'صادر' ? 'صورة الكتاب الصادر' : 'صورة الكتاب الوارد') : 'صورة الكتاب' }}
                                         </label>
+
+                                        <!-- إضافة زر المسح الضوئي -->
+                                        <div class="mt-2">
+                                            <button type="button" class="btn btn-primary" onclick="initializeScanner()">
+                                                <i class="mdi mdi-scanner me-1"></i>
+                                                بدء المسح الضوئي
+                                            </button>
+                                        </div>
                                     </div>
                                     @error('attachment')
                                         <small class='text-danger inputerror'> {{ $message }} </small>
                                     @enderror
 
-                                    <div class="d-flex justify-content-center text-center">
+                                    <!-- إضافة منطقة المعاينة -->
+                                    <div class="mt-3">
+                                        <div id="dwtcontrolContainer" style="display: none; width: 100%; height: 300px;"></div>
+
                                         <div wire:loading wire:target='attachment' class="mt-3">
                                             <img src="{{ asset('assets/img/gif/Cube-Loading-Animated-3D.gif') }}"
                                                 style="height: 300px" alt="">
                                         </div>
+
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
                                             @if ($attachment && $attachment->getMimeType() == 'application/pdf')
                                                 <embed src="{{ $attachment->temporaryUrl() }}" type="application/pdf"
@@ -257,7 +269,8 @@
                         <hr class="my-0">
                         <div class="text-center col-12 demo-vertical-spacing mb-n4">
                             <div class="form-check mb-3">
-                                <input wire:model="sendEmail" class="form-check-input" type="checkbox" id="sendEmailCheck">
+                                <input wire:model="sendEmail" class="form-check-input" type="checkbox"
+                                    id="sendEmailCheck">
                                 <label class="form-check-label" for="sendEmailCheck">
                                     إرسال إشعار بالبريد الإلكتروني للجهات المحددة
                                 </label>

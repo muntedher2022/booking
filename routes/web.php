@@ -36,3 +36,8 @@ Route::GET('Departments', [DepartmentsController::class, 'index'])->name('Depart
 Route::GET('Incomingbooks', [IncomingbooksController::class, 'index'])->name('Incomingbooks');
 // البريد الالكتروني للاقسام
 Route::RESOURCE('Emaillists', EmaillistsController::class);
+
+
+Route::get('/scan', function () {
+    return view('scan');
+});
