@@ -381,33 +381,25 @@
             }, 3000);
         });
 
-
-        // كود المسح الضوئي
         let DWTObject = null;
         let isInitialized = false;
 
         function initializeScanner() {
             if (!isInitialized) {
-                // عرض مؤشر التحميل
                 Toast.fire({
                     icon: 'info',
                     title: 'جاري تهيئة الماسح الضوئي...',
                     showConfirmButton: false
                 });
-
-                // تهيئة المكتبة
                 Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function() {
                     DWTObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
                     isInitialized = true;
                     $('#dwtcontrolContainer').show();
-
-                    // بدء المسح مباشرة
                     AcquireImage();
                 });
 
                 Dynamsoft.DWT.Load();
             } else {
-                // إذا كانت المكتبة مهيأة مسبقاً، نبدأ المسح مباشرة
                 $('#dwtcontrolContainer').show();
                 AcquireImage();
             }
@@ -434,23 +426,15 @@
                     });
                 })
                 .then(function() {
-                    // تحويل الصورة الممسوحة إلى ملف
                     DWTObject.ConvertToBlob([0], Dynamsoft.DWT.EnumDWT_ImageType.IT_JPG)
                         .then(function(blob) {
-                            // إنشاء ملف من البلوب
                             const file = new File([blob], "scanned_image.jpg", {
                                 type: "image/jpeg"
                             });
-
-                            // تحديث حقل الملف
                             const dataTransfer = new DataTransfer();
                             dataTransfer.items.add(file);
                             document.querySelector('#attachment').files = dataTransfer.files;
-
-                            // إرسال حدث تغيير الملف
                             document.querySelector('#attachment').dispatchEvent(new Event('change'));
-
-                            // إخفاء منطقة المسح
                             $('#dwtcontrolContainer').hide();
 
                             Toast.fire({
@@ -468,8 +452,6 @@
                     });
                 });
         }
-
-        // تنظيف عند إغلاق النافذة
         $('#addincomingbookModal').on('hidden.bs.modal', function() {
             if (DWTObject) {
                 $('#dwtcontrolContainer').hide();
