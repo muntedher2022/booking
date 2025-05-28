@@ -391,6 +391,16 @@
                     title: 'جاري تهيئة الماسح الضوئي...',
                     showConfirmButton: false
                 });
+
+                // تهيئة إعدادات المكتبة
+                Dynamsoft.DWT.AutoLoad = false;
+                Dynamsoft.DWT.ResourcesPath = "/Resources";
+                Dynamsoft.DWT.Containers = [{
+                    ContainerId: 'dwtcontrolContainer',
+                    Width: '100%',
+                    Height: '300px'
+                }];
+
                 Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function() {
                     DWTObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
                     isInitialized = true;
@@ -414,6 +424,11 @@
                 return;
             }
 
+            // إغلاق أي اتصال سابق
+            if (DWTObject.DataSourceStatus) {
+                DWTObject.CloseSource();
+            }
+
             DWTObject.SelectSourceAsync()
                 .then(function() {
                     return DWTObject.AcquireImageAsync({
@@ -426,25 +441,32 @@
                     });
                 })
                 .then(function() {
-                    DWTObject.ConvertToBlob([0], Dynamsoft.DWT.EnumDWT_ImageType.IT_JPG)
-                        .then(function(blob) {
-                            const file = new File([blob], "scanned_image.jpg", {
-                                type: "image/jpeg"
-                            });
-                            const dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(file);
-                            document.querySelector('#attachment').files = dataTransfer.files;
-                            document.querySelector('#attachment').dispatchEvent(new Event('change'));
-                            $('#dwtcontrolContainer').hide();
+                    return DWTObject.ConvertToBlob([0], Dynamsoft.DWT.EnumDWT_ImageType.IT_PDF);
+                })
+                .then(function(blob) {
+                    const file = new File([blob], "scanned_document.pdf", {
+                        type: "application/pdf"
+                    });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    document.querySelector('#attachment').files = dataTransfer.files;
+                    document.querySelector('#attachment').dispatchEvent(new Event('change'));
 
-                            Toast.fire({
-                                icon: 'success',
-                                title: 'تم المسح بنجاح',
-                            });
-                        });
+                    // تنظيف الذاكرة
+                    DWTObject.RemoveAllImages();
+                    $('#dwtcontrolContainer').hide();
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'تم المسح بنجاح',
+                    });
                 })
                 .catch(function(error) {
                     console.error(error);
+                    // محاولة إغلاق المصدر في حالة الخطأ
+                    if (DWTObject.DataSourceStatus) {
+                        DWTObject.CloseSource();
+                    }
                     Toast.fire({
                         icon: 'error',
                         title: 'حدث خطأ أثناء المسح',
@@ -452,8 +474,14 @@
                     });
                 });
         }
+
         $('#addincomingbookModal').on('hidden.bs.modal', function() {
             if (DWTObject) {
+                // تنظيف عند إغلاق النافذة
+                DWTObject.RemoveAllImages();
+                if (DWTObject.DataSourceStatus) {
+                    DWTObject.CloseSource();
+                }
                 $('#dwtcontrolContainer').hide();
             }
         });
