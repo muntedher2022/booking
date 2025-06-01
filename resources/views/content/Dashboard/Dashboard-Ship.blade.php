@@ -2,11 +2,12 @@
 
 @section('title', 'لوحة التحكم')
 
-@section('vendor-style')
+@push('styles')
+    @livewireStyles
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-bs5/datatables.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/swiper/swiper.css') }}" />
-@endsection
+@endpush
 
 @section('page-style')
     <!-- Page -->
@@ -16,6 +17,8 @@
 @endsection
 
 @section('vendor-script')
+    @parent
+    <script src="{{ asset('assets/vendor/libs/remixicon/remixicon.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/apex-charts/apexcharts.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/swiper/swiper.js') }}"></script>
@@ -35,12 +38,6 @@
 
 @endsection
 
-@section('vendor-style')
-    @parent
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/remixicon/remixicon.css') }}" />
-@endsection
-
-@section('vendor-script')
-    @parent
-    <script src="{{ asset('assets/vendor/libs/remixicon/remixicon.js') }}"></script>
-@endsection
+@push('scripts')
+    @livewireScripts
+@endpush

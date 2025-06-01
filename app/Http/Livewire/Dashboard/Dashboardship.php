@@ -6,7 +6,7 @@ use App\Models\Incomingbooks\Incomingbooks;
 use Carbon\Carbon;
 use Livewire\Component;
 
-class DashboardShip extends Component
+class Dashboardship extends Component
 {
     public $dailyStats;
     public $recentBooks;
