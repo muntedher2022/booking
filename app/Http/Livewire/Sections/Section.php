@@ -8,7 +8,7 @@ use Livewire\WithPagination;
 use App\Models\Sections\Sections;
 use Illuminate\Support\Facades\Auth;
 
-class section extends Component
+class Section extends Component
 {
     use WithPagination;
     protected $paginationTheme = 'bootstrap';

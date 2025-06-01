@@ -19,7 +19,7 @@ use App\Models\Departments\Departments;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Incomingbooks\Incomingbooks;
 
-class Incomingbook extends Component
+class IncomingBook extends Component
 {
     use WithPagination;
     use WithFileUploads;
