@@ -250,11 +250,14 @@
                                                         class="img-fluid" width="100%" height="300px" />
                                                 @endif
                                             @elseif ($previewIncomingbookImage)
-                                                @if (pathinfo($previewIncomingbookImage, PATHINFO_EXTENSION) === 'pdf')
-                                                    <embed src="{{ $previewIncomingbookImage }}"
+                                                @php
+                                                    $extension = pathinfo($previewIncomingbookImage, PATHINFO_EXTENSION);
+                                                @endphp
+                                                @if (strtolower($extension) === 'pdf')
+                                                    <embed src="{{ asset($previewIncomingbookImage) }}"
                                                         type="application/pdf" width="100%" height="300px" />
                                                 @else
-                                                    <img src="{{ $previewIncomingbookImage }}" alt="Selected Image"
+                                                    <img src="{{ asset($previewIncomingbookImage) }}" alt="Selected Image"
                                                         class="img-fluid" width="100%" height="300px" />
                                                 @endif
                                             @endif

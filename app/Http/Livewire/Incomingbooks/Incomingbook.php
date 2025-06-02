@@ -295,7 +295,7 @@ class IncomingBook extends Component
 
         if ($this->Incomingbook->attachment) {
             $year = date('Y', strtotime($this->Incomingbook->book_date));
-            $this->previewIncomingbookImage = Storage::url('public/Incomingbooks/' . $year . '/' . $this->book_number . '/' . $this->Incomingbook->attachment);
+            $this->previewIncomingbookImage = 'storage/Incomingbooks/' . $year . '/' . $this->book_number . '/' . $this->Incomingbook->attachment;
         } else {
             $this->previewIncomingbookImage = null;
         }
