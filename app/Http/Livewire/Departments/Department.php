@@ -3,10 +3,10 @@
 namespace App\Http\Livewire\Departments;
 
 use Livewire\Component;
-
 use Livewire\WithPagination;
-use App\Models\Departments\Departments;
+use App\Models\Tracking\Tracking;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Departments\Departments;
 
 class Department extends Component
 {
@@ -69,8 +69,16 @@ class Department extends Component
         Departments::create([
             'user_id' => Auth::User()->id,
             'department_name' => $this->department_name,
-
         ]);
+        // =================================
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'الدوائر',
+            'operation_type' => 'اضافة',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "اسم الدائرة: " . $this->department_name,
+        ]);
+        // =================================
         $this->reset();
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
@@ -91,9 +99,7 @@ class Department extends Component
     {
         $this->resetValidation();
         $this->validate([
-            'department_name' => 'required|unique:departments,department_name',
-
-
+            'department_name' => 'required|unique:departments,department_name,'.$this->departmentId,
         ], [
             'department_name.required' => 'يرجى إدخال اسم الدائرة',
             'department_name.unique' => 'هذه الدائرة موجودة بالفعل'
@@ -103,8 +109,16 @@ class Department extends Component
         $Departments->update([
             'user_id' => Auth::User()->id,
             'department_name' => $this->department_name,
-
         ]);
+        // =================================
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'الدوائر',
+            'operation_type' => 'تعديل',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "اسم الدائرة: " . $this->department_name,
+        ]);
+        // =================================
         $this->reset();
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم التعديل بنجاح',
@@ -117,7 +131,15 @@ class Department extends Component
         $Departments = Departments::find($this->departmentId);
 
         if ($Departments) {
-
+            // =================================
+            Tracking::create([
+                'user_id' => Auth::id(),
+                'page_name' => 'الدوائر',
+                'operation_type' => 'حذف',
+                'operation_time' => now()->format('Y-m-d H:i:s'),
+                'details' => "اسم الدائرة: " . $Departments->department_name,
+            ]);
+            // =================================
             $Departments->delete();
             $this->reset();
             $this->dispatchBrowserEvent('success', [

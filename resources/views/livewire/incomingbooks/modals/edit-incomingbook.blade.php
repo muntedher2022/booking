@@ -163,7 +163,7 @@
                                             <a href="{{ route('Sections') }}" class="btn btn-primary position-relative"
                                                 data-bs-custom-class="tooltip-white-grey"
                                                 data-bs-toggle="tooltip" data-bs-placement="top"
-                                                data-bs-popper-placement="top" 
+                                                data-bs-popper-placement="top"
                                                 data-bs-title="في حالة عدم وجود القسم اضغط هنا لإضافته"
                                                 onclick="$('#editincomingbookModal').modal('hide')">
                                                 <i class="mdi mdi-plus me-1"></i>قسم
@@ -241,18 +241,16 @@
                                                 style="height: 300px" alt="">
                                         </div>
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
-                                            @if ($filePreview)
-                                                @if ($attachment && $attachment->getClientOriginalExtension() == strtolower('pdf'))
-                                                    <embed src="{{ $filePreview }}" type="application/pdf"
+                                            @if ($tempImageUrl)
+                                                @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
+                                                    <embed src="{{ $tempImageUrl }}" type="application/pdf"
                                                         width="100%" height="300px" />
                                                 @else
-                                                    <img src="{{ $filePreview }}" alt="Selected Image"
+                                                    <img src="{{ $tempImageUrl }}" alt="Selected Image"
                                                         class="img-fluid" width="100%" height="300px" />
                                                 @endif
-                                            @endif
-
-                                            @if ($previewIncomingbookImage && empty($filePreview))
-                                                @if (pathinfo($previewIncomingbookImage, PATHINFO_EXTENSION) == strtolower('pdf'))
+                                            @elseif ($previewIncomingbookImage)
+                                                @if (pathinfo($previewIncomingbookImage, PATHINFO_EXTENSION) === 'pdf')
                                                     <embed src="{{ $previewIncomingbookImage }}"
                                                         type="application/pdf" width="100%" height="300px" />
                                                 @else

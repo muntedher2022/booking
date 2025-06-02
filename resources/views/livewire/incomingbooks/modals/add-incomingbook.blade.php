@@ -231,14 +231,35 @@
                                         <label for="addIncomingbooksender_id">
                                             {{ $book_type ? ($book_type == 'صادر' ? 'صورة الكتاب الصادر' : 'صورة الكتاب الوارد') : 'صورة الكتاب' }}
                                         </label>
-
-                                        <!-- إضافة زر المسح الضوئي -->
-                                        <div class="mt-2">
-                                            <button type="button" class="btn btn-primary" onclick="initializeScanner()">
-                                                <i class="mdi mdi-scanner me-1"></i>
-                                                بدء المسح الضوئي
-                                            </button>
-                                        </div>
+                                        @can('incomingbook-Scanner')
+                                            <!-- إضافة زر المسح الضوئي -->
+                                            <div class="mt-2">
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-primary"
+                                                        onclick="initializeScanner()">
+                                                        <i class="mdi mdi-scanner me-1"></i>
+                                                        Dynamsoft
+                                                    </button>
+                                                    <button type="button" class="btn btn-info"
+                                                        onclick="initializeNAPS2Scanner()">
+                                                        <i class="mdi mdi-scanner me-1"></i>
+                                                        NAPS2
+                                                    </button>
+                                                </div>
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-success"
+                                                        onclick="initializeTWAINScanner()">
+                                                        <i class="mdi mdi-scanner me-1"></i>
+                                                        TWAIN
+                                                    </button>
+                                                    <button type="button" class="btn btn-warning"
+                                                        onclick="initializeWIAScanner()">
+                                                        <i class="mdi mdi-scanner me-1"></i>
+                                                        WIA
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endcan
                                     </div>
                                     @error('attachment')
                                         <small class='text-danger inputerror'> {{ $message }} </small>
@@ -246,7 +267,8 @@
 
                                     <!-- إضافة منطقة المعاينة -->
                                     <div class="mt-3">
-                                        <div id="dwtcontrolContainer" style="display: none; width: 100%; height: 300px;"></div>
+                                        <div id="dwtcontrolContainer"
+                                            style="display: none; width: 100%; height: 300px;"></div>
 
                                         <div wire:loading wire:target='attachment' class="mt-3">
                                             <img src="{{ asset('assets/img/gif/Cube-Loading-Animated-3D.gif') }}"
@@ -254,12 +276,14 @@
                                         </div>
 
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
-                                            @if ($attachment && $attachment->getMimeType() == 'application/pdf')
-                                                <embed src="{{ $attachment->temporaryUrl() }}" type="application/pdf"
-                                                    width="100%" height="300px" />
-                                            @elseif ($attachment && Str::startsWith($attachment->getMimeType(), 'image/'))
-                                                <img src="{{ $attachment->temporaryUrl() }}" alt="Selected Image"
-                                                    class="img-fluid" width="100%" height="300px" />
+                                            @if ($tempImageUrl)
+                                                @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
+                                                    <embed src="{{ $tempImageUrl }}" type="application/pdf"
+                                                        width="100%" height="300px" />
+                                                @else
+                                                    <img src="{{ $tempImageUrl }}" alt="Selected Image"
+                                                        class="img-fluid" width="100%" height="300px" />
+                                                @endif
                                             @endif
                                         </div>
                                     </div>
@@ -268,16 +292,18 @@
                         </div>
                         <hr class="my-0">
                         <div class="text-center col-12 demo-vertical-spacing mb-n4">
-                            <div class="form-check mb-3">
-                                <input wire:model="sendEmail" class="form-check-input" type="checkbox"
-                                    id="sendEmailCheck">
-                                <label class="form-check-label" for="sendEmailCheck">
-                                    إرسال إشعار بالبريد الإلكتروني للجهات المحددة
-                                </label>
-                            </div>
-                            <div wire:loading wire:target="store" class="text-primary mb-2">
-                                جاري إرسال البريد الإلكتروني...
-                            </div>
+                            @can('incomingbook-Email')
+                                <div class="form-check mb-3">
+                                    <input wire:model="sendEmail" class="form-check-input" type="checkbox"
+                                        id="sendEmailCheck">
+                                    <label class="form-check-label" for="sendEmailCheck">
+                                        إرسال إشعار بالبريد الإلكتروني للجهات المحددة
+                                    </label>
+                                </div>
+                                <div wire:loading wire:target="store" class="text-primary mb-2">
+                                    جاري إرسال البريد الإلكتروني...
+                                </div>
+                            @endcan
                             <button wire:click='store' wire:loading.attr="disabled" type="button"
                                 class="btn btn-primary me-sm-3 me-1">اضافة</button>
                             <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="modal"

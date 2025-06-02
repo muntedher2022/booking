@@ -99,7 +99,7 @@
                             {{-- الاعدادات --}}
                             @can('Settings')
                                 <li
-                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists') ? 'open active' : '' }}">
+                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Trackings') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                         <span class="menu-title">الاعدادات</span>
@@ -125,9 +125,18 @@
                                         {{-- البريد الالكتروني --}}
                                         @can('Emaillists')
                                             <li Class="menu-item {{ request()->Is('Emaillists') ? 'active' : '' }}">
-                                                <a href="{{ Route('Emaillists.index') }}" Class="menu-link">
+                                                <a href="{{ Route('Emaillists') }}" Class="menu-link">
                                                     <i Class=""></i>
                                                     <div>البريد الألكتروني</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('Trackings')
+                                            {{-- التتبع --}}
+                                            <li Class="menu-item {{ request()->Is('Tracking') ? 'active' : '' }}">
+                                                <a href="{{ Route('Tracking') }}" Class="menu-link">
+                                                    <i Class=""></i>
+                                                    <div>التتبع</div>
                                                 </a>
                                             </li>
                                         @endcan

@@ -3,9 +3,9 @@
 namespace App\Http\Livewire\Sections;
 
 use Livewire\Component;
-
 use Livewire\WithPagination;
 use App\Models\Sections\Sections;
+use App\Models\Tracking\Tracking;
 use Illuminate\Support\Facades\Auth;
 
 class Section extends Component
@@ -71,6 +71,15 @@ class Section extends Component
             'section_name' => $this->section_name,
 
         ]);
+        // =================================
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'الأقسام',
+            'operation_type' => 'اضافة',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "اسم القسم: " . $this->section_name,
+        ]);
+        // =================================
         $this->reset();
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
@@ -91,7 +100,7 @@ class Section extends Component
     {
         $this->resetValidation();
         $this->validate([
-            'section_name' => 'required|unique:sections,section_name',
+            'section_name' => 'required|unique:sections,section_name,'.$this->sectionId.',id'
 
         ], [
             'section_name.required' => 'يرجى إدخال اسم القسم',
@@ -103,6 +112,15 @@ class Section extends Component
             'user_id' => Auth::User()->id,
             'section_name' => $this->section_name,
         ]);
+        // =================================
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'الأقسام',
+            'operation_type' => 'تعديل',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "اسم القسم: " . $this->section_name,
+        ]);
+        // =================================
         $this->reset();
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم التعديل بنجاح',
@@ -115,7 +133,15 @@ class Section extends Component
         $Sections = Sections::find($this->sectionId);
 
         if ($Sections) {
-
+            // =================================
+            Tracking::create([
+                'user_id' => Auth::id(),
+                'page_name' => 'الأقسام',
+                'operation_type' => 'حذف',
+                'operation_time' => now()->format('Y-m-d H:i:s'),
+                'details' => "اسم القسم: " . $Sections->section_name,
+            ]);
+            // =================================
             $Sections->delete();
             $this->reset();
             $this->dispatchBrowserEvent('success', [

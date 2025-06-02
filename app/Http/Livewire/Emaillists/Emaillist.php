@@ -5,9 +5,10 @@ namespace App\Http\Livewire\Emaillists;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Sections\Sections;
-use App\Models\Departments\Departments;
-use App\Models\Emaillists\Emaillists;
+use App\Models\Tracking\Tracking;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Emaillists\Emaillists;
+use App\Models\Departments\Departments;
 
 class Emaillist extends Component
 {
@@ -111,7 +112,18 @@ class Emaillist extends Component
             'email' => $this->email,
             'notes' => $this->notes,
         ]);
-
+        // =================================
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'قائمة البريد الإلكتروني',
+            'operation_type' => 'اضافة',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "النوع: " . $this->type . ' - '
+                . "القسم/الدائرة: " . $this->department . ' - '
+                . "البريد الإلكتروني: " . $this->email . ' - '
+                . "الملاحظات: " . $this->notes,
+        ]);
+        // =================================
         // إعادة تحميل البيانات بعد الإضافة
         $this->mount();
         $this->reset();
@@ -155,6 +167,18 @@ class Emaillist extends Component
             'email' => $this->email,
             'notes' => $this->notes,
         ]);
+        // =================================
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'قائمة البريد الإلكتروني',
+            'operation_type' => 'تعديل',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "النوع: " . $this->type . ' - '
+                . "القسم/الدائرة: " . $this->department . ' - '
+                . "البريد الإلكتروني: " . $this->email . ' - '
+                . "الملاحظات: " . $this->notes,
+        ]);
+        // =================================
         $this->reset(['department', 'email', 'notes']);
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم التعديل بنجاح',
@@ -166,6 +190,19 @@ class Emaillist extends Component
     {
         $Emaillists = Emaillists::find($this->emaillistId);
         if ($Emaillists) {
+            // =================================
+            Tracking::create([
+                'user_id' => Auth::id(),
+                'page_name' => 'قائمة البريد الإلكتروني',
+                'operation_type' => 'حذف',
+                'operation_time' => now()->format('Y-m-d H:i:s'),
+                'details' => "النوع: " . $Emaillists->type . ' - '
+                    . "القسم/الدائرة: " . $Emaillists->department . ' - '
+                    . "البريد الإلكتروني: " . $Emaillists->email . ' - '
+                    . "الملاحظات: " . $Emaillists->notes,
+            ]);
+            // =================================
+
             $Emaillists->delete();
             $this->reset();
             $this->dispatchBrowserEvent('success', [

@@ -22,9 +22,7 @@
 
 @endsection
 @section('content')
-
     @livewire('incomingbooks.incomingbook')
-
 @endsection
 
 @section('vendor-script')
@@ -59,29 +57,7 @@
     <script src=" {{ asset('assets/js/extended-ui-sweetalert2.js') }}"></script>
     <script src=" {{ asset('assets/js/form-basic-inputs.js') }}"></script>
     <script>
-        /* function printFile(fileUrl) {
-                            const fileExtension = fileUrl.split('.').pop().toLowerCase();
-                            const isPDF = fileExtension === 'pdf';
-
-                            if (isPDF) {
-                                printJS({
-                                    printable: fileUrl,
-                                    type: 'pdf',
-                                    onError: function(error) {
-                                        alert("خطأ في طباعة ملف PDF: " + error.message);
-                                    }
-                                });
-                            } else {
-                                printJS({
-                                    printable: fileUrl,
-                                    type: 'image',
-                                    onError: function(error) {
-                                        alert("خطأ في طباعة ملف PDF: " + error.message);
-                                    }
-                                });
-                            }
-                        } */
-
+        // استبدال دالة printFile الحالية بهذه
         function printFile(fileUrl) {
             const fileExtension = fileUrl.split('.').pop().toLowerCase();
             const isPDF = fileExtension === 'pdf';
@@ -91,14 +67,22 @@
                     printable: fileUrl,
                     type: 'pdf',
                     onError: function(error) {
-                        alert("خطأ في طباعة ملف PDF: " + error.message);
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'خطأ في طباعة الملف',
+                            text: error.message
+                        });
                     }
                 });
             } else {
-                // طباعة الصور بحجم ورقة A4
                 printImage(fileUrl);
             }
         }
+
+        // إضافة مستمع الحدث للطباعة
+        window.addEventListener('print-file', event => {
+            printFile(event.detail.url);
+        });
 
         async function printImage(fileUrl) {
             try {
@@ -200,34 +184,6 @@
                 initSelect2('#editIncomingbookrelated_book_id', 'GetSenderId', '#editincomingbookModal');
             });
         });
-
-        /*  $(document).ready(function() {
-             function initSelect2(selector, eventName, parentModal) {
-                 $(selector).select2({
-                     placeholder: 'اختيار',
-                     dropdownParent: $(parentModal),
-                     closeOnSelect: false,
-                     width: '100%',
-                     templateSelection: function(data) {
-                         return $('<span>' + data.text + '</span>');
-                     },
-                     templateResult: function(data) {
-                         return $('<span>' + data.text + '</span>');
-                     }
-                 });
-                 $(selector).on('change', function(e) {
-                     livewire.emit(eventName, $(this).val());
-                 });
-             }
-
-
-             initSelect2('#addIncomingbooksender_id', 'GetDepAndSec', '#addincomingbookModal');
-             initSelect2('#editIncomingbooksender_id', 'GetDepAndSec', '#editincomingbookModal');
-             window.livewire.on('select2', () => {
-                 initSelect2('#addIncomingbooksender_id', 'GetDepAndSec', '#addincomingbookModal');
-                 initSelect2('#editIncomingbooksender_id', 'GetDepAndSec', '#editincomingbookModal');
-             });
-         }); */
 
 
         $(document).ready(function() {
@@ -381,6 +337,7 @@
             }, 3000);
         });
 
+        // Dynamsoft Scanner Code
         let DWTObject = null;
         let isInitialized = false;
 
@@ -474,16 +431,5 @@
                     });
                 });
         }
-
-        $('#addincomingbookModal').on('hidden.bs.modal', function() {
-            if (DWTObject) {
-                // تنظيف عند إغلاق النافذة
-                DWTObject.RemoveAllImages();
-                if (DWTObject.DataSourceStatus) {
-                    DWTObject.CloseSource();
-                }
-                $('#dwtcontrolContainer').hide();
-            }
-        });
     </script>
 @endsection

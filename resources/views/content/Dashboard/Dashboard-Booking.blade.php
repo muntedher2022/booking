@@ -34,7 +34,7 @@
 
 @section('content')
 
-    @livewire('dashboard.dashboard-ship')
+    @livewire('dashboard.dashboard-booking')
 
 @endsection
 

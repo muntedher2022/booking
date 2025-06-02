@@ -1,4 +1,4 @@
-<!-- Remove Department Modal -->
+<!-- Remove Trackin Modal -->
 <div wire:ignore.self class="modal fade" id="removetrackinModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="p-4 modal-content p-md-5">
@@ -6,21 +6,29 @@
             <div class="modal-body p-md-0">
                 <div class="text-center mb-4">
                     <h3 class="fw-bold mb-2">
-                        <span class="text-danger">حذف</span> الدائرة
+                        <span class="text-danger">حذف</span> التتبع
                     </h3>
                     <p class="text-muted">
                         <i class="mdi mdi-delete-outline me-1"></i>
-                        هل أنت متأكد من حذف هذه الدائرة؟
+                        هل أنت متأكد من حذف هذا التتبع؟
                     </p>
                 </div>
                 <hr class="mt-n2">
-                <div wire:loading.remove wire:target="destroy, GetDepartment">
-                    <form id="removeDepartmentModalForm" onsubmit="return false" autocomplete="off">
+
+                <div wire:loading.remove wire:target="GetTrackin, destroy">
+
+                    <form id="removeTrackinModalForm" onsubmit="return false" autocomplete="off">
                         <div class="row">
                             <div class="col text-center">
                                 <div class="text-danger">
-                                    <label for="modalUnitunits_name">الدائرة</label>
-                                    <div class="form-control-plaintext mt-n2">{{ $department_name }}</div>
+                                    <label for="modalTrackinpage_name">اسم النافذة</label>
+                                    <div class="form-control-plaintext mt-n2">{{ $page_name }}</div>
+                                </div>
+                            </div>
+                            <div class="col text-center">
+                                <div class="text-danger">
+                                    <label for="modalTrackinoperation_type">نوع العملية</label>
+                                    <div class="form-control-plaintext mt-n2">{{ $operation_type }}</div>
                                 </div>
                             </div>
                         </div>
@@ -37,4 +45,4 @@
         </div>
     </div>
 </div>
-<!--/ Delete Department Modal -->
+<!--/ Delete Trackin Modal -->

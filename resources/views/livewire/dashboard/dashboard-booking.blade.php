@@ -73,14 +73,13 @@
     </style>
 
     <script>
-        // JavaScript for animating the numbers (optional, but adds a nice touch)
         document.addEventListener('DOMContentLoaded', () => {
             const numbers = document.querySelectorAll('.animated-number');
 
             numbers.forEach(number => {
                 const target = parseInt(number.getAttribute('data-target'));
                 let current = 0;
-                const increment = target / 200; // Adjust speed
+                const increment = target / 10; // تم تقليل عدد الخطوات من 200 إلى 50
 
                 const updateNumber = () => {
                     if (current < target) {
@@ -91,9 +90,10 @@
                         number.textContent = target;
                     }
                 };
-                setTimeout(() => { // Delay start slightly after card animation
+
+                setTimeout(() => {
                     requestAnimationFrame(updateNumber);
-                }, 800); // Match or slightly exceed card animation delay
+                }, 100); // تم تقليل وقت التأخير من 800 إلى 300
             });
         });
     </script>

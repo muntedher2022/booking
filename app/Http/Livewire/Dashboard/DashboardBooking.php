@@ -6,7 +6,7 @@ use App\Models\Incomingbooks\Incomingbooks;
 use Carbon\Carbon;
 use Livewire\Component;
 
-class DashboardShip extends Component
+class DashboardBooking extends Component
 {
     public $dailyStats;
     public $recentBooks;
@@ -62,6 +62,6 @@ class DashboardShip extends Component
 
     public function render()
     {
-        return view('livewire.dashboard.dashboard-ship');
+        return view('livewire.dashboard.dashboard-booking');
     }
 }

@@ -10,6 +10,7 @@ use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\Rule;
 use App\Models\Sections\Sections;
+use App\Models\Tracking\Tracking;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -37,6 +38,8 @@ class IncomingBook extends Component
     public $sendEmail = false;
     public $todayEmailCount = 0;
     public $remainingEmails = 450;
+    public $fileUrl;
+    public $tempImageUrl = null;
 
     protected $listeners = [
         'GetSenderId',
@@ -49,6 +52,8 @@ class IncomingBook extends Component
     {
         $this->emit('select2');
         $this->emit('flatpickr');
+
+        Storage::deleteDirectory('public/temp');
     }
 
     public function mount()
@@ -219,18 +224,6 @@ class IncomingBook extends Component
         ]);
     }
 
-    public function updatedIncomingbookImage()
-    {
-        $this->validate([
-            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:20480',
-        ], [
-            'attachment.required' => 'ملف الكتاب مطلوب.',
-            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب عن 20 ميجا.',
-            'attachment.mimes' => 'الملف ليس صورة أو PDF',
-        ]);
-        $this->filePreview = $this->attachment->temporaryUrl();
-    }
-
     public function updatedAttachment()
     {
         $this->validate([
@@ -240,7 +233,25 @@ class IncomingBook extends Component
             'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب عن 20 ميجا.',
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
         ]);
-        $this->filePreview = $this->attachment->temporaryUrl();
+
+        // Store file temporarily and get URL
+        $path = $this->attachment->store('public/temp');
+        $this->tempImageUrl = Storage::url($path);
+    }
+
+    public function updatedIncomingbookImage()
+    {
+        $this->validate([
+            'attachment' => 'required|file|mimes:jpeg,png,jpg,pdf|max:20480',
+        ], [
+            'attachment.required' => 'ملف الكتاب مطلوب.',
+            'attachment.max' => 'يجب ألا يزيد حجم ملف الكتاب عن 20 ميجا.',
+            'attachment.mimes' => 'الملف ليس صورة أو PDF',
+        ]);
+
+        // Instead of using temporaryUrl, store the file temporarily and use its URL
+        $path = $this->attachment->store('public/temp');
+        $this->filePreview = Storage::url($path);
     }
 
     public function AddIncomingbookModalShow()
@@ -449,6 +460,20 @@ class IncomingBook extends Component
             'importance' => $this->importance,
         ]);
 
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'الكتب الواردة',
+            'operation_type' => 'اضافة',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "رقم الكتاب: " . $this->book_number . ' - '
+                      . "\nتاريخ الكتاب: " . $this->book_date . ' - '
+                      . "\nالموضوع: " . $this->subject . ' - '
+                      . "\nالمحتوى: " . $this->content . ' - '
+                      . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
+                      . "\nنوع الكتاب: " . $this->book_type . ' - '
+                      . "\nدرجة الأهمية: " . $this->importance,
+        ]);
+
         if ($this->sendEmail) {
             $emailCount = count($processed_sender_ids);
 
@@ -562,6 +587,20 @@ class IncomingBook extends Component
             'importance' => $this->importance,
         ]);
 
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'الكتب الواردة',
+            'operation_type' => 'تعديل',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => "رقم الكتاب: " . $this->book_number . ' - '
+                      . "\nتاريخ الكتاب: " . $this->book_date . ' - '
+                      . "\nالموضوع: " . $this->subject . ' - '
+                      . "\nالمحتوى: " . $this->content . ' - '
+                      . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
+                      . "\nنوع الكتاب: " . $this->book_type . ' - '
+                      . "\nدرجة الأهمية: " . $this->importance,
+        ]);
+
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم التعديل بنجاح',
@@ -574,6 +613,20 @@ class IncomingBook extends Component
         $Incomingbooks = Incomingbooks::find($this->IncomingbookId);
 
         if ($Incomingbooks) {
+            Tracking::create([
+                'user_id' => Auth::id(),
+                'page_name' => 'الكتب الواردة',
+                'operation_type' => 'حذف',
+                'operation_time' => now()->format('Y-m-d H:i:s'),
+                'details' => "رقم الكتاب: " . $Incomingbooks->book_number . ' - '
+                          . "\nتاريخ الكتاب: " . $Incomingbooks->book_date . ' - '
+                          . "\nالموضوع: " . $Incomingbooks->subject . ' - '
+                          . "\nالمحتوى: " . $Incomingbooks->content . ' - '
+                          . "\nالكلمات المفتاحية: " . $Incomingbooks->keywords . ' - '
+                          . "\nنوع الكتاب: " . $Incomingbooks->book_type . ' - '
+                          . "\nدرجة الأهمية: " . $Incomingbooks->importance,
+            ]);
+
             $year = date('Y', strtotime($Incomingbooks->book_date));
             Storage::deleteDirectory('public/Incomingbooks/' . $year . '/' . $Incomingbooks->book_number);
 
@@ -596,5 +649,32 @@ class IncomingBook extends Component
             'message' => 'لا يمكن حذف هذا الكتاب لوجود كتاب مرتبط اخر به',
             'title' => 'خطأ'
         ]);
+    }
+
+    public function printIncomingBook($id)
+    {
+        $incomingBook = Incomingbooks::find($id);
+
+        if ($incomingBook) {
+            // إنشاء سجل تتبع للطباعة
+            Tracking::create([
+                'user_id' => Auth::id(),
+                'page_name' => 'الكتب الواردة',
+                'operation_type' => 'طباعة',
+                'operation_time' => now()->format('Y-m-d H:i:s'),
+                'details' => "رقم الكتاب: " . $incomingBook->book_number . ' - '
+                    . "\nتاريخ الكتاب: " . $incomingBook->book_date . ' - '
+                    . "\nالموضوع: " . $incomingBook->subject . ' - '
+                    . "\nنوع الكتاب: " . $incomingBook->book_type . ' - '
+                    . "\nدرجة الأهمية: " . $incomingBook->importance,
+            ]);
+
+            // تحضير مسار الملف للطباعة
+            $year = date('Y', strtotime($incomingBook->book_date));
+            $filePath = Storage::url('Incomingbooks/' . $year . '/' . $incomingBook->book_number . '/' . $incomingBook->attachment);
+
+            // إرسال حدث JavaScript للطباعة
+            $this->dispatchBrowserEvent('print-file', ['url' => $filePath]);
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Sections\SectionsController;
+use App\Http\Controllers\Tracking\TrackingController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Emaillists\EmaillistsController;
 use App\Http\Controllers\Departments\DepartmentsController;
@@ -35,7 +36,10 @@ Route::GET('Departments', [DepartmentsController::class, 'index'])->name('Depart
 //الكتب الواردة
 Route::GET('Incomingbooks', [IncomingbooksController::class, 'index'])->name('Incomingbooks');
 // البريد الالكتروني للاقسام
-Route::RESOURCE('Emaillists', EmaillistsController::class);
+Route::GET('Emaillists', [EmaillistsController::class, 'index'])->name('Emaillists');
+
+// التتبع
+Route::GET('Tracking', [TrackingController::class, 'index'])->name('Tracking');
 
 
 Route::get('/scan', function () {
