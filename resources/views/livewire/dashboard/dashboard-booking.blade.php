@@ -308,26 +308,36 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 65%;
-            height: 65%;
-            opacity: 0.05;
+            width: 80%;  /* زيادة حجم الصورة */
+            height: 80%;
+            opacity: 0.04;  /* تعديل الشفافية */
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            transition: all 0.3s ease;
+            transition: all 0.5s ease;
+            filter: grayscale(100%) contrast(120%);  /* إضافة تأثيرات على الصورة */
+            mix-blend-mode: multiply;  /* تحسين مزج الصورة مع الخلفية */
         }
 
         .watermark-image.incoming {
             background-image: url('/assets/img/logo/Incoming.png');
+            transform: translate(-50%, -50%) rotate(-5deg);  /* إضافة دوران خفيف */
         }
 
         .watermark-image.outgoing {
             background-image: url('/assets/img/logo/Outgoing.png');
+            transform: translate(-50%, -50%) rotate(5deg);  /* إضافة دوران في الاتجاه المعاكس */
         }
 
         .card:hover .watermark-image {
-            opacity: 0.08;
-            transform: translate(-50%, -50%) scale(1.05);
+            opacity: 0.06;
+            filter: grayscale(80%) contrast(130%);  /* تغيير التأثيرات عند التحويم */
+            transform: translate(-50%, -50%) scale(1.05) rotate(0deg);  /* تأثير حركي عند التحويم */
+        }
+
+        /* تحسين الانتقالات الحركية */
+        .card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.95) 100%);
         }
 
         /* ضمان أن محتوى الكارد يظهر فوق الصورة */
