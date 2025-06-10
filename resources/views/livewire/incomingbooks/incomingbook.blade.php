@@ -18,26 +18,35 @@
                     </div>
                     @can('incomingbook-Email')
                         <div class="d-flex gap-3">
-                            <div class="badge bg-label-primary p-3 fs-5">
+                            <div class="badge bg-label-primary p-3 fs-6">
                                 <i class="mdi mdi-email-multiple me-1"></i>
                                 الحد اليومي: 450
                             </div>
-                            <div class="badge bg-label-success p-3 fs-5">
+                            <div class="badge bg-label-success p-3 fs-6">
                                 <i class="mdi mdi-email-check me-1"></i>
                                 المرسلة: {{ $todayEmailCount }}
                             </div>
-                            <div class="badge bg-label-warning p-3 fs-5">
+                            <div class="badge bg-label-warning p-3 fs-6">
                                 <i class="mdi mdi-email-outline me-1"></i>
                                 المتبقية: {{ $remainingEmails }}
                             </div>
                         </div>
                     @endcan
                     <div>
-                        @can('incomingbook-create')
-                            <button wire:click='AddIncomingbookModalShow' class="mb-3 add-new btn btn-primary mb-md-0"
-                                data-bs-toggle="modal" data-bs-target="#addincomingbookModal">أضــافــة</button>
-                            @include('livewire.incomingbooks.modals.add-incomingbook')
-                        @endcan
+                        <div class="d-flex gap-2">
+                            @can('incomingbook-export')
+                                <button wire:click="exportSelected" class="mb-3 btn btn-success mb-md-0"
+                                    {{ $selectedRows && count($selectedRows) > 0 ? '' : 'disabled' }}>
+                                    <i class="mdi mdi-file-excel me-1"></i>
+                                    تصدير Excel
+                                </button>
+                            @endcan
+                            @can('incomingbook-create')
+                                <button wire:click='AddIncomingbookModalShow' class="mb-3 add-new btn btn-primary mb-md-0"
+                                    data-bs-toggle="modal" data-bs-target="#addincomingbookModal">أضــافــة</button>
+                            @endcan
+                        </div>
+                        @include('livewire.incomingbooks.modals.add-incomingbook')
                     </div>
                 </div>
                 <hr>
@@ -109,6 +118,11 @@
                 <table class="table">
                     <thead class="table-light">
                         <tr>
+                            <th>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" wire:model="selectAll" id="selectAll">
+                                </div>
+                            </th>
                             <th>#</th>
                             <th class="text-center">رقم الكتاب</th>
                             <th class="text-center">تاريخ الكتاب</th>
@@ -128,6 +142,12 @@
                         @endphp
                         @foreach ($Incomingbooks as $Incomingbook)
                             <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" wire:model="selectedRows"
+                                            value="{{ $Incomingbook->id }}">
+                                    </div>
+                                </td>
                                 <td>{{ $i++ }}</td>
                                 <td class="text-center">{{ $Incomingbook->book_number }}</td>
                                 <td class="text-center text-nowrap">{{ $Incomingbook->book_date }}</td>

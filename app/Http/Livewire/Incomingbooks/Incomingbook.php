@@ -3,7 +3,8 @@
 namespace App\Http\Livewire\Incomingbooks;
 
 use Carbon\Carbon;
-
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -24,9 +25,11 @@ class IncomingBook extends Component
 {
     use WithPagination;
     use WithFileUploads;
-    protected $paginationTheme = 'bootstrap';
 
-    public $Incomingbooks = [];
+    protected $paginationTheme = 'bootstrap';  // إضافة هذا السطر
+
+    // تغيير تعريف المتغير من مصفوفة إلى null
+    public $Incomingbooks = null;
     public $departments = [];
     public $sections = [];
     public $sender_id = [];
@@ -41,11 +44,16 @@ class IncomingBook extends Component
     public $fileUrl;
     public $tempImageUrl = null;
 
+    // أضف هذه المتغيرات الجديدة
+    public $selectedRows = [];
+    public $selectAll = false;
+
     protected $listeners = [
         'GetSenderId',
         'GetDepAndSec',
         'showIncomingbookbook' => 'handleBookDateUpdated',
         'showError',
+        'updatedSelectAll',    // إضافة المستمع الجديد
     ];
 
     public function hydrate()
@@ -58,7 +66,7 @@ class IncomingBook extends Component
         if (file_exists($path)) {
             $files = glob($path . '/*');
             $twoDaysAgo = strtotime('-2 days');
-            
+
             foreach ($files as $file) {
                 if (is_file($file) && filemtime($file) < $twoDaysAgo) {
                     unlink($file);
@@ -117,7 +125,7 @@ class IncomingBook extends Component
 
     public function updatedSearch($value, $key)
     {
-        if (in_array($key, ['book_number', 'subject', 'content', 'related_book_id', 'sender_type', 'sender_id', 'book_type'])) {
+        if (in_array($key, ['book_number','book_date', 'subject', 'content', 'related_book_id', 'sender_type', 'sender_id', 'book_type', 'importance'])) {
             $this->resetPage();
         }
     }
@@ -134,6 +142,7 @@ class IncomingBook extends Component
         $sender_typeSearch = '%' . $this->search['sender_type'] . '%';
         $sender_idSearch = '%' . $this->search['sender_id'] . '%';
         $book_typeSearch = '%' . $this->search['book_type'] . '%';
+        $importanceSearch = '%' . $this->search['importance'] . '%';
 
         $Incomingbooks = Incomingbooks::query()
             ->when($this->search['book_number'], function ($query) use ($book_numberSearch) {
@@ -158,6 +167,10 @@ class IncomingBook extends Component
             })
             ->when($this->search['book_type'], function ($query) use ($book_typeSearch) {
                 $query->where('book_type', 'LIKE', $book_typeSearch);
+            })
+            // إضافة شرط البحث بدرجة الأهمية
+            ->when($this->search['importance'], function ($query) use ($importanceSearch) {
+                $query->where('importance', 'LIKE', $importanceSearch);
             })
             ->when($this->search['sender_id'], function ($query) use ($sender_idSearch) {
                 $query->where(function ($subQuery) use ($sender_idSearch) {
@@ -191,14 +204,13 @@ class IncomingBook extends Component
             ->paginate(10);
 
         $links = $Incomingbooks;
+        // تحويل النتائج إلى Collection
         $this->Incomingbooks = collect($Incomingbooks->items());
-
-        $incomingbooks = Incomingbooks::all();
 
         return view('livewire.incomingbooks.incomingbook', [
             'Departments' => $Incomingbooks,
             'links' => $links,
-            'incomingbooks' => $incomingbooks
+            'incomingbooks' => $Incomingbooks
         ]);
     }
 
@@ -269,14 +281,15 @@ class IncomingBook extends Component
 
     public function AddIncomingbookModalShow()
     {
-        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment');
+        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'tempImageUrl', 'book_type', 'importance');
         $this->resetValidation();
         $this->dispatchBrowserEvent('IncomingbookModalShow');
+        $this->dispatchBrowserEvent('resetFileInput', ['input' => 'attachment']);
     }
 
     public function GetIncomingbook($IncomingbookId)
     {
-        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment');
+        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment','book_type','importance');
         $this->resetValidation();
 
         $this->Incomingbook = Incomingbooks::with('relatedBook')->find($IncomingbookId);
@@ -516,7 +529,7 @@ class IncomingBook extends Component
             $this->incrementEmailCounter($emailCount);
         }
 
-        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
+        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview','book_type','importance');
 
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
@@ -614,7 +627,7 @@ class IncomingBook extends Component
                 . "\nدرجة الأهمية: " . $this->importance,
         ]);
 
-        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
+        $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview','book_type','importance');
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم التعديل بنجاح',
             'title' => 'تعديل'
@@ -689,5 +702,270 @@ class IncomingBook extends Component
             // إرسال حدث JavaScript للطباعة
             $this->dispatchBrowserEvent('print-file', ['url' => $filePath]);
         }
+    }
+
+    // أضف هذه الدوال الجديدة
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            // تعديل الاستعلام ليشمل جميع السجلات بدون تقسيم الصفحات
+            $allIds = Incomingbooks::query()
+                ->when($this->search['book_number'], function ($query) {
+                    $query->where('book_number', 'LIKE', '%' . $this->search['book_number'] . '%');
+                })
+                ->when($this->search['book_date'], function ($query) {
+                    $query->where('book_date', 'LIKE', '%' . $this->search['book_date'] . '%');
+                })
+                ->when($this->search['subject'], function ($query) {
+                    $query->where('subject', 'LIKE', '%' . $this->search['subject'] . '%');
+                })
+                ->when($this->search['content'], function ($query) {
+                    $query->where('content', 'LIKE', '%' . $this->search['content'] . '%');
+                })
+                ->when($this->search['related_book_id'], function ($query) {
+                    $query->whereHas('relatedBook', function ($q) {
+                        $q->where('book_number', 'LIKE', '%' . $this->search['related_book_id'] . '%');
+                    });
+                })
+                ->when($this->search['sender_type'], function ($query) {
+                    $query->where('sender_type', 'LIKE', '%' . $this->search['sender_type'] . '%');
+                })
+                ->when($this->search['book_type'], function ($query) {
+                    $query->where('book_type', 'LIKE', '%' . $this->search['book_type'] . '%');
+                })
+                ->when($this->search['sender_id'], function ($query) {
+                    $query->where(function ($subQuery) {
+                        $sectionIds = Sections::where('section_name', 'LIKE', '%' . $this->search['sender_id'] . '%')
+                            ->pluck('id')
+                            ->map(function ($id) {
+                                return ['type' => 'sec', 'id' => $id];
+                            })
+                            ->toArray();
+
+                        $departmentIds = Departments::where('department_name', 'LIKE', '%' . $this->search['sender_id'] . '%')
+                            ->pluck('id')
+                            ->map(function ($id) {
+                                return ['type' => 'dep', 'id' => $id];
+                            })
+                            ->toArray();
+
+                        $allIds = array_merge($sectionIds, $departmentIds);
+
+                        if (!empty($allIds)) {
+                            foreach ($allIds as $item) {
+                                $jsonPattern = '%"type":"' . $item['type'] . '","id":' . $item['id'] . '%';
+                                $subQuery->orWhere('sender_id', 'LIKE', $jsonPattern);
+                            }
+                        }
+                    });
+                })
+                ->pluck('id')
+                ->map(fn($id) => (string) $id)
+                ->toArray();
+
+            $this->selectedRows = $allIds;
+        } else {
+            $this->selectedRows = [];
+        }
+    }
+
+    public function updatedSelectedRows($value)
+    {
+        $totalCount = Incomingbooks::query()
+            ->when($this->search['book_number'], function ($query) {
+                $query->where('book_number', 'LIKE', '%' . $this->search['book_number'] . '%');
+            })
+            ->when($this->search['book_date'], function ($query) {
+                $query->where('book_date', 'LIKE', '%' . $this->search['book_date'] . '%');
+            })
+            ->when($this->search['subject'], function ($query) {
+                $query->where('subject', 'LIKE', '%' . $this->search['subject'] . '%');
+            })
+            ->when($this->search['content'], function ($query) {
+                $query->where('content', 'LIKE', '%' . $this->search['content'] . '%');
+            })
+            ->when($this->search['related_book_id'], function ($query) {
+                $query->whereHas('relatedBook', function ($q) {
+                    $q->where('book_number', 'LIKE', '%' . $this->search['related_book_id'] . '%');
+                });
+            })
+            ->when($this->search['sender_type'], function ($query) {
+                $query->where('sender_type', 'LIKE', '%' . $this->search['sender_type'] . '%');
+            })
+            ->when($this->search['book_type'], function ($query) {
+                $query->where('book_type', 'LIKE', '%' . $this->search['book_type'] . '%');
+            })
+            ->when($this->search['sender_id'], function ($query) {
+                $query->where(function ($subQuery) {
+                    $sectionIds = Sections::where('section_name', 'LIKE', '%' . $this->search['sender_id'] . '%')
+                        ->pluck('id')
+                        ->map(function ($id) {
+                            return ['type' => 'sec', 'id' => $id];
+                        })
+                        ->toArray();
+
+                    $departmentIds = Departments::where('department_name', 'LIKE', '%' . $this->search['sender_id'] . '%')
+                        ->pluck('id')
+                        ->map(function ($id) {
+                            return ['type' => 'dep', 'id' => $id];
+                        })
+                        ->toArray();
+
+                    $allIds = array_merge($sectionIds, $departmentIds);
+
+                    if (!empty($allIds)) {
+                        foreach ($allIds as $item) {
+                            $jsonPattern = '%"type":"' . $item['type'] . '","id":' . $item['id'] . '%';
+                            $subQuery->orWhere('sender_id', 'LIKE', $jsonPattern);
+                        }
+                    }
+                });
+            })
+            ->count();
+
+        $this->selectAll = count($this->selectedRows) === $totalCount;
+    }
+
+    public function exportSelected()
+    {
+        if (empty($this->selectedRows)) {
+            $this->dispatchBrowserEvent('error', [
+                'title' => 'خطأ',
+                'message' => 'الرجاء تحديد صف واحد على الأقل'
+            ]);
+            return;
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setRightToLeft(true);
+
+        // تعيين العناوين
+        $headers = [
+            'رقم الكتاب',
+            'تاريخ الكتاب',
+            'موضوع الكتاب',
+            'المتن',
+            'نوع الكتاب',
+            'نطاق الكتاب',
+            'درجة الأهمية',
+            'الجهات',
+            'المرفقات'
+        ];
+        $sheet->fromArray([$headers], NULL, 'A1');
+
+        // تنسيق العناوين
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['rgb' => 'FFFFFF'],
+                'size' => 12,
+                'name' => 'Arial'
+            ],
+            'fill' => [
+                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '4A6CF7']
+            ],
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000']
+                ]
+            ]
+        ];
+        $sheet->getStyle('A1:I1')->applyFromArray($headerStyle);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+
+        // إضافة البيانات
+        $row = 2;
+        $books = Incomingbooks::whereIn('id', $this->selectedRows)->get();
+        foreach ($books as $book) {
+            // تحضير مسار الملف
+            $year = date('Y', strtotime($book->book_date));
+            $filePath = asset("storage/Incomingbooks/{$year}/{$book->book_number}/{$book->attachment}");
+
+            // تجميع الجهات
+            $departments = $book->Getdepartment()->pluck('department_name')->toArray();
+            $sections = $book->Getsection()->pluck('section_name')->toArray();
+            $entities = array_merge(
+                array_map(fn($name) => "دائرة: {$name}", $departments),
+                array_map(fn($name) => "قسم: {$name}", $sections)
+            );
+            $entitiesStr = implode("\n", $entities);
+
+            $data = [
+                $book->book_number,
+                Carbon::parse($book->book_date)->format('Y/m/d'),
+                $book->subject,
+                $book->content,
+                $book->book_type,
+                $book->sender_type,
+                $book->importance,
+                $entitiesStr,
+                $book->attachment ? 'HYPERLINK("' . $filePath . '","عرض المرفق")' // صيغة الارتباط التشعبي
+                    : 'لا يوجد مرفق'
+            ];
+            $sheet->fromArray([$data], NULL, 'A' . $row);
+
+            // إضافة الارتباط التشعبي للمرفق
+            if ($book->attachment) {
+                $sheet->getCell('I' . $row)->getHyperlink()->setUrl($filePath);
+                $sheet->getStyle('I' . $row)->getFont()->setColor(new \PhpOffice\PhpSpreadsheet\Style\Color(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_BLUE));
+                $sheet->getStyle('I' . $row)->getFont()->setUnderline(true);
+            }
+
+            $row++;
+        }
+
+        // تنسيق البيانات
+        $dataRange = 'A2:I' . ($row - 1);
+        $dataStyle = [
+            'alignment' => [
+                'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
+                'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER,
+                'wrapText' => true
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                    'color' => ['rgb' => '000000']
+                ]
+            ]
+        ];
+        $sheet->getStyle($dataRange)->applyFromArray($dataStyle);
+
+        // تلوين الصفوف بالتناوب
+        for ($i = 2; $i < $row; $i++) {
+            if ($i % 2 == 0) {
+                $sheet->getStyle('A' . $i . ':I' . $i)->getFill()
+                    ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+                    ->setStartColor(new \PhpOffice\PhpSpreadsheet\Style\Color('F8F9FA'));
+            }
+        }
+
+        // تعيين عرض الأعمدة
+        foreach (range('A', 'I') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        // تجميد الصف الأول
+        $sheet->freezePane('A2');
+
+        $fileName = 'incomingbooks_' . date('Y-m-d_H-i-s') . '.xlsx';
+        $writer = new Xlsx($spreadsheet);
+
+        $path = storage_path('app/public/exports');
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $fullPath = $path . '/' . $fileName;
+        $writer->save($fullPath);
+
+        return response()->download($fullPath)->deleteFileAfterSend();
     }
 }

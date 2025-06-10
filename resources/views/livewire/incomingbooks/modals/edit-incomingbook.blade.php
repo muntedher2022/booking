@@ -222,7 +222,7 @@
                             </div>
 
                             <div class="col-4 text-center">
-                                <div class="col mb-3" style="height: 350px;">
+                                <div class="col mb-3">
                                     <div class="form-floating form-floating-outline">
                                         <input wire:model.defer='attachment' type="file" id="attachment"
                                             accept=".jpeg,.png,.jpg,.pdf"
@@ -230,36 +230,56 @@
                                         <label for="addIncomingbooksender_id">
                                             {{ $book_type ? ($book_type == 'صادر' ? 'صورة الكتاب الصادر' : 'صورة الكتاب الوارد') : 'صورة الكتاب' }}
                                         </label>
+                                        @can('incomingbook-Scanner')
+                                            <div class="mt-2">
+                                                <div class="btn-group" role="group">
+                                                    <button type="button" class="btn btn-info"
+                                                        onclick="initializeNaps2Scanner()">
+                                                        <i class="mdi mdi-scanner me-1"></i>
+                                                        مسح ضوئي
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endcan
                                     </div>
                                     @error('attachment')
                                         <small class='text-danger inputerror'> {{ $message }} </small>
                                     @enderror
 
-                                    <div class="d-flex justify-content-center text-center">
+                                    <!-- إضافة منطقة المعاينة مع تنسيقات محسّنة -->
+                                    <div class="mt-3 preview-container" style="max-height: 400px; overflow: hidden;">
+                                        <div id="dwtcontrolContainer"
+                                            style="display: none; width: 100%; height: 300px;"></div>
+
                                         <div wire:loading wire:target='attachment' class="mt-3">
                                             <img src="{{ asset('assets/img/gif/Cube-Loading-Animated-3D.gif') }}"
-                                                style="height: 300px" alt="">
+                                                style="max-height: 300px; width: auto;" alt="Loading">
                                         </div>
+
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
                                             @if ($tempImageUrl)
-                                                @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
-                                                    <embed src="{{ $tempImageUrl }}" type="application/pdf"
-                                                        width="100%" height="300px" />
-                                                @else
-                                                    <img src="{{ $tempImageUrl }}" alt="Selected Image"
-                                                        class="img-fluid" width="100%" height="300px" />
-                                                @endif
+                                                <div class="preview-wrapper" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                                    @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
+                                                        <embed src="{{ $tempImageUrl }}" type="application/pdf"
+                                                            style="width: 100%; height: 300px; object-fit: contain;" />
+                                                    @else
+                                                        <img src="{{ $tempImageUrl }}" alt="Selected Image"
+                                                            style="width: 100%; max-height: 300px; object-fit: contain;" />
+                                                    @endif
+                                                </div>
                                             @elseif ($previewIncomingbookImage)
-                                                @php
-                                                    $extension = pathinfo($previewIncomingbookImage, PATHINFO_EXTENSION);
-                                                @endphp
-                                                @if (strtolower($extension) === 'pdf')
-                                                    <embed src="{{ asset($previewIncomingbookImage) }}"
-                                                        type="application/pdf" width="100%" height="300px" />
-                                                @else
-                                                    <img src="{{ asset($previewIncomingbookImage) }}" alt="Selected Image"
-                                                        class="img-fluid" width="100%" height="300px" />
-                                                @endif
+                                                <div class="preview-wrapper" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                                    @php
+                                                        $extension = pathinfo($previewIncomingbookImage, PATHINFO_EXTENSION);
+                                                    @endphp
+                                                    @if (strtolower($extension) === 'pdf')
+                                                        <embed src="{{ asset($previewIncomingbookImage) }}"
+                                                            type="application/pdf" style="width: 100%; height: 300px; object-fit: contain;" />
+                                                    @else
+                                                        <img src="{{ asset($previewIncomingbookImage) }}" alt="Selected Image"
+                                                            style="width: 100%; max-height: 300px; object-fit: contain;" />
+                                                    @endif
+                                                </div>
                                             @endif
                                         </div>
                                     </div>

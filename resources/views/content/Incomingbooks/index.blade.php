@@ -552,5 +552,17 @@
                 });
             }, 3000);
         });
+
+        // Reset file input and remove preview
+        window.addEventListener('resetFileInput', event => {
+        const input = document.getElementById(event.detail.input);
+        if (input) {
+            input.value = '';
+            const previewContainer = document.querySelector('.preview-wrapper');
+            if (previewContainer) {
+                previewContainer.remove();
+            }
+        }
+    });
     </script>
 @endsection
