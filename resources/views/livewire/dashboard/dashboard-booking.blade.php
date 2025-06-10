@@ -20,7 +20,7 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-center gap-4">
-                        <div class="text-center">
+                        <div class="text-center w-100">
                             <h2 class="display-3 fw-bold mb-0 text-gradient animated-number" data-target="{{ $totalIncoming }}">0</h2>
                             <div class="trend-indicator positive mt-2">
                                 <div class="d-flex align-items-center justify-content-center gap-2">
@@ -29,6 +29,15 @@
                                         <span class="fs-6">الكتب المضافة اليوم</span>
                                         <span class="fs-5 fw-bold">{{ $todayGrowthIncoming }} كتاب</span>
                                     </div>
+                                </div>
+                            </div>
+                            <!-- تعديل تنسيق المخطط البياني -->
+                            <div class="sparkline-box mt-4 mx-auto">
+                                <div class="chart-title text-center mb-2">
+                                    <small class="text-muted">إحصائيات آخر 7 أيام - الكتب الواردة</small>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="incomingChart"></canvas>
                                 </div>
                             </div>
                             <div class="mt-2 text-muted">
@@ -43,7 +52,6 @@
 
         <div class="col-md-8 col-lg-6">
             <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
-                <!-- إضافة الخلفية والووترمارك -->
                 <div class="position-absolute top-0 start-0 w-100 h-100">
                     <div class="watermark-image outgoing"></div>
                 </div>
@@ -60,7 +68,7 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-center gap-4">
-                        <div class="text-center">
+                        <div class="text-center w-100">
                             <h2 class="display-3 fw-bold mb-0 text-gradient animated-number" data-target="{{ $totalOutgoing }}">0</h2>
                             <div class="trend-indicator positive mt-2">
                                 <div class="d-flex align-items-center justify-content-center gap-2">
@@ -71,6 +79,15 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- تعديل تنسيق المخطط البياني -->
+                            <div class="sparkline-box mt-4 mx-auto">
+                                <div class="chart-title text-center mb-2">
+                                    <small class="text-muted">إحصائيات آخر 7 أيام - الكتب الصادرة</small>
+                                </div>
+                                <div class="chart-container">
+                                    <canvas id="outgoingChart"></canvas>
+                                </div>
+                            </div>
                             <div class="mt-2 text-muted">
                                 <span class="fw-semibold">إجمالي الكتب الصادرة:</span>
                                 <span class="fs-5 ms-1">{{ number_format($totalOutgoing) }} كتاب</span>
@@ -78,9 +95,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- <div class="watermark-icon success">
-                    <i class="mdi mdi-email-arrow-right"></i>
-                </div> -->
             </div>
         </div>
     </div>
@@ -345,6 +359,45 @@
             position: relative;
             z-index: 1;
         }
+
+        .sparkline-container {
+            height: 60px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .sparkline-chart {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .sparkline-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            width: 100%;
+            max-width: 500px; /* زيادة العرض الأقصى من 300 إلى 400 */
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 100px; /* زيادة الارتفاع من 80 إلى 100 */
+            width: 100%;
+            min-width: 300px; /* إضافة حد أدنى للعرض */
+        }
+
+        .chart-title {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
     </style>
 
     <script>
@@ -495,103 +548,117 @@
     </style>
 
     @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        // Daily Statistics Chart
-        var dailyStatsOptions = {
-            series: [{
-                name: 'كتب واردة',
-                data: @json($dailyStats->pluck('incoming'))
-            }, {
-                name: 'كتب صادرة',
-                data: @json($dailyStats->pluck('outgoing'))
-            }],
-            chart: {
-                type: 'area',
-                height: 350,
-                toolbar: {
-                    show: false
-                },
-                fontFamily: 'inherit',
-                animations: {
-                    enabled: true,
-                    easing: 'easeinout',
-                    speed: 800,
-                    animateGradually: {
-                        enabled: true,
-                        delay: 150
-                    }
-                }
-            },
-            colors: ['#4e73df', '#1cc88a'],
-            dataLabels: {
-                enabled: false
-            },
-            stroke: {
-                curve: 'smooth',
-                width: 2
-            },
-            fill: {
-                type: 'gradient',
-                gradient: {
-                    shadeIntensity: 1,
-                    opacityFrom: 0.4,
-                    opacityTo: 0.1,
-                    stops: [0, 90, 100]
-                }
-            },
-            xaxis: {
-                categories: @json($dailyStats->keys())
-            },
+window.addEventListener('livewire:load', function() {
+    console.log('Chart Data:', @json($dailyStats));
+
+    const statsData = @json($dailyStats);
+    const dates = Object.keys(statsData);
+    const incomingData = dates.map(date => statsData[date].incoming);
+    const outgoingData = dates.map(date => statsData[date].outgoing);
+
+    const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: {
+            intersect: false,
+            mode: 'index',
+        },
+        plugins: {
+            legend: { display: false },
             tooltip: {
-                shared: true,
-                theme: 'dark',
-                x: {
-                    format: 'yyyy-MM-dd'
+                enabled: true,
+                mode: 'index',
+                intersect: false,
+                backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                titleColor: '#fff',
+                bodyColor: '#fff',
+                padding: 10,
+                displayColors: false,
+                callbacks: {
+                    title: function(tooltipItems) {
+                        return tooltipItems[0].label;
+                    },
+                    label: function(context) {
+                        let label = '';
+                        if (context.dataset.label === 'الكتب الواردة') {
+                            label = 'عدد الكتب الواردة: ';
+                        } else {
+                            label = 'عدد الكتب الصادرة: ';
+                        }
+                        return label + context.parsed.y;
+                    }
                 }
             }
-        };
-
-        var dailyStatsChart = new ApexCharts(document.querySelector("#dailyStatsChart"), dailyStatsOptions);
-        dailyStatsChart.render();
-
-        // Importance Distribution Chart
-        var importanceOptions = {
-            series: @json($importanceStats->pluck('count')),
-            labels: @json($importanceStats->pluck('importance')),
-            chart: {
-                type: 'donut',
-                height: 300,
-                fontFamily: 'inherit',
-                animations: {
-                    enabled: true,
-                    easing: 'easeinout',
-                    speed: 800,
-                    animateGradually: {
-                        enabled: true,
-                        delay: 150
-                    }
-                }
+        },
+        scales: {
+            x: {
+                display: false,
+                grid: { display: false }
             },
-            colors: ['#4e73df', '#1cc88a', '#f6c23e', '#e74a3b'],
-            legend: {
-                position: 'bottom',
-                fontFamily: 'inherit'
-            },
-            plotOptions: {
-                pie: {
-                    donut: {
-                        size: '70%'
-                    }
-                }
-            },
-            tooltip: {
-                theme: 'dark'
+            y: {
+                display: false,
+                beginAtZero: true,
+                grid: { display: false },
+                suggestedMax: Math.max(...incomingData, ...outgoingData) + 2 // إضافة مساحة أعلى
             }
-        };
+        },
+        layout: {
+            padding: {
+                left: 10,
+                right: 10,
+                top: 10,
+                bottom: 10
+            }
+        }
+    };
 
-        var importanceChart = new ApexCharts(document.querySelector("#importanceChart"), importanceOptions);
-        importanceChart.render();
-    </script>
-    @endpush
+    // مخطط الكتب الواردة
+    const incomingCtx = document.getElementById('incomingChart');
+    if (incomingCtx) {
+        new Chart(incomingCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'الكتب الواردة',
+                    data: incomingData,
+                    borderColor: '#696cff',
+                    backgroundColor: 'rgba(105, 108, 255, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#696cff'
+                }]
+            },
+            options: chartOptions
+        });
+    }
+
+    // مخطط الكتب الصادرة
+    const outgoingCtx = document.getElementById('outgoingChart');
+    if (outgoingCtx) {
+        new Chart(outgoingCtx, {
+            type: 'line',
+            data: {
+                labels: dates,
+                datasets: [{
+                    label: 'الكتب الصادرة',
+                    data: outgoingData,
+                    borderColor: '#71dd37',
+                    backgroundColor: 'rgba(113, 221, 55, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 2,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#71dd37'
+                }]
+            },
+            options: chartOptions
+        });
+    }
+});
+</script>
+@endpush
 </div>

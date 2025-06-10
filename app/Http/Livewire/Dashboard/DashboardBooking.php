@@ -2,9 +2,10 @@
 
 namespace App\Http\Livewire\Dashboard;
 
-use App\Models\Incomingbooks\Incomingbooks;
 use Carbon\Carbon;
 use Livewire\Component;
+use Illuminate\Support\Facades\Log;
+use App\Models\Incomingbooks\Incomingbooks;
 
 class DashboardBooking extends Component
 {
@@ -27,20 +28,43 @@ class DashboardBooking extends Component
 
     private function loadDailyStats()
     {
-        $startDate = Carbon::now()->subDays(7);
+        $startDate = now()->subDays(6)->startOfDay();
+        $endDate = now()->endOfDay();
 
-        $this->dailyStats = Incomingbooks::where('created_at', '>=', $startDate)
+        // تهيئة مصفوفة البيانات لكل يوم
+        $stats = [];
+        for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+            $dateString = $date->format('Y-m-d');
+            $stats[$dateString] = [
+                'date' => $dateString,
+                'incoming' => 0,
+                'outgoing' => 0
+            ];
+        }
+
+        // جلب البيانات من قاعدة البيانات
+        $results = Incomingbooks::whereBetween('created_at', [$startDate, $endDate])
             ->selectRaw('DATE(created_at) as date, book_type, COUNT(*) as count')
             ->groupBy('date', 'book_type')
             ->orderBy('date')
-            ->get()
-            ->groupBy('date')
-            ->map(function ($group) {
-                return [
-                    'incoming' => $group->where('book_type', 'وارد')->first()->count ?? 0,
-                    'outgoing' => $group->where('book_type', 'صادر')->first()->count ?? 0
-                ];
-            });
+            ->get();
+
+        // تعبئة البيانات الفعلية
+        foreach ($results as $result) {
+            $dateStr = $result->date;
+            if (isset($stats[$dateStr])) {
+                if ($result->book_type === 'وارد') {
+                    $stats[$dateStr]['incoming'] = (int)$result->count;
+                } else {
+                    $stats[$dateStr]['outgoing'] = (int)$result->count;
+                }
+            }
+        }
+
+        $this->dailyStats = $stats;
+
+        // للتأكد من البيانات
+        Log::info('Daily Stats:', $stats);
     }
 
     private function loadRecentBooks()

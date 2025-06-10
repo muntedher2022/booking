@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             // ...existing seeders...
             SectionSeeder::class,
+            IncomingbooksSeeder::class,
         ]);
     }
 }

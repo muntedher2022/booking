@@ -27,6 +27,14 @@
 	@include('layouts/sections/scriptsIncludes')
 
     @livewireStyles
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 </head>
 
 <body>
@@ -47,6 +55,11 @@
 	@include('layouts/sections/scripts')
 
     @livewireScripts
+
+    <!-- Core Scripts -->
+    @yield('vendor-script')
+    @yield('page-script')
+    @stack('scripts')
 </body>
 
 </html>

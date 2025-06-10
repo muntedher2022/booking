@@ -132,6 +132,16 @@ mix.copy('node_modules/@mdi/font/fonts/*', 'public/assets/vendor/fonts/materiald
 mix.copy('node_modules/@fortawesome/fontawesome-free/webfonts/*', 'public/assets/vendor/fonts/fontawesome');
 mix.copy('node_modules/katex/dist/fonts/*', 'public/assets/vendor/libs/quill/fonts');
 
+// New changes start here
+mix.js('resources/js/app.js', 'public/js')
+   .sass('resources/sass/app.scss', 'public/css')
+   .postCss('resources/css/app.css', 'public/css', [
+       require('postcss-import'),
+       require('tailwindcss'),
+       require('autoprefixer'),
+   ]);
+// New changes end here
+
 mix.version();
 
 /*

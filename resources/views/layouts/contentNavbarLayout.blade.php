@@ -1,35 +1,40 @@
-@isset($pageConfigs)
-    {!! Helper::updatePageConfig($pageConfigs) !!}
-@endisset
-@php
-    $configData = Helper::appClasses();
-@endphp
+<!DOCTYPE html>
+<html>
 
-@extends('layouts/commonMaster')
+<head>
+    @isset($pageConfigs)
+        {!! Helper::updatePageConfig($pageConfigs) !!}
+    @endisset
+    @php
+        $configData = Helper::appClasses();
+    @endphp
 
-@php
-    /* Display elements */
-    $contentNavbar = $contentNavbar ?? true;
-    $isNavbar = $isNavbar ?? true;
-    $isMenu = $isMenu ?? true;
-    $isFlex = $isFlex ?? false;
-    $isFooter = $isFooter ?? true;
-    $customizerHidden = $customizerHidden ?? '';
-    $pricingModal = $pricingModal ?? false;
+    @extends('layouts/commonMaster')
 
-    /* HTML Classes */
-    $navbarDetached = 'navbar-detached';
-    $menuFixed = isset($configData['menuFixed']) ? $configData['menuFixed'] : '';
-    $navbarFixed = isset($configData['navbarFixed']) ? $configData['navbarFixed'] : '';
-    $footerFixed = isset($configData['footerFixed']) ? $configData['footerFixed'] : '';
-    $menuCollapsed = isset($configData['menuCollapsed']) ? $configData['menuCollapsed'] : '';
-    $menuFlipped = isset($configData['menuFlipped']) ? $configData['menuFlipped'] : '';
-    /* $menuOffcanvas = (isset($configData['menuOffcanvas']) ? $configData['menuOffcanvas'] : ''); */
+    @php
+        /* Display elements */
+        $contentNavbar = $contentNavbar ?? true;
+        $isNavbar = $isNavbar ?? true;
+        $isMenu = $isMenu ?? true;
+        $isFlex = $isFlex ?? false;
+        $isFooter = $isFooter ?? true;
+        $customizerHidden = $customizerHidden ?? '';
+        $pricingModal = $pricingModal ?? false;
 
-    /* Content classes */
-    $container = $container ?? 'container-xxl';
+        /* HTML Classes */
+        $navbarDetached = 'navbar-detached';
+        $menuFixed = isset($configData['menuFixed']) ? $configData['menuFixed'] : '';
+        $navbarFixed = isset($configData['navbarFixed']) ? $configData['navbarFixed'] : '';
+        $footerFixed = isset($configData['footerFixed']) ? $configData['footerFixed'] : '';
+        $menuCollapsed = isset($configData['menuCollapsed']) ? $configData['menuCollapsed'] : '';
+        $menuFlipped = isset($configData['menuFlipped']) ? $configData['menuFlipped'] : '';
+        /* $menuOffcanvas = (isset($configData['menuOffcanvas']) ? $configData['menuOffcanvas'] : ''); */
 
-@endphp
+        /* Content classes */
+        $container = $container ?? 'container-xxl';
+    @endphp
+
+</head>
 
 @section('layoutContent')
     <div class="layout-wrapper layout-content-navbar {{ $isMenu ? '' : 'layout-without-menu' }}">
