@@ -56,6 +56,7 @@
                                     <option value="تعديل">تعديل</option>
                                     <option value="حذف">حذف</option>
                                     <option value="طباعة">طباعة</option>
+                                    <option value="تصدير Excel">تصدير Excel</option>
                                 </select>
                             </th>
                             <th class="text-center">
@@ -79,28 +80,74 @@
                         @foreach ($Tracking as $Trackin)
                             <tr>
 
-                                <td>{{ $i++ }}</td>
+                                <td class="text-center">{{ $i++ }}</td>
                                 <td class="text-center">{{ $Trackin->Getuser ? $Trackin->Getuser->name : '' }}</td>
                                 <td class="text-center">{{ $Trackin->page_name }}</td>
 
                                 <td class="text-center" style="padding: 10px; border-radius: 5px; font-size: 14px;">
                                     @if ($Trackin->operation_type === 'اضافة')
-                                        <i class="mdi mdi-shield-plus-outline" style="color: #28a745;"></i>
-                                        <span style="color: #28a745;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'تعديل')
-                                        <i class="mdi mdi-shield-refresh-outline" style="color: #007bff;"></i>
+                                        <i class="mdi mdi-shield-plus-outline" style="color: #007bff;"></i>
                                         <span style="color: #007bff;">{{ $Trackin->operation_type }}</span>
+                                    @elseif($Trackin->operation_type === 'تعديل')
+                                        <i class="mdi mdi-shield-refresh-outline" style="color: #ffa500;"></i>
+                                        <span style="color: #ffa500;">{{ $Trackin->operation_type }}</span>
                                     @elseif($Trackin->operation_type === 'حذف')
                                         <i class="mdi mdi-shield-remove-outline" style="color: #dc3545;"></i>
                                         <span style="color: #dc3545;">{{ $Trackin->operation_type }}</span>
                                     @elseif($Trackin->operation_type === 'طباعة')
-                                        <i class="mdi mdi-shield-crown-outline" style="color: #ffc107;"></i>
-                                        <span style="color: #ffc107;">{{ $Trackin->operation_type }}</span>
+                                        <i class="mdi mdi-shield-crown-outline" style="color: #9C27B0;"></i>
+                                        <span style="color: #9C27B0;">{{ $Trackin->operation_type }}</span>
+                                    @elseif($Trackin->operation_type === 'تصدير Excel')
+                                        <i class="mdi mdi-file-excel-outline" style="color: #28a745;"></i>
+                                        <span style="color: #28a745;">{{ $Trackin->operation_type }}</span>
                                     @endif
                                 </td>
 
                                 <td class="text-center">{{ $Trackin->operation_time }}</td>
-                                <td class="text-center">{{ $Trackin->details }}</td>
+                                <td class="text-center">
+                                    <div style="white-space: pre-line; max-width: 500px; margin: 0 auto; text-align: right; max-height: 150px; overflow-y: auto; padding: 10px; background-color: #f8f9fa; border-radius: 6px;">
+                                        @php
+                                            $details = $Trackin->details;
+                                            $lines = explode("\n", $details);
+                                            $color = match($Trackin->operation_type) {
+                                                'اضافة' => '#007bff',
+                                                'تعديل' => '#ffa500',
+                                                'حذف' => '#dc3545',
+                                                'طباعة' => '#9C27B0',
+                                                'تصدير Excel' => '#28a745',
+                                                default => '#000000'
+                                            };
+
+                                            // تحسين عرض عناصر التصدير
+                                            if ($Trackin->operation_type === 'تصدير Excel') {
+                                                echo '<div style="border-bottom: 1px solid #dee2e6; margin-bottom: 5px; padding-bottom: 5px;">';
+                                                foreach($lines as $line) {
+                                                    if (str_contains($line, '=======================')) {
+                                                        echo '</div><div style="border-bottom: 1px solid #dee2e6; margin-bottom: 5px; padding-bottom: 5px;">';
+                                                        continue;
+                                                    }
+                                                    $parts = explode(':', $line, 2);
+                                                    if (count($parts) == 2) {
+                                                        echo '<div style="margin-bottom: 3px;"><span style="color: ' . $color . '; font-weight: 600;">' . $parts[0] . ':</span>' . $parts[1] . '</div>';
+                                                    } else {
+                                                        echo '<div style="margin-bottom: 3px;">' . $line . '</div>';
+                                                    }
+                                                }
+                                                echo '</div>';
+                                            } else {
+                                                // عرض عادي لباقي العمليات
+                                                foreach($lines as $line) {
+                                                    $parts = explode(':', $line, 2);
+                                                    if (count($parts) == 2) {
+                                                        echo '<div style="margin-bottom: 3px;"><span style="color: ' . $color . '; font-weight: 600;">' . $parts[0] . ':</span>' . $parts[1] . '</div>';
+                                                    } else {
+                                                        echo '<div style="margin-bottom: 3px;">' . $line . '</div>';
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+                                    </div>
+                                </td>
 
                                 {{-- <td class="text-center">
                                         <div class="btn-group" role="group" aria-label="First group">

@@ -250,11 +250,11 @@
                                     <!-- إضافة منطقة المعاينة مع تنسيقات محسّنة -->
                                     <div class="mt-3 preview-container" style="max-height: 400px; overflow: hidden;">
                                         <div id="dwtcontrolContainer"
-                                            style="display: none; width: 100%; height: 300px;"></div>
+                                            style="display: none; width: 100%; height: 250px;"></div>
 
                                         <div wire:loading wire:target='attachment' class="mt-3">
                                             <img src="{{ asset('assets/img/gif/Cube-Loading-Animated-3D.gif') }}"
-                                                style="max-height: 300px; width: auto;" alt="Loading">
+                                                style="max-height: 250px; width: auto;" alt="Loading">
                                         </div>
 
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
@@ -262,10 +262,10 @@
                                                 <div class="preview-wrapper" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
                                                     @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
                                                         <embed src="{{ $tempImageUrl }}" type="application/pdf"
-                                                            style="width: 100%; height: 300px; object-fit: contain;" />
+                                                            style="width: 100%; height: 250px; object-fit: contain;" />
                                                     @else
                                                         <img src="{{ $tempImageUrl }}" alt="Selected Image"
-                                                            style="width: 100%; max-height: 300px; object-fit: contain;" />
+                                                            style="width: 100%; max-height: 250px; object-fit: contain;" />
                                                     @endif
                                                 </div>
                                             @endif

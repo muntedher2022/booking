@@ -139,9 +139,9 @@ class Emaillist extends Component
             'page_name' => 'قائمة البريد الإلكتروني',
             'operation_type' => 'اضافة',
             'operation_time' => now()->format('Y-m-d H:i:s'),
-            'details' => "النوع: " . $this->type . ' - '
-                . "القسم/الدائرة: " . $this->department . ' - '
-                . "البريد الإلكتروني: " . $this->email . ' - '
+            'details' => "النوع: " . $this->type . "\n"
+                . "القسم/الدائرة: " . $this->department . "\n"
+                . "البريد الإلكتروني: " . $this->email . "\n"
                 . "الملاحظات: " . $this->notes,
         ]);
         // =================================
@@ -194,9 +194,9 @@ class Emaillist extends Component
             'page_name' => 'قائمة البريد الإلكتروني',
             'operation_type' => 'تعديل',
             'operation_time' => now()->format('Y-m-d H:i:s'),
-            'details' => "النوع: " . $this->type . ' - '
-                . "القسم/الدائرة: " . $this->department . ' - '
-                . "البريد الإلكتروني: " . $this->email . ' - '
+            'details' => "النوع: " . $this->type . "\n"
+                . "القسم/الدائرة: " . $this->department . "\n"
+                . "البريد الإلكتروني: " . $this->email . "\n"
                 . "الملاحظات: " . $this->notes,
         ]);
         // =================================
@@ -217,9 +217,9 @@ class Emaillist extends Component
                 'page_name' => 'قائمة البريد الإلكتروني',
                 'operation_type' => 'حذف',
                 'operation_time' => now()->format('Y-m-d H:i:s'),
-                'details' => "النوع: " . $Emaillists->type . ' - '
-                    . "القسم/الدائرة: " . $Emaillists->department . ' - '
-                    . "البريد الإلكتروني: " . $Emaillists->email . ' - '
+                'details' => "النوع: " . $Emaillists->type . "\n"
+                    . "القسم/الدائرة: " . $Emaillists->department . "\n"
+                    . "البريد الإلكتروني: " . $Emaillists->email . "\n"
                     . "الملاحظات: " . $Emaillists->notes,
             ]);
             // =================================

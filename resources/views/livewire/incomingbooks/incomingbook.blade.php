@@ -83,7 +83,7 @@
                         </select>
                     </div>
                     <div class="mb-3 col">
-                        <select wire:model.debounce.300ms="search.sender_type" class="form-select"
+                        <select wire:model.debounce.300ms="search.sender_type" class="form-select text-center"
                             wire:key="search_sender_type">
                             <option value="">نطاق الكتاب</option>
                             <option value="داخلي">داخلي</option>

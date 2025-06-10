@@ -258,9 +258,9 @@ class IncomingBook extends Component
         ]);
 
         if ($this->attachment) {
-            // حفظ الملف في مجلد uploads المؤقت
             $path = $this->attachment->store('public/uploads');
             $this->tempImageUrl = Storage::url($path);
+            $this->previewIncomingbookImage = null;
         }
     }
 
@@ -321,9 +321,21 @@ class IncomingBook extends Component
 
         if ($this->Incomingbook->attachment) {
             $year = date('Y', strtotime($this->Incomingbook->book_date));
-            $this->previewIncomingbookImage = 'storage/Incomingbooks/' . $year . '/' . $this->book_number . '/' . $this->Incomingbook->attachment;
+            $bookNumber = $this->Incomingbook->book_number;
+            $attachment = $this->Incomingbook->attachment;
+
+            // تحديث مسار المعاينة باستخدام asset()
+            $this->previewIncomingbookImage = "Incomingbooks/{$year}/{$bookNumber}/{$attachment}";
+
+            // التأكد من وجود الملف وإمكانية الوصول إليه
+            if (Storage::disk('public')->exists($this->previewIncomingbookImage)) {
+                $this->tempImageUrl = null; // تصفير القيمة المؤقتة
+            } else {
+                $this->previewIncomingbookImage = null;
+            }
         } else {
             $this->previewIncomingbookImage = null;
+            $this->tempImageUrl = null;
         }
 
         $this->dispatchBrowserEvent('initEditSelect2', [
@@ -486,18 +498,39 @@ class IncomingBook extends Component
             'importance' => $this->importance,
         ]);
 
+        // تحضير تفاصيل التتبع
+        $departments = $this->getSenderDetails('dep');
+        $sections = $this->getSenderDetails('sec');
+
+        $details = sprintf(
+            "رقم الكتاب: %s\n" .
+            "تاريخ الكتاب: %s\n" .
+            "موضوع الكتاب: %s\n" .
+            "محتوى الكتاب: %s\n" .
+            "الكلمات المفتاحية: %s\n" .
+            "نوع الكتاب: %s\n" .
+            "نطاق الكتاب: %s\n" .
+            "درجة الأهمية: %s\n" .
+            "الجهات:\n%s%s%s",
+            $this->book_number ?: 'غير محدد',
+            $this->book_date ?: 'غير محدد',
+            $this->subject ?: 'غير محدد',
+            $this->content ?: 'غير محدد',
+            $this->keywords ?: 'غير محدد',
+            $this->book_type ?: 'غير محدد',
+            $this->sender_type ?: 'غير محدد',
+            $this->importance ?: 'غير محدد',
+            $departments ? $departments . "\n" : '',
+            $sections ? $sections . "\n" : '',
+            (!$departments && !$sections) ? "لا توجد جهات\n" : ''
+        );
+
         Tracking::create([
             'user_id' => Auth::id(),
             'page_name' => 'الكتب الواردة',
             'operation_type' => 'اضافة',
             'operation_time' => now()->format('Y-m-d H:i:s'),
-            'details' => "رقم الكتاب: " . $this->book_number . ' - '
-                . "\nتاريخ الكتاب: " . $this->book_date . ' - '
-                . "\nالموضوع: " . $this->subject . ' - '
-                . "\nالمحتوى: " . $this->content . ' - '
-                . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
-                . "\nنوع الكتاب: " . $this->book_type . ' - '
-                . "\nدرجة الأهمية: " . $this->importance,
+            'details' => $details
         ]);
 
         if ($this->sendEmail) {
@@ -613,18 +646,39 @@ class IncomingBook extends Component
             'importance' => $this->importance,
         ]);
 
+        // تحضير تفاصيل التتبع
+        $departments = $this->getSenderDetails('dep');
+        $sections = $this->getSenderDetails('sec');
+
+        $details = sprintf(
+            "رقم الكتاب: %s\n" .
+            "تاريخ الكتاب: %s\n" .
+            "موضوع الكتاب: %s\n" .
+            "محتوى الكتاب: %s\n" .
+            "الكلمات المفتاحية: %s\n" .
+            "نوع الكتاب: %s\n" .
+            "نطاق الكتاب: %s\n" .
+            "درجة الأهمية: %s\n" .
+            "الجهات:\n%s%s%s",
+            $this->book_number ?: 'غير محدد',
+            $this->book_date ?: 'غير محدد',
+            $this->subject ?: 'غير محدد',
+            $this->content ?: 'غير محدد',
+            $this->keywords ?: 'غير محدد',
+            $this->book_type ?: 'غير محدد',
+            $this->sender_type ?: 'غير محدد',
+            $this->importance ?: 'غير محدد',
+            $departments ? $departments . "\n" : '',
+            $sections ? $sections . "\n" : '',
+            (!$departments && !$sections) ? "لا توجد جهات\n" : ''
+        );
+
         Tracking::create([
             'user_id' => Auth::id(),
             'page_name' => 'الكتب الواردة',
             'operation_type' => 'تعديل',
             'operation_time' => now()->format('Y-m-d H:i:s'),
-            'details' => "رقم الكتاب: " . $this->book_number . ' - '
-                . "\nتاريخ الكتاب: " . $this->book_date . ' - '
-                . "\nالموضوع: " . $this->subject . ' - '
-                . "\nالمحتوى: " . $this->content . ' - '
-                . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
-                . "\nنوع الكتاب: " . $this->book_type . ' - '
-                . "\nدرجة الأهمية: " . $this->importance,
+            'details' => $details
         ]);
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview','book_type','importance');
@@ -639,18 +693,41 @@ class IncomingBook extends Component
         $Incomingbooks = Incomingbooks::find($this->IncomingbookId);
 
         if ($Incomingbooks) {
+            // تحضير تفاصيل التتبع
+            $departments = $Incomingbooks->Getdepartment()->pluck('department_name')
+                ->map(fn($name) => "دائرة: " . $name)->join("\n");
+            $sections = $Incomingbooks->Getsection()->pluck('section_name')
+                ->map(fn($name) => "قسم: " . $name)->join("\n");
+
+            $details = sprintf(
+                "رقم الكتاب: %s\n" .
+                "تاريخ الكتاب: %s\n" .
+                "موضوع الكتاب: %s\n" .
+                "محتوى الكتاب: %s\n" .
+                "الكلمات المفتاحية: %s\n" .
+                "نوع الكتاب: %s\n" .
+                "نطاق الكتاب: %s\n" .
+                "درجة الأهمية: %s\n" .
+                "الجهات:\n%s%s%s",
+                $Incomingbooks->book_number ?: 'غير محدد',
+                $Incomingbooks->book_date ?: 'غير محدد',
+                $Incomingbooks->subject ?: 'غير محدد',
+                $Incomingbooks->content ?: 'غير محدد',
+                $Incomingbooks->keywords ?: 'غير محدد',
+                $Incomingbooks->book_type ?: 'غير محدد',
+                $Incomingbooks->sender_type ?: 'غير محدد',
+                $Incomingbooks->importance ?: 'غير محدد',
+                $departments ? $departments . "\n" : '',
+                $sections ? $sections . "\n" : '',
+                (!$departments && !$sections) ? "لا توجد جهات\n" : ''
+            );
+
             Tracking::create([
                 'user_id' => Auth::id(),
                 'page_name' => 'الكتب الواردة',
                 'operation_type' => 'حذف',
                 'operation_time' => now()->format('Y-m-d H:i:s'),
-                'details' => "رقم الكتاب: " . $Incomingbooks->book_number . ' - '
-                    . "\nتاريخ الكتاب: " . $Incomingbooks->book_date . ' - '
-                    . "\nالموضوع: " . $Incomingbooks->subject . ' - '
-                    . "\nالمحتوى: " . $Incomingbooks->content . ' - '
-                    . "\nالكلمات المفتاحية: " . $Incomingbooks->keywords . ' - '
-                    . "\nنوع الكتاب: " . $Incomingbooks->book_type . ' - '
-                    . "\nدرجة الأهمية: " . $Incomingbooks->importance,
+                'details' => $details
             ]);
 
             $year = date('Y', strtotime($Incomingbooks->book_date));
@@ -682,17 +759,41 @@ class IncomingBook extends Component
         $incomingBook = Incomingbooks::find($id);
 
         if ($incomingBook) {
-            // إنشاء سجل تتبع للطباعة
+            // تحضير تفاصيل التتبع
+            $departments = $incomingBook->Getdepartment()->pluck('department_name')
+                ->map(fn($name) => "دائرة: " . $name)->join("\n");
+            $sections = $incomingBook->Getsection()->pluck('section_name')
+                ->map(fn($name) => "قسم: " . $name)->join("\n");
+
+            $details = sprintf(
+                "رقم الكتاب: %s\n" .
+                "تاريخ الكتاب: %s\n" .
+                "موضوع الكتاب: %s\n" .
+                "محتوى الكتاب: %s\n" .
+                "الكلمات المفتاحية: %s\n" .
+                "نوع الكتاب: %s\n" .
+                "نطاق الكتاب: %s\n" .
+                "درجة الأهمية: %s\n" .
+                "الجهات:\n%s%s%s",
+                $incomingBook->book_number ?: 'غير محدد',
+                $incomingBook->book_date ?: 'غير محدد',
+                $incomingBook->subject ?: 'غير محدد',
+                $incomingBook->content ?: 'غير محدد',
+                $incomingBook->keywords ?: 'غير محدد',
+                $incomingBook->book_type ?: 'غير محدد',
+                $incomingBook->sender_type ?: 'غير محدد',
+                $incomingBook->importance ?: 'غير محدد',
+                $departments ? $departments . "\n" : '',
+                $sections ? $sections . "\n" : '',
+                (!$departments && !$sections) ? "لا توجد جهات\n" : ''
+            );
+
             Tracking::create([
                 'user_id' => Auth::id(),
                 'page_name' => 'الكتب الواردة',
                 'operation_type' => 'طباعة',
                 'operation_time' => now()->format('Y-m-d H:i:s'),
-                'details' => "رقم الكتاب: " . $incomingBook->book_number . ' - '
-                    . "\nتاريخ الكتاب: " . $incomingBook->book_date . ' - '
-                    . "\nالموضوع: " . $incomingBook->subject . ' - '
-                    . "\nنوع الكتاب: " . $incomingBook->book_type . ' - '
-                    . "\nدرجة الأهمية: " . $incomingBook->importance,
+                'details' => $details
             ]);
 
             // تحضير مسار الملف للطباعة
@@ -723,9 +824,7 @@ class IncomingBook extends Component
                     $query->where('content', 'LIKE', '%' . $this->search['content'] . '%');
                 })
                 ->when($this->search['related_book_id'], function ($query) {
-                    $query->whereHas('relatedBook', function ($q) {
-                        $q->where('book_number', 'LIKE', '%' . $this->search['related_book_id'] . '%');
-                    });
+                    $query->where('related_book_id', 'LIKE', '%' . $this->search['related_book_id'] . '%');
                 })
                 ->when($this->search['sender_type'], function ($query) {
                     $query->where('sender_type', 'LIKE', '%' . $this->search['sender_type'] . '%');
@@ -785,9 +884,7 @@ class IncomingBook extends Component
                 $query->where('content', 'LIKE', '%' . $this->search['content'] . '%');
             })
             ->when($this->search['related_book_id'], function ($query) {
-                $query->whereHas('relatedBook', function ($q) {
-                    $q->where('book_number', 'LIKE', '%' . $this->search['related_book_id'] . '%');
-                });
+                $query->where('related_book_id', 'LIKE', '%' . $this->search['related_book_id'] . '%');
             })
             ->when($this->search['sender_type'], function ($query) {
                 $query->where('sender_type', 'LIKE', '%' . $this->search['sender_type'] . '%');
@@ -835,6 +932,57 @@ class IncomingBook extends Component
             ]);
             return;
         }
+
+        // تسجيل تفاصيل الكتب المصدرة
+        $books = Incomingbooks::whereIn('id', $this->selectedRows)->get();
+        $exportDetails = "تم تصدير " . count($this->selectedRows) . " كتاب:\n";
+        $exportDetails .= "======================\n";
+
+        foreach($books as $index => $book) {
+            // تحضير الجهات
+            $departments = $book->Getdepartment()->pluck('department_name')->map(function($name) {
+                return "دائرة: " . $name;
+            })->join("\n");
+
+            $sections = $book->Getsection()->pluck('section_name')->map(function($name) {
+                return "قسم: " . $name;
+            })->join("\n");
+
+            $exportDetails .= sprintf(
+                "الكتاب رقم %d:\n" .
+                "رقم الكتاب: %s\n" .
+                "تاريخ الكتاب: %s\n" .
+                "موضوع الكتاب: %s\n" .
+                "محتوى الكتاب: %s\n" .
+                "الكلمات المفتاحية: %s\n" .
+                "نوع الكتاب: %s\n" .
+                "نطاق الكتاب: %s\n" .
+                "درجة الأهمية: %s\n" .
+                "الجهات:\n%s%s%s" .
+                "======================\n",
+                $index + 1,
+                $book->book_number ?: 'غير محدد',
+                $book->book_date ?: 'غير محدد',
+                $book->subject ?: 'غير محدد',
+                $book->content ?: 'غير محدد',
+                $book->keywords ?: 'غير محدد',
+                $book->book_type ?: 'غير محدد',
+                $book->sender_type ?: 'غير محدد',
+                $book->importance ?: 'غير محدد',
+                $departments ? $departments . "\n" : '',
+                $sections ? $sections . "\n" : '',
+                (!$departments && !$sections) ? "لا توجد جهات\n" : ''
+            );
+        }
+
+        // إنشاء سجل تتبع لعملية التصدير
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'الكتب الواردة',
+            'operation_type' => 'تصدير Excel',
+            'operation_time' => now()->format('Y-m-d H:i:s'),
+            'details' => $exportDetails
+        ]);
 
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
@@ -967,5 +1115,30 @@ class IncomingBook extends Component
         $writer->save($fullPath);
 
         return response()->download($fullPath)->deleteFileAfterSend();
+    }
+
+    // دالة مساعدة للحصول على تفاصيل الجهات المرسلة
+    private function getSenderDetails($type)
+    {
+        $processedIds = array_map(function ($id) {
+            $parts = explode('_', $id);
+            return ['type' => $parts[0], 'id' => intval($parts[1])];
+        }, $this->sender_id);
+
+        $ids = collect($processedIds)
+            ->filter(fn($item) => $item['type'] === $type)
+            ->pluck('id');
+
+        if ($type === 'dep') {
+            return Departments::whereIn('id', $ids)
+                ->pluck('department_name')
+                ->map(fn($name) => "دائرة: " . $name)
+                ->join("\n");
+        } else {
+            return Sections::whereIn('id', $ids)
+                ->pluck('section_name')
+                ->map(fn($name) => "قسم: " . $name)
+                ->join("\n");
+        }
     }
 }
