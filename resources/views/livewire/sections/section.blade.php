@@ -1,30 +1,30 @@
 <div class="mt-n4">
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex justify-content-between">
-                <div>
-                    <h4 class="d-flex align-items-center gap-2">
-                        <span class="text-muted d-flex align-items-center">
-                            <i class="mdi mdi-cog-outline fs-4"></i>
-                            <span class="ms-1">الاعدادات</span>
-                        </span>
-                        <i class="mdi mdi-chevron-left text-primary"></i>
-                        <span class="fw-bold text-primary d-flex align-items-center">
-                            <i class="mdi mdi-domain me-1 fs-4"></i>
-                            <span class="ms-1">الاقسام</span>
-                        </span>
-                    </h4>
-                </div>
-                <div>
-                    @can('section-create')
-                        <button wire:click='AddsectionModalShow' class="mb-3 add-new btn btn-primary mb-md-0"
-                            data-bs-toggle="modal" data-bs-target="#addsectionModal">أضــافــة</button>
-                        @include('livewire.sections.modals.add-section')
-                    @endcan
+    @can('section-list')
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4 class="d-flex align-items-center gap-2">
+                            <span class="text-muted d-flex align-items-center">
+                                <i class="mdi mdi-cog-outline fs-4"></i>
+                                <span class="ms-1">الاعدادات</span>
+                            </span>
+                            <i class="mdi mdi-chevron-left text-primary"></i>
+                            <span class="fw-bold text-primary d-flex align-items-center">
+                                <i class="mdi mdi-domain me-1 fs-4"></i>
+                                <span class="ms-1">الاقسام</span>
+                            </span>
+                        </h4>
+                    </div>
+                    <div>
+                        @can('section-create')
+                            <button wire:click='AddsectionModalShow' class="mb-3 add-new btn btn-primary mb-md-0"
+                                data-bs-toggle="modal" data-bs-target="#addsectionModal">أضــافــة</button>
+                            @include('livewire.sections.modals.add-section')
+                        @endcan
+                    </div>
                 </div>
             </div>
-        </div>
-        @can('section-list')
             <div class="table-responsive">
                 <table class="table">
                     <thead class="table-light">
@@ -82,6 +82,28 @@
             @include('livewire.sections.modals.edit-section')
             @include('livewire.sections.modals.remove-section')
             <!-- Modal -->
-        @endcan
-    </div>
+        </div>
+    @else
+        <div class="container-xxl">
+            <div class="misc-wrapper">
+                <div class="card shadow-lg border-0">
+                    <div class="card-body text-center p-5">
+                        <div class="mb-4">
+                            <i class="mdi mdi-shield-lock-outline text-primary fs-1" style="opacity: 0.9;"></i>
+                        </div>
+                        <h2 class="mb-3 fw-semibold">عذراً! ليس لديك صلاحيات الوصول</h2>
+                        <p class="mb-4 mx-auto text-muted" style="max-width: 500px;">
+                            لا تملك الصلاحيات الكافية للوصول إلى هذه الصفحة. يرجى التواصل مع مدير النظام للحصول على
+                            المساعدة.
+                        </p>
+                        <a href="{{ route('Dashboard') }}"
+                            class="btn btn-primary btn-lg rounded-pill px-5 waves-effect waves-light">
+                            <i class="mdi mdi-home-outline me-1"></i>
+                            العودة إلى الرئيسية
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endcan
 </div>

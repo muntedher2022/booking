@@ -79,7 +79,7 @@
                             @endcan
                             {{-- المخاطبات --}}
                             @can('Correspondence Management')
-                                <li class="menu-item {{ request()->is('OutgoingBooks', 'Incomingbooks') ? 'open active' : '' }}">
+                                <li class="menu-item {{ request()->is('Incomingbooks') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-text-box-multiple-outline'></i>
                                         <span class="menu-title">ادارة المخاطبات</span>
@@ -99,7 +99,7 @@
                             {{-- الاعدادات --}}
                             @can('Settings')
                                 <li
-                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Trackings') ? 'open active' : '' }}">
+                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                         <span class="menu-title">الاعدادات</span>

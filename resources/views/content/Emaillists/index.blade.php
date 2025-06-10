@@ -35,6 +35,23 @@
     <script src=" {{ asset('assets/js/extended-ui-sweetalert2.js') }}"></script>
     <script src=" {{ asset('assets/js/form-basic-inputs.js') }}"></script>
     <script>
+        function exportSelectedRows() {
+            // جمع معرّفات الصفوف المحددة
+            const selectedIds = [];
+            document.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedIds.push(checkbox.value);
+            });
+
+            // إذا لم يتم تحديد أي صفوف
+            if (selectedIds.length === 0) {
+                alert('يرجى تحديد صفوف لتصديرها.');
+                return;
+            }
+
+            // إرسال معرّفات الصفوف إلى الرابط
+            window.location.href = "{{ url('/export-emails') }}?selected_ids=" + selectedIds.join(',');
+        }
+
         $(document).ready(function() {
             function initSelect2(selector, eventName, parentModal) {
                 $(selector).select2({
