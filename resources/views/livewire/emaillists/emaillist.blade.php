@@ -30,19 +30,17 @@
                 <table class="table">
                     <thead class="table-light">
                         <tr>
-                            <th> </th>
                             <th>ت</th>
-                            <th class="text-center">القسم</th>
+                            <th class="text-center">القسم / الدائرة</th>
                             <th class="text-center">البريد الإلكتروني</th>
                             <th class="text-center">ملاحظات</th>
                             <th class="text-center">العملية</th>
                         </tr>
                         <tr>
-                            <th> </th>
                             <th>#</th>
                             <th class="text-center">
                                 <input type="text" wire:model.debounce.300ms="search.department"
-                                    class="form-control text-center" placeholder="بحث بالقسم">
+                                    class="form-control text-center" placeholder="بحث بالقسم / الدائرة">
                             </th>
                             <th class="text-center">
                                 <input type="text" wire:model.debounce.300ms="search.email"
@@ -61,9 +59,6 @@
                         @endphp
                         @foreach ($Emaillists as $emaillist)
                             <tr>
-                                <td>
-                                    <input type="checkbox" value="{{ $emaillist->id }}">
-                                </td>
                                 <td>{{ $i++ }}</td>
                                 <td class="text-center">
                                     @if ($emaillist->type == 'section')

@@ -6,12 +6,12 @@ class TrackingController extends Controller
 {
     public function index()
     {
-        Return View('content.Tracking.index'); 
+        return view('content.Tracking.index');
     }
 
     public function TrackinShow($id)
     {
-        Return View('content.Tracking.show', [
+        return view('content.Tracking.show', [
             'id' => $id
         ]);
     }

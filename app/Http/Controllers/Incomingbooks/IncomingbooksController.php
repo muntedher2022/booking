@@ -6,6 +6,6 @@ class IncomingbooksController extends Controller
 {
     public function index()
     {
-        Return View('content.Incomingbooks.index'); 
+        return view('content.Incomingbooks.index');
     }
 }

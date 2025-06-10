@@ -51,6 +51,12 @@ class Emaillist extends Component
         }
     }
 
+    public function updatedSearch($value, $key)
+    {
+        if (in_array($key, ['department', 'email', 'notes'])) {
+            $this->resetPage();
+        }
+    }
 
     public function render()
     {
@@ -60,7 +66,22 @@ class Emaillist extends Component
 
         $Emaillists = Emaillists::query()
             ->when($this->search['department'], function ($query) use ($departmentSearch) {
-                $query->where('department', 'LIKE', $departmentSearch);
+                $query->where(function ($subQuery) use ($departmentSearch) {
+                    // البحث في الأقسام فقط عندما يكون النوع section
+                    $subQuery->where(function ($q) use ($departmentSearch) {
+                        $q->where('type', 'section')
+                          ->whereHas('Getsection', function ($q) use ($departmentSearch) {
+                              $q->where('section_name', 'LIKE', $departmentSearch);
+                          });
+                    })
+                    // البحث في الدوائر فقط عندما يكون النوع department
+                    ->orWhere(function ($q) use ($departmentSearch) {
+                        $q->where('type', 'department')
+                          ->whereHas('Getdepartment', function ($q) use ($departmentSearch) {
+                              $q->where('department_name', 'LIKE', $departmentSearch);
+                          });
+                    });
+                });
             })
             ->when($this->search['email'], function ($query) use ($emailSearch) {
                 $query->where('email', 'LIKE', $emailSearch);
@@ -68,9 +89,9 @@ class Emaillist extends Component
             ->when($this->search['notes'], function ($query) use ($notesSearch) {
                 $query->where('notes', 'LIKE', $notesSearch);
             })
-
             ->orderBy('id', 'ASC')
             ->paginate(10);
+
         $links = $Emaillists;
         $this->Emaillists = collect($Emaillists->items());
 
