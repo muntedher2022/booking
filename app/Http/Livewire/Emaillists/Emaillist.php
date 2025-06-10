@@ -38,13 +38,34 @@ class Emaillist extends Component
 
     public function updatedType()
     {
-        $this->department = '';
+        // التحقق من القيمة الحالية للـ department
+        if ($this->department) {
+            if ($this->type == 'section') {
+                // التحقق من وجود القيمة في جدول الأقسام
+                $exists = Sections::where('id', $this->department)->exists();
+            } else {
+                // التحقق من وجود القيمة في جدول الدوائر
+                $exists = Departments::where('id', $this->department)->exists();
+            }
+
+            // إذا لم تكن القيمة موجودة في الجدول الجديد، قم بتصفير القيمة
+            if (!$exists) {
+                $this->department = '';
+            }
+        }
+
+        $this->emit('select2');
     }
 
     public function SelectDepartment($DepartmentID)
     {
-        $department = Sections::find($DepartmentID);
-        if ($department) {
+        if ($this->type == 'section') {
+            $exists = Sections::find($DepartmentID);
+        } else {
+            $exists = Departments::find($DepartmentID);
+        }
+
+        if ($exists) {
             $this->department = $DepartmentID;
         } else {
             $this->department = null;
@@ -126,6 +147,16 @@ class Emaillist extends Component
             'email.unique' => 'هذا البريد الإلكتروني مسجل مسبقاً'
         ]);
 
+        // الحصول على اسم القسم/الدائرة
+        $departmentName = '';
+        if ($this->type == 'section') {
+            $section = Sections::find($this->department);
+            $departmentName = $section ? $section->section_name : '';
+        } else {
+            $department = Departments::find($this->department);
+            $departmentName = $department ? $department->department_name : '';
+        }
+
         Emaillists::create([
             'user_id' => Auth::id(),
             'type' => $this->type,
@@ -133,14 +164,14 @@ class Emaillist extends Component
             'email' => $this->email,
             'notes' => $this->notes,
         ]);
-        // =================================
+
         Tracking::create([
             'user_id' => Auth::id(),
             'page_name' => 'قائمة البريد الإلكتروني',
             'operation_type' => 'اضافة',
             'operation_time' => now()->format('Y-m-d H:i:s'),
-            'details' => "النوع: " . $this->type . "\n"
-                . "القسم/الدائرة: " . $this->department . "\n"
+            'details' => "النوع: " . ($this->type == 'section' ? 'قسم' : 'دائرة') . "\n"
+                . "القسم/الدائرة: " . $departmentName . "\n"
                 . "البريد الإلكتروني: " . $this->email . "\n"
                 . "الملاحظات: " . $this->notes,
         ]);
@@ -150,7 +181,8 @@ class Emaillist extends Component
         $this->reset();
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
-            'title' => 'اضافه'
+            'title' => 'اضافه',
+            'reloadPage' => true  // إضافة معلمة لإعادة تحميل الصفحة
         ]);
     }
 
@@ -160,9 +192,15 @@ class Emaillist extends Component
         $this->emaillist = Emaillists::find($emaillistId);
         $this->emaillistId = $this->emaillist->id;
         $this->type = $this->emaillist->type;
-        $this->department = $this->emaillist->department;
+        $this->department = $this->emaillist->department; // نحفظ ID القسم/الدائرة
         $this->email = $this->emaillist->email;
         $this->notes = $this->emaillist->notes;
+
+        // لضمان تحديث القيمة في Select2 بعد تحميل البيانات
+        $this->dispatchBrowserEvent('updateSelect2', [
+            'selector' => '#editEmaillistdepartment',
+            'value' => $this->department
+        ]);
     }
 
     public function update()
@@ -181,6 +219,17 @@ class Emaillist extends Component
         ]);
 
         $Emaillists = Emaillists::find($this->emaillistId);
+
+        // الحصول على اسم القسم/الدائرة
+        $departmentName = '';
+        if ($this->type == 'section') {
+            $section = Sections::find($this->department);
+            $departmentName = $section ? $section->section_name : '';
+        } else {
+            $department = Departments::find($this->department);
+            $departmentName = $department ? $department->department_name : '';
+        }
+
         $Emaillists->update([
             'user_id' => Auth::id(),
             'type' => $this->type,
@@ -188,14 +237,14 @@ class Emaillist extends Component
             'email' => $this->email,
             'notes' => $this->notes,
         ]);
-        // =================================
+
         Tracking::create([
             'user_id' => Auth::id(),
             'page_name' => 'قائمة البريد الإلكتروني',
             'operation_type' => 'تعديل',
             'operation_time' => now()->format('Y-m-d H:i:s'),
-            'details' => "النوع: " . $this->type . "\n"
-                . "القسم/الدائرة: " . $this->department . "\n"
+            'details' => "النوع: " . ($this->type == 'section' ? 'قسم' : 'دائرة') . "\n"
+                . "القسم/الدائرة: " . $departmentName . "\n"
                 . "البريد الإلكتروني: " . $this->email . "\n"
                 . "الملاحظات: " . $this->notes,
         ]);
@@ -211,18 +260,26 @@ class Emaillist extends Component
     {
         $Emaillists = Emaillists::find($this->emaillistId);
         if ($Emaillists) {
-            // =================================
+            // الحصول على اسم القسم/الدائرة
+            $departmentName = '';
+            if ($Emaillists->type == 'section') {
+                $section = Sections::find($Emaillists->department);
+                $departmentName = $section ? $section->section_name : '';
+            } else {
+                $department = Departments::find($Emaillists->department);
+                $departmentName = $department ? $department->department_name : '';
+            }
+
             Tracking::create([
                 'user_id' => Auth::id(),
                 'page_name' => 'قائمة البريد الإلكتروني',
                 'operation_type' => 'حذف',
                 'operation_time' => now()->format('Y-m-d H:i:s'),
-                'details' => "النوع: " . $Emaillists->type . "\n"
-                    . "القسم/الدائرة: " . $Emaillists->department . "\n"
+                'details' => "النوع: " . ($Emaillists->type == 'section' ? 'قسم' : 'دائرة') . "\n"
+                    . "القسم/الدائرة: " . $departmentName . "\n"
                     . "البريد الإلكتروني: " . $Emaillists->email . "\n"
                     . "الملاحظات: " . $Emaillists->notes,
             ]);
-            // =================================
 
             $Emaillists->delete();
             $this->reset();

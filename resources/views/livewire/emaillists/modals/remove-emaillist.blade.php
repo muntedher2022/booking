@@ -23,14 +23,14 @@
                     <form id="removeemaillistModalForm" onsubmit="return false" autocomplete="off">
                         <div class="row">
                             <div class="col text-center">
-                                <div class="">
-                                    <label class="border-bottom-2 w-100">القسم</label>
+                                <div class="text-danger">
+                                    <label>{{ $type == 'section' ? 'القسم' : 'الدائرة' }}</label>
                                     <div class="form-control-plaintext mt-n2">{{ $department }}</div>
                                 </div>
                             </div>
                             <div class="col text-center">
-                                <div class="">
-                                    <label class="border-bottom-2 w-100">البريد الالكتروني</label>
+                                <div class="text-danger">
+                                    <label>البريد الالكتروني</label>
                                     <div class="form-control-plaintext mt-n2">{{ $email }}</div>
                                 </div>
                             </div>
