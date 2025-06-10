@@ -12,6 +12,9 @@ class DashboardBooking extends Component
     public $recentBooks;
     public $totalIncoming;
     public $totalOutgoing;
+    public $totalBooks;  // إجمالي الكتب
+    public $todayGrowthIncoming;  // معدل النمو اليومي للوارد
+    public $todayGrowthOutgoing;  // معدل النمو اليومي للصادر
     public $importanceStats;
 
     public function mount()
@@ -49,8 +52,22 @@ class DashboardBooking extends Component
 
     private function loadTotalStats()
     {
+        $today = Carbon::today();
+
+        // إحصائيات الكتب الواردة
         $this->totalIncoming = Incomingbooks::where('book_type', 'وارد')->count();
+        $this->todayGrowthIncoming = Incomingbooks::where('book_type', 'وارد')
+            ->whereDate('created_at', $today)
+            ->count();
+
+        // إحصائيات الكتب الصادرة
         $this->totalOutgoing = Incomingbooks::where('book_type', 'صادر')->count();
+        $this->todayGrowthOutgoing = Incomingbooks::where('book_type', 'صادر')
+            ->whereDate('created_at', $today)
+            ->count();
+
+        // إجمالي الكتب
+        $this->totalBooks = $this->totalIncoming + $this->totalOutgoing;
     }
 
     private function loadImportanceStats()

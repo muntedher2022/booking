@@ -1,24 +1,86 @@
 <div>
     <!-- Statistics Cards -->
-    <div class="row mb-5 justify-content-center">
-        <div class="col-md-5 col-lg-4 mb-4">
-            <div class="card shadow-sm border-0 rounded-lg h-100 animate__animated animate__fadeInUp">
-                <div class="card-body text-center p-4">
-                    <h5 class="card-title text-muted fw-bold mb-3">الكتب الواردة</h5>
-                    <h2 class="display-4 fw-bolder text-primary mb-3 animated-number" data-target="{{ $totalIncoming }}">0
-                    </h2>
-                    <p class="card-text text-secondary mb-0">إجمالي عدد الكتب الواردة</p>
+    <div class="row mb-5 justify-content-center g-4">
+        <div class="col-md-8 col-lg-6">
+            <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                <!-- إضافة الخلفية والووترمارك -->
+                <div class="position-absolute top-0 start-0 w-100 h-100">
+                    <div class="watermark-image incoming"></div>
+                </div>
+                <div class="card-body position-relative p-5">
+                    <div class="d-flex align-items-center mb-4 justify-content-center">
+                        <div class="avatar-wrapper me-3">
+                            <div class="avatar-circle">
+                                <i class="mdi mdi-email-arrow-left mdi-36px text-primary"></i>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="mb-1 fw-bold text-primary fs-4">الكتب الواردة</h5>
+                            <small class="text-muted">إجمالي عدد الكتب الواردة</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center gap-4">
+                        <div class="text-center">
+                            <h2 class="display-3 fw-bold mb-0 text-gradient animated-number" data-target="{{ $totalIncoming }}">0</h2>
+                            <div class="trend-indicator positive mt-2">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <i class="mdi mdi-trending-up fs-4"></i>
+                                    <div class="d-flex flex-column">
+                                        <span class="fs-6">الكتب المضافة اليوم</span>
+                                        <span class="fs-5 fw-bold">{{ $todayGrowthIncoming }} كتاب</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-muted">
+                                <span class="fw-semibold">إجمالي الكتب الواردة:</span>
+                                <span class="fs-5 ms-1">{{ number_format($totalIncoming) }} كتاب</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-5 col-lg-4 mb-4">
-            <div class="card shadow-sm border-0 rounded-lg h-100 animate__animated animate__fadeInUp animate__delay-1s">
-                <div class="card-body text-center p-4">
-                    <h5 class="card-title text-muted fw-bold mb-3">الكتب الصادرة</h5>
-                    <h2 class="display-4 fw-bolder text-success mb-3 animated-number"
-                        data-target="{{ $totalOutgoing }}">0</h2>
-                    <p class="card-text text-secondary mb-0">إجمالي عدد الكتب الصادرة</p>
+
+        <div class="col-md-8 col-lg-6">
+            <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                <!-- إضافة الخلفية والووترمارك -->
+                <div class="position-absolute top-0 start-0 w-100 h-100">
+                    <div class="watermark-image outgoing"></div>
                 </div>
+                <div class="card-body position-relative p-5">
+                    <div class="d-flex align-items-center mb-4 justify-content-center">
+                        <div class="avatar-wrapper me-3">
+                            <div class="avatar-circle success">
+                                <i class="mdi mdi-email-arrow-right mdi-36px text-success"></i>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h5 class="mb-1 fw-bold text-success fs-4">الكتب الصادرة</h5>
+                            <small class="text-muted">إجمالي عدد الكتب الصادرة</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-center gap-4">
+                        <div class="text-center">
+                            <h2 class="display-3 fw-bold mb-0 text-gradient animated-number" data-target="{{ $totalOutgoing }}">0</h2>
+                            <div class="trend-indicator positive mt-2">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <i class="mdi mdi-trending-up fs-4"></i>
+                                    <div class="d-flex flex-column">
+                                        <span class="fs-6">الكتب المضافة اليوم</span>
+                                        <span class="fs-5 fw-bold">{{ $todayGrowthOutgoing }} كتاب</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mt-2 text-muted">
+                                <span class="fw-semibold">إجمالي الكتب الصادرة:</span>
+                                <span class="fs-5 ms-1">{{ number_format($totalOutgoing) }} كتاب</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div class="watermark-icon success">
+                    <i class="mdi mdi-email-arrow-right"></i>
+                </div> -->
             </div>
         </div>
     </div>
@@ -69,6 +131,209 @@
         .animate__delay-1s {
             animation-delay: 0.5s;
             /* Adjusted for better flow */
+        }
+
+        .transition-all {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .hover-shadow-lg:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, .175) !important;
+        }
+
+        .avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bg-label-primary {
+            background-color: rgba(105, 108, 255, 0.16) !important;
+            color: #696cff !important;
+        }
+
+        .bg-label-success {
+            background-color: rgba(113, 221, 55, 0.16) !important;
+            color: #71dd37 !important;
+        }
+
+        .chart-sparkline {
+            width: 100px;
+            height: 30px;
+            position: relative;
+            opacity: 0.5;
+        }
+
+        .chart-sparkline.positive {
+            background: linear-gradient(45deg, transparent 45%, #71dd37 45%, #71dd37 55%, transparent 55%),
+                        linear-gradient(45deg, transparent 45%, #71dd37 45%, #71dd37 55%, transparent 55%),
+                        linear-gradient(45deg, transparent 45%, #71dd37 45%, #71dd37 55%, transparent 55%);
+            background-size: 10px 10px;
+            background-position: 0 0, 5px 5px, 10px 10px;
+        }
+
+        .avatar-xl {
+            width: 60px;
+            height: 60px;
+        }
+
+        .trend-indicator {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .trend-indicator.positive {
+            color: #71dd37;
+            background-color: rgba(113, 221, 55, 0.1);
+        }
+
+        .trend-indicator.positive i {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-3px);
+            }
+            100% {
+                transform: translateY(0);
+            }
+        }
+
+        /* تحديث الستايلات */
+        .backdrop-blur-sm {
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .text-gradient {
+            background: linear-gradient(45deg, #696cff, #8592a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .bg-primary-subtle {
+            background: linear-gradient(135deg, #696cff15 0%, #8592a315 100%);
+        }
+
+        .trend-indicator {
+            border-radius: 1rem;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .trend-indicator.positive {
+            background: rgba(113, 221, 55, 0.1);
+            color: #71dd37;
+            box-shadow: 0 0 20px rgba(113, 221, 55, 0.2);
+        }
+
+        .avatar {
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .avatar {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .animated-number {
+            font-size: 4rem;
+            line-height: 1;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .card:hover .animated-number {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* تحسين الظلال والتأثيرات */
+        .shadow-lg {
+            box-shadow: 0 10px 25px -5px rgba(105, 108, 255, 0.1) !important;
+        }
+
+        .hover-shadow-lg:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 30px -10px rgba(105, 108, 255, 0.2) !important;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            display: inline-flex;
+        }
+
+        .avatar-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: rgba(105, 108, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 5px rgba(105, 108, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .avatar-circle.success {
+            background: rgba(113, 221, 55, 0.1);
+            box-shadow: 0 0 0 5px rgba(113, 221, 55, 0.05);
+        }
+
+        .mdi-36px {
+            font-size: 36px !important;
+        }
+
+        .card:hover .avatar-circle {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 0 0 8px rgba(105, 108, 255, 0.08);
+        }
+
+        .card:hover .avatar-circle.success {
+            box-shadow: 0 0 0 8px rgba(113, 221, 55, 0.08);
+        }
+
+        .watermark-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 65%;
+            height: 65%;
+            opacity: 0.05;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: all 0.3s ease;
+        }
+
+        .watermark-image.incoming {
+            background-image: url('/assets/img/logo/Incoming.png');
+        }
+
+        .watermark-image.outgoing {
+            background-image: url('/assets/img/logo/Outgoing.png');
+        }
+
+        .card:hover .watermark-image {
+            opacity: 0.08;
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        /* ضمان أن محتوى الكارد يظهر فوق الصورة */
+        .card-body {
+            position: relative;
+            z-index: 1;
         }
     </style>
 
