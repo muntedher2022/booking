@@ -25,6 +25,7 @@ class Emaillist extends Component
 
     protected $listeners = [
         'SelectDepartment',
+        'refreshData' => '$refresh'  // إضافة هذا السطر
     ];
     public function hydrate()
     {
@@ -176,13 +177,11 @@ class Emaillist extends Component
                 . "الملاحظات: " . $this->notes,
         ]);
         // =================================
-        // إعادة تحميل البيانات بعد الإضافة
-        $this->mount();
-        $this->reset();
+        $this->reset(['department', 'email', 'notes']);
+        $this->emit('refreshData');  // إضافة هذا السطر
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
-            'title' => 'اضافه',
-            'reloadPage' => true  // إضافة معلمة لإعادة تحميل الصفحة
+            'title' => 'اضافه'
         ]);
     }
 

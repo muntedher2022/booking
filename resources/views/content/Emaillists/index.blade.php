@@ -54,23 +54,12 @@
                 initSelect2('#editEmaillistdepartment', 'SelectDepartment', '#editemaillistModal');
             });
 
-            // تحديث معالج تغيير النوع
-            $('input[type=radio][name=type]').change(function() {
+            // إضافة معالج لتحديث Select2 بعد تحديث البيانات
+            window.livewire.on('refreshData', () => {
                 setTimeout(() => {
-                    // إعادة تهيئة Select2 بعد تغيير النوع
                     $('.select2-hidden-accessible').select2('destroy');
                     initSelect2('#addEmaillistdepartment', 'SelectDepartment', '#addemaillistModal');
                     initSelect2('#editEmaillistdepartment', 'SelectDepartment', '#editemaillistModal');
-
-                    // تحديث القيمة المحددة
-                    window.livewire.emit('typeChanged');
-                }, 100);
-            });
-
-            // معالج تحديث Select2
-            window.livewire.on('updateSelect2', data => {
-                setTimeout(() => {
-                    $('#editEmaillistdepartment').val(data.value).trigger('change');
                 }, 100);
             });
         });
@@ -103,21 +92,14 @@
             }, 100);
         })
 
-        // تعديل معالج النجاح
         window.addEventListener('success', event => {
             $('#addemaillistModal').modal('hide');
             $('#editemaillistModal').modal('hide');
             $('#removeemaillistModal').modal('hide');
-
             Toast.fire({
                 icon: 'success',
                 title: event.detail.title + '<hr>' + event.detail.message,
-            }).then(() => {
-                // إعادة تحميل الصفحة بعد اختفاء رسالة النجاح إذا كان مطلوباً
-                if (event.detail.reloadPage) {
-                    window.location.reload();
-                }
-            });
+            })
         })
 
         window.addEventListener('error', event => {
