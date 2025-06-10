@@ -939,39 +939,39 @@ class IncomingBook extends Component
         $exportDetails .= "======================\n";
 
         foreach($books as $index => $book) {
-            // تحضير الجهات
+            /* // تحضير الجهات
             $departments = $book->Getdepartment()->pluck('department_name')->map(function($name) {
                 return "دائرة: " . $name;
             })->join("\n");
 
             $sections = $book->Getsection()->pluck('section_name')->map(function($name) {
                 return "قسم: " . $name;
-            })->join("\n");
+            })->join("\n"); */
 
             $exportDetails .= sprintf(
-                "الكتاب رقم %d:\n" .
+                /* "الكتاب رقم %d:\n" . */
                 "رقم الكتاب: %s\n" .
                 "تاريخ الكتاب: %s\n" .
-                "موضوع الكتاب: %s\n" .
+                /* "موضوع الكتاب: %s\n" .
                 "محتوى الكتاب: %s\n" .
                 "الكلمات المفتاحية: %s\n" .
                 "نوع الكتاب: %s\n" .
                 "نطاق الكتاب: %s\n" .
-                "درجة الأهمية: %s\n" .
-                "الجهات:\n%s%s%s" .
+                "درجة الأهمية: %s\n" . */
+                /* "الجهات:\n%s%s%s" . */
                 "======================\n",
-                $index + 1,
+                /* $index + 1, */
                 $book->book_number ?: 'غير محدد',
                 $book->book_date ?: 'غير محدد',
-                $book->subject ?: 'غير محدد',
+                /* $book->subject ?: 'غير محدد',
                 $book->content ?: 'غير محدد',
                 $book->keywords ?: 'غير محدد',
                 $book->book_type ?: 'غير محدد',
                 $book->sender_type ?: 'غير محدد',
-                $book->importance ?: 'غير محدد',
-                $departments ? $departments . "\n" : '',
+                $book->importance ?: 'غير محدد', */
+                /* $departments ? $departments . "\n" : '',
                 $sections ? $sections . "\n" : '',
-                (!$departments && !$sections) ? "لا توجد جهات\n" : ''
+                (!$departments && !$sections) ? "لا توجد جهات\n" : '' */
             );
         }
 
