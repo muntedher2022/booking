@@ -235,27 +235,15 @@
                                             <!-- إضافة زر المسح الضوئي -->
                                             <div class="mt-2">
                                                 <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-primary"
+                                                    {{-- <button type="button" class="btn btn-primary"
                                                         onclick="initializeScanner()">
                                                         <i class="mdi mdi-scanner me-1"></i>
                                                         Dynamsoft
-                                                    </button>
+                                                    </button> --}}
                                                     <button type="button" class="btn btn-info"
-                                                        onclick="initializeNAPS2Scanner()">
+                                                        onclick="initializeNaps2Scanner()">
                                                         <i class="mdi mdi-scanner me-1"></i>
-                                                        NAPS2
-                                                    </button>
-                                                </div>
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-success"
-                                                        onclick="initializeTWAINScanner()">
-                                                        <i class="mdi mdi-scanner me-1"></i>
-                                                        TWAIN
-                                                    </button>
-                                                    <button type="button" class="btn btn-warning"
-                                                        onclick="initializeWIAScanner()">
-                                                        <i class="mdi mdi-scanner me-1"></i>
-                                                        WIA
+                                                        مسح ضوئي
                                                     </button>
                                                 </div>
                                             </div>

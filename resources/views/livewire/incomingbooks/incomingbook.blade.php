@@ -1,109 +1,110 @@
 <div class="mt-n4">
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h4 class="d-flex align-items-center gap-2">
-                        <span class="text-muted d-flex align-items-center">
-                            <i class="mdi mdi-cog-outline fs-4"></i>
-                            <span class="ms-1">ادارة المخاطبات</span>
-                        </span>
-                        <i class="mdi mdi-chevron-left text-primary"></i>
-                        <span class="fw-bold text-primary d-flex align-items-center">
-                            <i class="mdi mdi-file-document-multiple-outline me-1 fs-4"></i>
-                            <span class="ms-1">الصادر والوارد</span>
-                        </span>
-                    </h4>
-                </div>
-                @can('incomingbook-Email')
-                    <div class="d-flex gap-3">
-                        <div class="badge bg-label-primary p-3 fs-5">
-                            <i class="mdi mdi-email-multiple me-1"></i>
-                            الحد اليومي: 450
-                        </div>
-                        <div class="badge bg-label-success p-3 fs-5">
-                            <i class="mdi mdi-email-check me-1"></i>
-                            المرسلة: {{ $todayEmailCount }}
-                        </div>
-                        <div class="badge bg-label-warning p-3 fs-5">
-                            <i class="mdi mdi-email-outline me-1"></i>
-                            المتبقية: {{ $remainingEmails }}
-                        </div>
+    @can('incomingbook-list')
+        <div class="card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h4 class="d-flex align-items-center gap-2">
+                            <span class="text-muted d-flex align-items-center">
+                                <i class="mdi mdi-cog-outline fs-4"></i>
+                                <span class="ms-1">ادارة المخاطبات</span>
+                            </span>
+                            <i class="mdi mdi-chevron-left text-primary"></i>
+                            <span class="fw-bold text-primary d-flex align-items-center">
+                                <i class="mdi mdi-file-document-multiple-outline me-1 fs-4"></i>
+                                <span class="ms-1">الصادر والوارد</span>
+                            </span>
+                        </h4>
                     </div>
-                @endcan
-                <div>
-                    @can('incomingbook-create')
-                        <button wire:click='AddIncomingbookModalShow' class="mb-3 add-new btn btn-primary mb-md-0"
-                            data-bs-toggle="modal" data-bs-target="#addincomingbookModal">أضــافــة</button>
-                        @include('livewire.incomingbooks.modals.add-incomingbook')
+                    @can('incomingbook-Email')
+                        <div class="d-flex gap-3">
+                            <div class="badge bg-label-primary p-3 fs-5">
+                                <i class="mdi mdi-email-multiple me-1"></i>
+                                الحد اليومي: 450
+                            </div>
+                            <div class="badge bg-label-success p-3 fs-5">
+                                <i class="mdi mdi-email-check me-1"></i>
+                                المرسلة: {{ $todayEmailCount }}
+                            </div>
+                            <div class="badge bg-label-warning p-3 fs-5">
+                                <i class="mdi mdi-email-outline me-1"></i>
+                                المتبقية: {{ $remainingEmails }}
+                            </div>
+                        </div>
                     @endcan
-                </div>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="mb-3 col">
-                    <input type="text" wire:model.debounce.300ms="search.book_number"
-                        class="form-control text-center" placeholder="رقم الكتاب" wire:key="search_book_number">
-                </div>
-                <div class="mb-3 col">
-                    <div class="input-group">
-                        <input type="date" wire:model.debounce.300ms="search.book_date"
-                            class="form-control text-center" placeholder="تاريخ الكتاب.." id="showIncomingbookbook_date"
-                            wire:key="search_book_date">
-                        <button class="btn btn-outline-secondary" type="button"
-                            id="showIncomingbookbook_date-clear">مسح</button>
+                    <div>
+                        @can('incomingbook-create')
+                            <button wire:click='AddIncomingbookModalShow' class="mb-3 add-new btn btn-primary mb-md-0"
+                                data-bs-toggle="modal" data-bs-target="#addincomingbookModal">أضــافــة</button>
+                            @include('livewire.incomingbooks.modals.add-incomingbook')
+                        @endcan
                     </div>
                 </div>
-                <div class="mb-3 col">
-                    <input type="text" wire:model.debounce.300ms="search.subject" class="form-control text-center"
-                        placeholder="ابحث بموضوع الكتاب.." wire:key="search_subject">
+                <hr>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <input type="text" wire:model.debounce.300ms="search.book_number"
+                            class="form-control text-center" placeholder="رقم الكتاب" wire:key="search_book_number">
+                    </div>
+                    <div class="mb-3 col">
+                        <div class="input-group">
+                            <input type="date" wire:model.debounce.300ms="search.book_date"
+                                class="form-control text-center" placeholder="تاريخ الكتاب.." id="showIncomingbookbook_date"
+                                wire:key="search_book_date">
+                            <button class="btn btn-outline-secondary" type="button"
+                                id="showIncomingbookbook_date-clear">مسح</button>
+                        </div>
+                    </div>
+                    <div class="mb-3 col">
+                        <input type="text" wire:model.debounce.300ms="search.subject" class="form-control text-center"
+                            placeholder="ابحث بموضوع الكتاب.." wire:key="search_subject">
+                    </div>
+                    <div class="mb-3 col">
+                        <input type="text" wire:model.debounce.300ms="search.content" class="form-control text-center"
+                            placeholder="ابحث بالمتن.." wire:key="search_content">
+                    </div>
                 </div>
-                <div class="mb-3 col">
-                    <input type="text" wire:model.debounce.300ms="search.content" class="form-control text-center"
-                        placeholder="ابحث بالمتن.." wire:key="search_content">
+                <div class="row">
+                    <div class="mb-3 col">
+                        <select wire:model.debounce.300ms="search.book_type" class="form-select text-center"
+                            wire:key="search_book_type">
+                            <option value="">نوع الكتاب</option>
+                            <option value="صادر">صادر</option>
+                            <option value="وارد">وارد</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <select wire:model.debounce.300ms="search.sender_type" class="form-select"
+                            wire:key="search_sender_type">
+                            <option value="">نطاق الكتاب</option>
+                            <option value="داخلي">داخلي</option>
+                            <option value="خارجي">خارجي</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <select wire:model.debounce.300ms="search.importance" class="form-select text-center"
+                            wire:key="search_importance">
+                            <option value="">درجة الاهمية</option>
+                            <option value="عادي">عادي</option>
+                            <option value="عاجل">عاجل</option>
+                            <option value="سري">سري</option>
+                            <option value="سري للغاية">سري للغاية</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <input type="text" wire:model.debounce.300ms="search.related_book_id"
+                            class="form-control text-center" placeholder=" ابحث عن الرقم الكتاب المرتبط.."
+                            wire:key="search_related_book_id">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="mb-3 col">
+                        <input type="text" wire:model.debounce.300ms="search.sender_id" class="form-control text-center"
+                            placeholder=" ابحث عن الجهة المرسل اليها الكتاب.." wire:key="search_sender_id">
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="mb-3 col">
-                    <select wire:model.debounce.300ms="search.book_type" class="form-select text-center"
-                        wire:key="search_book_type">
-                        <option value="">نوع الكتاب</option>
-                        <option value="صادر">صادر</option>
-                        <option value="وارد">وارد</option>
-                    </select>
-                </div>
-                <div class="mb-3 col">
-                    <select wire:model.debounce.300ms="search.sender_type" class="form-select"
-                        wire:key="search_sender_type">
-                        <option value="">نطاق الكتاب</option>
-                        <option value="داخلي">داخلي</option>
-                        <option value="خارجي">خارجي</option>
-                    </select>
-                </div>
-                <div class="mb-3 col">
-                    <select wire:model.debounce.300ms="search.importance" class="form-select text-center"
-                        wire:key="search_importance">
-                        <option value="">درجة الاهمية</option>
-                        <option value="عادي">عادي</option>
-                        <option value="عاجل">عاجل</option>
-                        <option value="سري">سري</option>
-                        <option value="سري للغاية">سري للغاية</option>
-                    </select>
-                </div>
-                <div class="mb-3 col">
-                    <input type="text" wire:model.debounce.300ms="search.related_book_id"
-                        class="form-control text-center" placeholder=" ابحث عن الرقم الكتاب المرتبط.."
-                        wire:key="search_related_book_id">
-                </div>
-            </div>
-            <div class="row">
-                <div class="mb-3 col">
-                    <input type="text" wire:model.debounce.300ms="search.sender_id" class="form-control text-center"
-                        placeholder=" ابحث عن الجهة المرسل اليها الكتاب.." wire:key="search_sender_id">
-                </div>
-            </div>
-        </div>
-        @can('incomingbook-list')
+
             <div class="table-responsive">
                 <table class="table">
                     <thead class="table-light">
@@ -247,6 +248,6 @@
             @include('livewire.incomingbooks.modals.edit-incomingbook')
             @include('livewire.incomingbooks.modals.remove-incomingbook')
             <!-- Modal -->
-        @endcan
-    </div>
+        </div>
+    @endcan
 </div>

@@ -53,7 +53,18 @@ class IncomingBook extends Component
         $this->emit('select2');
         $this->emit('flatpickr');
 
-        Storage::deleteDirectory('public/temp');
+        // حذف الملفات المؤقتة التي مر عليها يومين
+        $path = storage_path('app/public/uploads');
+        if (file_exists($path)) {
+            $files = glob($path . '/*');
+            $twoDaysAgo = strtotime('-2 days');
+            
+            foreach ($files as $file) {
+                if (is_file($file) && filemtime($file) < $twoDaysAgo) {
+                    unlink($file);
+                }
+            }
+        }
     }
 
     public function mount()
@@ -234,9 +245,11 @@ class IncomingBook extends Component
             'attachment.mimes' => 'الملف ليس صورة أو PDF',
         ]);
 
-        // Store file temporarily and get URL
-        $path = $this->attachment->store('public/temp');
-        $this->tempImageUrl = Storage::url($path);
+        if ($this->attachment) {
+            // حفظ الملف في مجلد uploads المؤقت
+            $path = $this->attachment->store('public/uploads');
+            $this->tempImageUrl = Storage::url($path);
+        }
     }
 
     public function updatedIncomingbookImage()
@@ -466,12 +479,12 @@ class IncomingBook extends Component
             'operation_type' => 'اضافة',
             'operation_time' => now()->format('Y-m-d H:i:s'),
             'details' => "رقم الكتاب: " . $this->book_number . ' - '
-                      . "\nتاريخ الكتاب: " . $this->book_date . ' - '
-                      . "\nالموضوع: " . $this->subject . ' - '
-                      . "\nالمحتوى: " . $this->content . ' - '
-                      . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
-                      . "\nنوع الكتاب: " . $this->book_type . ' - '
-                      . "\nدرجة الأهمية: " . $this->importance,
+                . "\nتاريخ الكتاب: " . $this->book_date . ' - '
+                . "\nالموضوع: " . $this->subject . ' - '
+                . "\nالمحتوى: " . $this->content . ' - '
+                . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
+                . "\nنوع الكتاب: " . $this->book_type . ' - '
+                . "\nدرجة الأهمية: " . $this->importance,
         ]);
 
         if ($this->sendEmail) {
@@ -593,12 +606,12 @@ class IncomingBook extends Component
             'operation_type' => 'تعديل',
             'operation_time' => now()->format('Y-m-d H:i:s'),
             'details' => "رقم الكتاب: " . $this->book_number . ' - '
-                      . "\nتاريخ الكتاب: " . $this->book_date . ' - '
-                      . "\nالموضوع: " . $this->subject . ' - '
-                      . "\nالمحتوى: " . $this->content . ' - '
-                      . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
-                      . "\nنوع الكتاب: " . $this->book_type . ' - '
-                      . "\nدرجة الأهمية: " . $this->importance,
+                . "\nتاريخ الكتاب: " . $this->book_date . ' - '
+                . "\nالموضوع: " . $this->subject . ' - '
+                . "\nالمحتوى: " . $this->content . ' - '
+                . "\nالكلمات المفتاحية: " . $this->keywords . ' - '
+                . "\nنوع الكتاب: " . $this->book_type . ' - '
+                . "\nدرجة الأهمية: " . $this->importance,
         ]);
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'filePreview');
@@ -619,12 +632,12 @@ class IncomingBook extends Component
                 'operation_type' => 'حذف',
                 'operation_time' => now()->format('Y-m-d H:i:s'),
                 'details' => "رقم الكتاب: " . $Incomingbooks->book_number . ' - '
-                          . "\nتاريخ الكتاب: " . $Incomingbooks->book_date . ' - '
-                          . "\nالموضوع: " . $Incomingbooks->subject . ' - '
-                          . "\nالمحتوى: " . $Incomingbooks->content . ' - '
-                          . "\nالكلمات المفتاحية: " . $Incomingbooks->keywords . ' - '
-                          . "\nنوع الكتاب: " . $Incomingbooks->book_type . ' - '
-                          . "\nدرجة الأهمية: " . $Incomingbooks->importance,
+                    . "\nتاريخ الكتاب: " . $Incomingbooks->book_date . ' - '
+                    . "\nالموضوع: " . $Incomingbooks->subject . ' - '
+                    . "\nالمحتوى: " . $Incomingbooks->content . ' - '
+                    . "\nالكلمات المفتاحية: " . $Incomingbooks->keywords . ' - '
+                    . "\nنوع الكتاب: " . $Incomingbooks->book_type . ' - '
+                    . "\nدرجة الأهمية: " . $Incomingbooks->importance,
             ]);
 
             $year = date('Y', strtotime($Incomingbooks->book_date));

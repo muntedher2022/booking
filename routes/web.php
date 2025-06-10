@@ -1,6 +1,10 @@
 <?php
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Sections\SectionsController;
 use App\Http\Controllers\Tracking\TrackingController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -44,4 +48,39 @@ Route::GET('Tracking', [TrackingController::class, 'index'])->name('Tracking');
 
 Route::get('/scan', function () {
     return view('scan');
+});
+
+
+Route::get('/latest-scan', function () {
+    $sourceDir = public_path('storage/uploads');
+    $publicDir = public_path('storage/uploads');
+
+    if (!File::exists($sourceDir)) {
+        File::makeDirectory($sourceDir, 0755, true);
+        return response()->json(['message' => 'مجلد المسح غير موجود.'], 404);
+    }
+
+    $files = File::files($sourceDir);
+
+    if (empty($files)) {
+        return response()->json(['message' => 'لا توجد ملفات مسح.'], 404);
+    }
+
+    // جلب الملفات التي تم إنشاؤها أو تعديلها خلال آخر 60 ثانية
+    $recentFiles = collect($files)->filter(function ($file) {
+        return now()->diffInSeconds(Carbon::createFromTimestamp($file->getMTime())) <= 60;
+    });
+
+    if ($recentFiles->isEmpty()) {
+        return response()->json(['message' => 'لم يتم العثور على ملف جديد مؤخراً.'], 404);
+    }
+
+    // جلب أحدث ملف
+    $latestFile = $recentFiles->sortByDesc(fn($file) => $file->getMTime())->first();
+    $originalFileName = $latestFile->getFilename();
+
+    return response()->json([
+        'name' => $originalFileName,
+        'url' => Storage::url('uploads/' . $originalFileName)
+    ]);
 });

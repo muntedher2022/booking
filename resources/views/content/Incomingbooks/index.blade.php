@@ -148,6 +148,222 @@
             }
         }
 
+        /* // Dynamsoft Scanner Code
+        let DWTObject = null;
+        let isInitialized = false;
+
+        function initializeScanner() {
+            if (!isInitialized) {
+                Toast.fire({
+                    icon: 'info',
+                    title: 'جاري تهيئة الماسح الضوئي...',
+                    showConfirmButton: false
+                });
+
+                // تهيئة إعدادات المكتبة
+                Dynamsoft.DWT.AutoLoad = false;
+                Dynamsoft.DWT.ResourcesPath = "/Resources";
+                Dynamsoft.DWT.Containers = [{
+                    ContainerId: 'dwtcontrolContainer',
+                    Width: '100%',
+                    Height: '300px'
+                }];
+
+                Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function() {
+                    DWTObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
+                    isInitialized = true;
+                    $('#dwtcontrolContainer').show();
+                    AcquireImage();
+                });
+
+                Dynamsoft.DWT.Load();
+            } else {
+                $('#dwtcontrolContainer').show();
+                AcquireImage();
+            }
+        }
+
+        function AcquireImage() {
+            if (!DWTObject) {
+                Toast.fire({
+                    icon: 'error',
+                    title: 'لم يتم العثور على الماسح الضوئي',
+                });
+                return;
+            }
+
+            // إغلاق أي اتصال سابق
+            if (DWTObject.DataSourceStatus) {
+                DWTObject.CloseSource();
+            }
+
+            DWTObject.SelectSourceAsync()
+                .then(function() {
+                    return DWTObject.AcquireImageAsync({
+                        IfShowUI: true,
+                        IfFeederEnabled: false,
+                        IfDuplexEnabled: false,
+                        PixelType: Dynamsoft.DWT.EnumDWT_PixelType.TWPT_RGB,
+                        Resolution: 300,
+                        IfCloseSourceAfterAcquire: true
+                    });
+                })
+                .then(function() {
+                    return DWTObject.ConvertToBlob([0], Dynamsoft.DWT.EnumDWT_ImageType.IT_PDF);
+                })
+                .then(function(blob) {
+                    const file = new File([blob], "scanned_document.pdf", {
+                        type: "application/pdf"
+                    });
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    document.querySelector('#attachment').files = dataTransfer.files;
+                    document.querySelector('#attachment').dispatchEvent(new Event('change'));
+
+                    // تنظيف الذاكرة
+                    DWTObject.RemoveAllImages();
+                    $('#dwtcontrolContainer').hide();
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'تم المسح بنجاح',
+                    });
+                })
+                .catch(function(error) {
+                    console.error(error);
+                    // محاولة إغلاق المصدر في حالة الخطأ
+                    if (DWTObject.DataSourceStatus) {
+                        DWTObject.CloseSource();
+                    }
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'حدث خطأ أثناء المسح',
+                        text: error.message
+                    });
+                });
+        } */
+
+        // المسح الضوئي باستخدام NAPS2
+        function initializeNaps2Scanner() {
+            Swal.fire({
+                icon: 'info',
+                title: 'جاري المسح',
+                text: 'تم تشغيل الماسح الضوئي جاري عملية اخذ الصورة ...',
+                showConfirmButton: false,
+                allowOutsideClick: false
+            });
+
+            fetch("http://localhost:3001/scan")
+                .then(response => {
+                    if (!response.ok) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'خطأ',
+                            text: 'فشل تشغيل NAPS2'
+                        });
+                        throw new Error("فشل تشغيل NAPS2");
+                    }
+
+                    let attempts = 0;
+                    const maxAttempts = 5;
+
+                    function checkScanResult() {
+                        fetch('/latest-scan')
+                            .then(res => res.json())
+                            .then(async data => {
+                                if (data.url) {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'جاري المسح',
+                                        text: 'تم تشغيل الماسح الضوئي جاري عملية اخذ الصورة ...',
+                                        showConfirmButton: false,
+                                        allowOutsideClick: false
+                                    });
+
+                                    try {
+                                        const response = await fetch(data.url);
+                                        const blob = await response.blob();
+                                        const file = new File([blob], data.name, {
+                                            type: data.name.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg'
+                                        });
+
+                                        const dataTransfer = new DataTransfer();
+                                        dataTransfer.items.add(file);
+                                        const attachmentInput = document.getElementById('attachment');
+                                        attachmentInput.files = dataTransfer.files;
+
+                                        // تحديث Livewire باستخدام الحدث
+                                        let component = window.Livewire.find(
+                                            document.getElementById('attachment').closest('[wire\\:id]').getAttribute('wire:id')
+                                        );
+
+                                        // رفع الملف إلى Livewire
+                                        const reader = new FileReader();
+                                        reader.readAsDataURL(file);
+                                        reader.onload = () => {
+                                            component.upload('attachment', file, (uploadedFilename) => {
+                                                // تحديث عنوان URL المؤقت
+                                                component.set('tempImageUrl', data.url);
+                                            }, () => {
+                                                console.error('Upload failed');
+                                            }, (e) => {
+                                                console.log('Upload progress:', e.detail.progress);
+                                            });
+                                        };
+
+                                        // عرض في المعاينة المؤقتة
+                                        const container = document.getElementById('dwtcontrolContainer');
+                                        container.style.display = 'none';
+
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'نجاح',
+                                            text: 'تم المسح الضوئي بنجاح',
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        });
+                                    } catch (error) {
+                                        console.error('Error:', error);
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'خطأ',
+                                            text: 'حدث خطأ أثناء معالجة الملف'
+                                        });
+                                    }
+                                } else if (++attempts < maxAttempts) {
+                                    setTimeout(checkScanResult, 3000);
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطأ',
+                                        text: 'لم يتم العثور على ملف مسح'
+                                    });
+                                }
+                            })
+                            .catch(() => {
+                                if (++attempts < maxAttempts) {
+                                    setTimeout(checkScanResult, 3000);
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'خطأ',
+                                        text: 'فشل في جلب نتيجة المسح'
+                                    });
+                                }
+                            });
+                    }
+
+                    setTimeout(checkScanResult, 3000);
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'خطأ',
+                        text: "حدث خطأ: " + error.message
+                    });
+                });
+        }
+
         $(document).ready(function() {
             function initSelect2(selector, eventName) {
                 $(selector).select2({
@@ -336,100 +552,5 @@
                 });
             }, 3000);
         });
-
-        // Dynamsoft Scanner Code
-        let DWTObject = null;
-        let isInitialized = false;
-
-        function initializeScanner() {
-            if (!isInitialized) {
-                Toast.fire({
-                    icon: 'info',
-                    title: 'جاري تهيئة الماسح الضوئي...',
-                    showConfirmButton: false
-                });
-
-                // تهيئة إعدادات المكتبة
-                Dynamsoft.DWT.AutoLoad = false;
-                Dynamsoft.DWT.ResourcesPath = "/Resources";
-                Dynamsoft.DWT.Containers = [{
-                    ContainerId: 'dwtcontrolContainer',
-                    Width: '100%',
-                    Height: '300px'
-                }];
-
-                Dynamsoft.DWT.RegisterEvent('OnWebTwainReady', function() {
-                    DWTObject = Dynamsoft.DWT.GetWebTwain('dwtcontrolContainer');
-                    isInitialized = true;
-                    $('#dwtcontrolContainer').show();
-                    AcquireImage();
-                });
-
-                Dynamsoft.DWT.Load();
-            } else {
-                $('#dwtcontrolContainer').show();
-                AcquireImage();
-            }
-        }
-
-        function AcquireImage() {
-            if (!DWTObject) {
-                Toast.fire({
-                    icon: 'error',
-                    title: 'لم يتم العثور على الماسح الضوئي',
-                });
-                return;
-            }
-
-            // إغلاق أي اتصال سابق
-            if (DWTObject.DataSourceStatus) {
-                DWTObject.CloseSource();
-            }
-
-            DWTObject.SelectSourceAsync()
-                .then(function() {
-                    return DWTObject.AcquireImageAsync({
-                        IfShowUI: true,
-                        IfFeederEnabled: false,
-                        IfDuplexEnabled: false,
-                        PixelType: Dynamsoft.DWT.EnumDWT_PixelType.TWPT_RGB,
-                        Resolution: 300,
-                        IfCloseSourceAfterAcquire: true
-                    });
-                })
-                .then(function() {
-                    return DWTObject.ConvertToBlob([0], Dynamsoft.DWT.EnumDWT_ImageType.IT_PDF);
-                })
-                .then(function(blob) {
-                    const file = new File([blob], "scanned_document.pdf", {
-                        type: "application/pdf"
-                    });
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    document.querySelector('#attachment').files = dataTransfer.files;
-                    document.querySelector('#attachment').dispatchEvent(new Event('change'));
-
-                    // تنظيف الذاكرة
-                    DWTObject.RemoveAllImages();
-                    $('#dwtcontrolContainer').hide();
-
-                    Toast.fire({
-                        icon: 'success',
-                        title: 'تم المسح بنجاح',
-                    });
-                })
-                .catch(function(error) {
-                    console.error(error);
-                    // محاولة إغلاق المصدر في حالة الخطأ
-                    if (DWTObject.DataSourceStatus) {
-                        DWTObject.CloseSource();
-                    }
-                    Toast.fire({
-                        icon: 'error',
-                        title: 'حدث خطأ أثناء المسح',
-                        text: error.message
-                    });
-                });
-        }
     </script>
 @endsection
