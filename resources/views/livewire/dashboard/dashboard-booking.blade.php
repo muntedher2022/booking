@@ -1,33 +1,33 @@
 <div>
     @can('dashboard-view')
-    <!-- Add Importance Statistics Cards -->
+        <!-- Add Importance Statistics Cards -->
         <div class="row mb-5 justify-content-center g-4">
             @php
                 $importanceConfig = [
                     'عادي' => [
                         'icon' => 'mdi-file-document',
                         'color' => 'info',
-                        'watermark' => 'normal'
+                        'watermark' => 'normal',
                     ],
                     'عاجل' => [
                         'icon' => 'mdi-clock-fast',
                         'color' => 'warning',
-                        'watermark' => 'urgent'
+                        'watermark' => 'urgent',
                     ],
                     'سري' => [
                         'icon' => 'mdi-shield-lock',
                         'color' => 'danger',
-                        'watermark' => 'confidential'
+                        'watermark' => 'confidential',
                     ],
                     'سري للغاية' => [
                         'icon' => 'mdi-shield-alert',
                         'color' => 'dark',
-                        'watermark' => 'top-secret'
-                    ]
+                        'watermark' => 'top-secret',
+                    ],
                 ];
             @endphp
 
-            @foreach($importanceConfig as $type => $config)
+            @foreach ($importanceConfig as $type => $config)
                 <div class="col-md-6 col-lg-3">
                     <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
                         <div class="position-absolute top-0 start-0 w-100 h-100">
@@ -83,7 +83,8 @@
                                         </div>
                                         <div class="stats-info">
                                             <h6 class="mb-0 text-primary-subtle">الكتب الداخلية</h6>
-                                            <span class="fs-4 fw-bold text-primary">{{ number_format($incomingInternalCount) }}</span>
+                                            <span
+                                                class="fs-4 fw-bold text-primary">{{ number_format($incomingInternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -103,7 +104,8 @@
                                         </div>
                                         <div class="stats-info">
                                             <h6 class="mb-0 text-primary-subtle">الكتب الخارجية</h6>
-                                            <span class="fs-4 fw-bold text-primary">{{ number_format($incomingExternalCount) }}</span>
+                                            <span
+                                                class="fs-4 fw-bold text-primary">{{ number_format($incomingExternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -168,7 +170,8 @@
                                         </div>
                                         <div class="stats-info">
                                             <h6 class="mb-0 text-success-subtle">الكتب الداخلية</h6>
-                                            <span class="fs-4 fw-bold text-success">{{ number_format($outgoingInternalCount) }}</span>
+                                            <span
+                                                class="fs-4 fw-bold text-success">{{ number_format($outgoingInternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -188,7 +191,8 @@
                                         </div>
                                         <div class="stats-info">
                                             <h6 class="mb-0 text-success-subtle">الكتب الخارجية</h6>
-                                            <span class="fs-4 fw-bold text-success">{{ number_format($outgoingExternalCount) }}</span>
+                                            <span
+                                                class="fs-4 fw-bold text-success">{{ number_format($outgoingExternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>
