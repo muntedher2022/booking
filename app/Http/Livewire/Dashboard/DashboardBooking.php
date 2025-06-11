@@ -23,7 +23,6 @@ class DashboardBooking extends Component
         $this->loadDailyStats();
         $this->loadRecentBooks();
         $this->loadTotalStats();
-        $this->loadImportanceStats();
     }
 
     private function loadDailyStats()
@@ -78,27 +77,31 @@ class DashboardBooking extends Component
     {
         $today = Carbon::today();
 
-        // إحصائيات الكتب الواردة
+        // إحصائيات الكتب الواردة والصادرة
         $this->totalIncoming = Incomingbooks::where('book_type', 'وارد')->count();
         $this->todayGrowthIncoming = Incomingbooks::where('book_type', 'وارد')
             ->whereDate('created_at', $today)
             ->count();
 
-        // إحصائيات الكتب الصادرة
         $this->totalOutgoing = Incomingbooks::where('book_type', 'صادر')->count();
         $this->todayGrowthOutgoing = Incomingbooks::where('book_type', 'صادر')
             ->whereDate('created_at', $today)
             ->count();
 
-        // إجمالي الكتب
         $this->totalBooks = $this->totalIncoming + $this->totalOutgoing;
-    }
 
-    private function loadImportanceStats()
-    {
-        $this->importanceStats = Incomingbooks::selectRaw('importance, COUNT(*) as count')
-            ->groupBy('importance')
-            ->get();
+        // تحديث إحصائيات درجات الأهمية
+        $importanceLevels = ['عادي', 'عاجل', 'سري', 'سري للغاية'];
+        $this->importanceStats = [];
+
+        foreach ($importanceLevels as $level) {
+            $this->importanceStats[$level] = [
+                'total' => Incomingbooks::where('importance', $level)->count(),
+                'today' => Incomingbooks::where('importance', $level)
+                    ->whereDate('created_at', $today)
+                    ->count()
+            ];
+        }
     }
 
     public function render()

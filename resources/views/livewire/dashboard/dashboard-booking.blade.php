@@ -102,6 +102,113 @@
             </div>
         </div>
 
+        <!-- Add Importance Statistics Cards -->
+        <div class="row mb-5 justify-content-center g-4">
+            <div class="col-md-6 col-lg-3">
+                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                    <div class="position-absolute top-0 start-0 w-100 h-100">
+                        <div class="watermark-image normal"></div>
+                    </div>
+                    <div class="card-body position-relative p-4">
+                        <div class="d-flex align-items-center mb-3 justify-content-center">
+                            <div class="avatar-wrapper me-2">
+                                <div class="avatar-circle info">
+                                    <i class="mdi mdi-file-document mdi-24px text-info"></i>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h6 class="mb-0 fw-bold text-info">عادي</h6>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="fw-bold mb-1">{{ $importanceStats['عادي']['total'] }}</h3>
+                            <div class="trend-indicator positive">
+                                <small>اليوم: {{ $importanceStats['عادي']['today'] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                    <div class="position-absolute top-0 start-0 w-100 h-100">
+                        <div class="watermark-image urgent"></div>
+                    </div>
+                    <div class="card-body position-relative p-4">
+                        <div class="d-flex align-items-center mb-3 justify-content-center">
+                            <div class="avatar-wrapper me-2">
+                                <div class="avatar-circle warning">
+                                    <i class="mdi mdi-clock-fast mdi-24px text-warning"></i>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h6 class="mb-0 fw-bold text-warning">عاجل</h6>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="fw-bold mb-1">{{ $importanceStats['عاجل']['total'] }}</h3>
+                            <div class="trend-indicator positive">
+                                <small>اليوم: {{ $importanceStats['عاجل']['today'] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                    <div class="position-absolute top-0 start-0 w-100 h-100">
+                        <div class="watermark-image confidential"></div>
+                    </div>
+                    <div class="card-body position-relative p-4">
+                        <div class="d-flex align-items-center mb-3 justify-content-center">
+                            <div class="avatar-wrapper me-2">
+                                <div class="avatar-circle danger">
+                                    <i class="mdi mdi-shield-lock mdi-24px text-danger"></i>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h6 class="mb-0 fw-bold text-danger">سري</h6>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="fw-bold mb-1">{{ $importanceStats['سري']['total'] }}</h3>
+                            <div class="trend-indicator positive">
+                                <small>اليوم: {{ $importanceStats['سري']['today'] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 col-lg-3">
+                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                    <div class="position-absolute top-0 start-0 w-100 h-100">
+                        <div class="watermark-image top-secret"></div>
+                    </div>
+                    <div class="card-body position-relative p-4">
+                        <div class="d-flex align-items-center mb-3 justify-content-center">
+                            <div class="avatar-wrapper me-2">
+                                <div class="avatar-circle dark">
+                                    <i class="mdi mdi-shield-alert mdi-24px text-dark"></i>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h6 class="mb-0 fw-bold text-dark">سري للغاية</h6>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <h3 class="fw-bold mb-1">{{ $importanceStats['سري للغاية']['total'] }}</h3>
+                            <div class="trend-indicator positive">
+                                <small>اليوم: {{ $importanceStats['سري للغاية']['today'] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <style>
             /* Custom styles for a more modern look */
             .card {
@@ -362,6 +469,22 @@
                 /* إضافة دوران في الاتجاه المعاكس */
             }
 
+            .watermark-image.normal {
+                background-image: url('/assets/img/logo/normal.png');
+            }
+
+            .watermark-image.urgent {
+                background-image: url('/assets/img/logo/urgent.png');
+            }
+
+            .watermark-image.confidential {
+                background-image: url('/assets/img/logo/confidential.png');
+            }
+
+            .watermark-image.top-secret {
+                background-image: url('/assets/img/logo/top-secret.png');
+            }
+
             .card:hover .watermark-image {
                 opacity: 0.06;
                 filter: grayscale(80%) contrast(130%);
@@ -421,6 +544,22 @@
                 font-size: 0.875rem;
                 color: #6c757d;
                 margin-bottom: 10px;
+            }
+
+            .avatar-circle.info {
+                background: rgba(13, 202, 240, 0.1);
+            }
+
+            .avatar-circle.warning {
+                background: rgba(255, 193, 7, 0.1);
+            }
+
+            .avatar-circle.danger {
+                background: rgba(220, 53, 69, 0.1);
+            }
+
+            .avatar-circle.dark {
+                background: rgba(33, 37, 41, 0.1);
             }
         </style>
 
