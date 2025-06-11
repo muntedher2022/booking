@@ -56,27 +56,6 @@
                                             <small class='text-danger inputerror'> {{ $message }} </small>
                                         @enderror
                                     </div>
-
-                                    <div class="mb-3 col">
-                                        <div class="form-floating form-floating-outline">
-                                            <select wire:model.defer='related_book_id'
-                                                id="editIncomingbookrelated_book_id"
-                                                class="form-select @error('related_book_id') is-invalid is-filled @enderror">
-                                                <option value=""></option>
-                                                @foreach ($incomingbooks as $incomingbook)
-                                                    <option value="{{ $incomingbook->id }}">
-                                                        رقم الكتاب: {{ $incomingbook->book_number }} - {{ $incomingbook->book_type }} - {{ $incomingbook->sender_type }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="modalIncomingbookrelated_book_id">
-                                                {{ $book_type ? ($book_type == 'صادر' ? 'رقم الكتاب المرتبط الصادر' : 'رقم الكتاب المرتبط الوارد') : 'رقم الكتاب المرتبط' }}
-                                            </label>
-                                        </div>
-                                        @error('related_book_id')
-                                            <small class='text-danger inputerror'>{{ $message }}</small>
-                                        @enderror
-                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -173,18 +152,18 @@
                                     </div>
                                     <div class="mb-3 col-4">
                                         <div class="d-flex gap-2">
-                                            <a href="{{ route('Departments') }}" class="btn btn-primary position-relative"
-                                                data-bs-custom-class="tooltip-white-grey"
-                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                                data-bs-popper-placement="top"
+                                            <a href="{{ route('Departments') }}"
+                                                class="btn btn-primary position-relative"
+                                                data-bs-custom-class="tooltip-white-grey" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" data-bs-popper-placement="top"
                                                 data-bs-title="في حالة عدم وجود الدائرة اضغط هنا لإضافتها"
                                                 onclick="$('#editincomingbookModal').modal('hide')">
                                                 <i class="mdi mdi-plus me-1"></i>دائرة
                                             </a>
-                                            <a href="{{ route('Sections') }}" class="btn btn-primary position-relative"
-                                                data-bs-custom-class="tooltip-white-grey"
-                                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                                data-bs-popper-placement="top"
+                                            <a href="{{ route('Sections') }}"
+                                                class="btn btn-primary position-relative"
+                                                data-bs-custom-class="tooltip-white-grey" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" data-bs-popper-placement="top"
                                                 data-bs-title="في حالة عدم وجود القسم اضغط هنا لإضافته"
                                                 onclick="$('#editincomingbookModal').modal('hide')">
                                                 <i class="mdi mdi-plus me-1"></i>قسم
@@ -195,10 +174,33 @@
 
                                 <div class="row">
                                     <div class="mb-3 col">
+                                        <div class="form-floating form-floating-outline">
+                                            <select wire:model.defer='related_book_id'
+                                                id="editIncomingbookrelated_book_id"
+                                                class="form-select @error('related_book_id') is-invalid is-filled @enderror">
+                                                <option value=""></option>
+                                                @foreach ($incomingbooks as $incomingbook)
+                                                    <option value="{{ $incomingbook->id }}">
+                                                        رقم الكتاب: {{ $incomingbook->book_number }} -
+                                                        {{ $incomingbook->book_type }} -
+                                                        {{ $incomingbook->sender_type }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <label for="modalIncomingbookrelated_book_id">
+                                                {{ $book_type ? ($book_type == 'صادر' ? 'رقم الكتاب المرتبط الصادر' : 'رقم الكتاب المرتبط الوارد') : 'رقم الكتاب المرتبط' }}
+                                            </label>
+                                        </div>
+                                        @error('related_book_id')
+                                            <small class='text-danger inputerror'>{{ $message }}</small>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="mb-3 col">
                                         <div wire:ignore class="form-floating form-floating-outline">
                                             <input wire:model.defer='keywords' type="text"
-                                                id="editIncomingbookkeywords" 
-                                                placeholder="اضف كلمات مفتاحية"
+                                                id="editIncomingbookkeywords" placeholder="اضف كلمات مفتاحية"
                                                 class="form-control @error('keywords') is-invalid is-filled @enderror" />
                                             <label for="editIncomingbookkeywords">كلمات مفتاحية</label>
                                             <small class="form-text text-muted">
@@ -258,7 +260,8 @@
                                         </div>
 
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
-                                            <div class="preview-wrapper" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                            <div class="preview-wrapper"
+                                                style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
                                                 @if ($tempImageUrl)
                                                     @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
                                                         <embed src="{{ $tempImageUrl }}" type="application/pdf"
@@ -269,13 +272,18 @@
                                                     @endif
                                                 @elseif ($previewIncomingbookImage)
                                                     @php
-                                                        $extension = pathinfo($previewIncomingbookImage, PATHINFO_EXTENSION);
+                                                        $extension = pathinfo(
+                                                            $previewIncomingbookImage,
+                                                            PATHINFO_EXTENSION,
+                                                        );
                                                     @endphp
                                                     @if (strtolower($extension) === 'pdf')
                                                         <embed src="{{ Storage::url($previewIncomingbookImage) }}"
-                                                            type="application/pdf" style="width: 100%; height: 250px; object-fit: contain;" />
+                                                            type="application/pdf"
+                                                            style="width: 100%; height: 250px; object-fit: contain;" />
                                                     @else
-                                                        <img src="{{ Storage::url($previewIncomingbookImage) }}" alt="معاينة المرفق"
+                                                        <img src="{{ Storage::url($previewIncomingbookImage) }}"
+                                                            alt="معاينة المرفق"
                                                             style="width: 100%; max-height: 250px; object-fit: contain;" />
                                                     @endif
                                                 @endif
