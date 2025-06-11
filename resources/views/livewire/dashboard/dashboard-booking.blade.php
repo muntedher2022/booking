@@ -167,7 +167,7 @@
                                     <div class="d-flex align-items-center justify-content-center gap-2">
                                         <i class="mdi mdi-trending-up fs-4"></i>
                                         <div class="d-flex flex-column">
-                                            <span class="fs-6">الكتب المضافة اليوم</span>
+                                            <span class="fs-6 text-primary">الكتب المضافة اليوم</span>
                                             <span class="fs-5 fw-bold">{{ $todayGrowthIncoming }} كتاب</span>
                                         </div>
                                     </div>
@@ -219,7 +219,7 @@
                                             </div>
                                             <div class="stats-info">
                                                 <h6 class="mb-0 text-muted">الكتب الداخلية</h6>
-                                                <span class="fs-4 fw-bold text-success">{{ number_format($outgoingInternalCount) }}</span>
+                                                <span class="fs-4 fw-bold text-primary">{{ number_format($outgoingInternalCount) }}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -249,7 +249,7 @@
                                     <div class="d-flex align-items-center justify-content-center gap-2">
                                         <i class="mdi mdi-trending-up fs-4"></i>
                                         <div class="d-flex flex-column">
-                                            <span class="fs-6">الكتب المضافة اليوم</span>
+                                            <span class="fs-6 text-primary">الكتب المضافة اليوم</span>
                                             <span class="fs-5 fw-bold">{{ $todayGrowthOutgoing }} كتاب</span>
                                         </div>
                                     </div>
