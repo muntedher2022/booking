@@ -1,108 +1,6 @@
 <div>
     @can('dashboard-view')
-        <!-- Statistics Cards -->
-        <div class="row mb-5 justify-content-center g-4">
-            <div class="col-md-8 col-lg-6">
-                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
-                    <!-- إضافة الخلفية والووترمارك -->
-                    <div class="position-absolute top-0 start-0 w-100 h-100">
-                        <div class="watermark-image incoming"></div>
-                    </div>
-                    <div class="card-body position-relative p-5">
-                        <div class="d-flex align-items-center mb-4 justify-content-center">
-                            <div class="avatar-wrapper me-3">
-                                <div class="avatar-circle">
-                                    <i class="mdi mdi-email-arrow-left mdi-36px text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <h5 class="mb-1 fw-bold text-primary fs-4">الكتب الواردة</h5>
-                                <small class="text-muted">إجمالي عدد الكتب الواردة</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center gap-4">
-                            <div class="text-center w-100">
-                                <h2 class="display-3 fw-bold mb-0 text-gradient animated-number"
-                                    data-target="{{ $totalIncoming }}">0</h2>
-                                <div class="trend-indicator positive mt-2">
-                                    <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <i class="mdi mdi-trending-up fs-4"></i>
-                                        <div class="d-flex flex-column">
-                                            <span class="fs-6">الكتب المضافة اليوم</span>
-                                            <span class="fs-5 fw-bold">{{ $todayGrowthIncoming }} كتاب</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- تعديل تنسيق المخطط البياني -->
-                                <div class="sparkline-box mt-4 mx-auto">
-                                    <div class="chart-title text-center mb-2">
-                                        <small class="text-muted">إحصائيات آخر 7 أيام - الكتب الواردة</small>
-                                    </div>
-                                    <div class="chart-container">
-                                        <canvas id="incomingChart"></canvas>
-                                    </div>
-                                </div>
-                                <div class="mt-2 text-muted">
-                                    <span class="fw-semibold">إجمالي الكتب الواردة:</span>
-                                    <span class="fs-5 ms-1">{{ number_format($totalIncoming) }} كتاب</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-8 col-lg-6">
-                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
-                    <div class="position-absolute top-0 start-0 w-100 h-100">
-                        <div class="watermark-image outgoing"></div>
-                    </div>
-                    <div class="card-body position-relative p-5">
-                        <div class="d-flex align-items-center mb-4 justify-content-center">
-                            <div class="avatar-wrapper me-3">
-                                <div class="avatar-circle success">
-                                    <i class="mdi mdi-email-arrow-right mdi-36px text-success"></i>
-                                </div>
-                            </div>
-                            <div class="text-center">
-                                <h5 class="mb-1 fw-bold text-success fs-4">الكتب الصادرة</h5>
-                                <small class="text-muted">إجمالي عدد الكتب الصادرة</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center justify-content-center gap-4">
-                            <div class="text-center w-100">
-                                <h2 class="display-3 fw-bold mb-0 text-gradient animated-number"
-                                    data-target="{{ $totalOutgoing }}">0</h2>
-                                <div class="trend-indicator positive mt-2">
-                                    <div class="d-flex align-items-center justify-content-center gap-2">
-                                        <i class="mdi mdi-trending-up fs-4"></i>
-                                        <div class="d-flex flex-column">
-                                            <span class="fs-6">الكتب المضافة اليوم</span>
-                                            <span class="fs-5 fw-bold">{{ $todayGrowthOutgoing }} كتاب</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- تعديل تنسيق المخطط البياني -->
-                                <div class="sparkline-box mt-4 mx-auto">
-                                    <div class="chart-title text-center mb-2">
-                                        <small class="text-muted">إحصائيات آخر 7 أيام - الكتب الصادرة</small>
-                                    </div>
-                                    <div class="chart-container">
-                                        <canvas id="outgoingChart"></canvas>
-                                    </div>
-                                </div>
-                                <div class="mt-2 text-muted">
-                                    <span class="fw-semibold">إجمالي الكتب الصادرة:</span>
-                                    <span class="fs-5 ms-1">{{ number_format($totalOutgoing) }} كتاب</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Add Importance Statistics Cards -->
+    <!-- Add Importance Statistics Cards -->
         <div class="row mb-5 justify-content-center g-4">
             <div class="col-md-6 col-lg-3">
                 <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
@@ -202,6 +100,173 @@
                             <h3 class="fw-bold mb-1">{{ $importanceStats['سري للغاية']['total'] }}</h3>
                             <div class="trend-indicator positive">
                                 <small>اليوم: {{ $importanceStats['سري للغاية']['today'] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Statistics Cards -->
+        <div class="row mb-5 justify-content-center g-4">
+            <div class="col-md-8 col-lg-6">
+                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                    <!-- إضافة الخلفية والووترمارك -->
+                    <div class="position-absolute top-0 start-0 w-100 h-100">
+                        <div class="watermark-image incoming"></div>
+                    </div>
+                    <div class="card-body position-relative p-5">
+                        <div class="d-flex align-items-center mb-4 justify-content-center">
+                            <div class="avatar-wrapper me-3">
+                                <div class="avatar-circle">
+                                    <i class="mdi mdi-email-arrow-left mdi-36px text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h5 class="mb-1 fw-bold text-primary fs-4">الكتب الواردة</h5>
+                                <small class="text-muted">إجمالي عدد الكتب الواردة</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center gap-4">
+                            <div class="text-center w-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <!-- Internal Books (Right) -->
+                                    <div class="stats-detail flex-fill mx-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="stats-icon internal">
+                                                <i class="mdi mdi-office-building mdi-24px"></i>
+                                            </div>
+                                            <div class="stats-info">
+                                                <h6 class="mb-0 text-muted">الكتب الداخلية</h6>
+                                                <span class="fs-4 fw-bold text-primary">{{ number_format($incomingInternalCount) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total Books (Center) -->
+                                    <div class="d-flex flex-column align-items-center mx-4">
+                                        <h2 class="display-3 fw-bold mb-0 text-gradient animated-number"
+                                            data-target="{{ $totalIncoming }}">0</h2>
+                                        <span class="fs-6 text-muted">الكتب الواردة</span>
+                                    </div>
+
+                                    <!-- External Books (Left) -->
+                                    <div class="stats-detail flex-fill mx-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="stats-icon external">
+                                                <i class="mdi mdi-domain mdi-24px"></i>
+                                            </div>
+                                            <div class="stats-info">
+                                                <h6 class="mb-0 text-muted">الكتب الخارجية</h6>
+                                                <span class="fs-4 fw-bold text-success">{{ number_format($incomingExternalCount) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="trend-indicator positive mt-2">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <i class="mdi mdi-trending-up fs-4"></i>
+                                        <div class="d-flex flex-column">
+                                            <span class="fs-6">الكتب المضافة اليوم</span>
+                                            <span class="fs-5 fw-bold">{{ $todayGrowthIncoming }} كتاب</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- تعديل تنسيق المخطط البياني -->
+                                <div class="sparkline-box mt-4 mx-auto">
+                                    <div class="chart-title text-center mb-2">
+                                        <small class="text-muted">إحصائيات آخر 7 أيام - الكتب الواردة</small>
+                                    </div>
+                                    <div class="chart-container">
+                                        <canvas id="incomingChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-muted">
+                                    <span class="fw-semibold">إجمالي الكتب الواردة:</span>
+                                    <span class="fs-5 ms-1">{{ number_format($totalIncoming) }} كتاب</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 col-lg-6">
+                <div class="card backdrop-blur-sm border-0 shadow-lg hover-shadow-lg transition-all overflow-hidden">
+                    <div class="position-absolute top-0 start-0 w-100 h-100">
+                        <div class="watermark-image outgoing"></div>
+                    </div>
+                    <div class="card-body position-relative p-5">
+                        <div class="d-flex align-items-center mb-4 justify-content-center">
+                            <div class="avatar-wrapper me-3">
+                                <div class="avatar-circle success">
+                                    <i class="mdi mdi-email-arrow-right mdi-36px text-success"></i>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h5 class="mb-1 fw-bold text-success fs-4">الكتب الصادرة</h5>
+                                <small class="text-muted">إجمالي عدد الكتب الصادرة</small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center gap-4">
+                            <div class="text-center w-100">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <!-- Internal Books (Right) -->
+                                    <div class="stats-detail flex-fill mx-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="stats-icon internal">
+                                                <i class="mdi mdi-office-building mdi-24px"></i>
+                                            </div>
+                                            <div class="stats-info">
+                                                <h6 class="mb-0 text-muted">الكتب الداخلية</h6>
+                                                <span class="fs-4 fw-bold text-success">{{ number_format($outgoingInternalCount) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Total Books (Center) -->
+                                    <div class="d-flex flex-column align-items-center mx-4">
+                                        <h2 class="display-3 fw-bold mb-0 text-gradient animated-number"
+                                            data-target="{{ $totalOutgoing }}">0</h2>
+                                        <span class="fs-6 text-muted">الكتب الصادرة</span>
+                                    </div>
+
+                                    <!-- External Books (Left) -->
+                                    <div class="stats-detail flex-fill mx-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="stats-icon external">
+                                                <i class="mdi mdi-domain mdi-24px"></i>
+                                            </div>
+                                            <div class="stats-info">
+                                                <h6 class="mb-0 text-muted">الكتب الخارجية</h6>
+                                                <span class="fs-4 fw-bold text-success">{{ number_format($outgoingExternalCount) }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="trend-indicator positive mt-2">
+                                    <div class="d-flex align-items-center justify-content-center gap-2">
+                                        <i class="mdi mdi-trending-up fs-4"></i>
+                                        <div class="d-flex flex-column">
+                                            <span class="fs-6">الكتب المضافة اليوم</span>
+                                            <span class="fs-5 fw-bold">{{ $todayGrowthOutgoing }} كتاب</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- تعديل تنسيق المخطط البياني -->
+                                <div class="sparkline-box mt-4 mx-auto">
+                                    <div class="chart-title text-center mb-2">
+                                        <small class="text-muted">إحصائيات آخر 7 أيام - الكتب الصادرة</small>
+                                    </div>
+                                    <div class="chart-container">
+                                        <canvas id="outgoingChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-muted">
+                                    <span class="fw-semibold">إجمالي الكتب الصادرة:</span>
+                                    <span class="fs-5 ms-1">{{ number_format($totalOutgoing) }} كتاب</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -560,6 +625,44 @@
 
             .avatar-circle.dark {
                 background: rgba(33, 37, 41, 0.1);
+            }
+
+            .stats-detail {
+                padding: 0.75rem;
+                border-radius: 0.75rem;
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                transition: all 0.3s ease;
+            }
+
+            .stats-detail:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            .stats-icon {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            }
+
+            .stats-icon.internal {
+                background: rgba(105, 108, 255, 0.1);
+                color: #696cff;
+            }
+
+            .stats-icon.external {
+                background: rgba(113, 221, 55, 0.1);
+                color: #71dd37;
+            }
+
+            .stats-info {
+                flex: 1;
             }
         </style>
 

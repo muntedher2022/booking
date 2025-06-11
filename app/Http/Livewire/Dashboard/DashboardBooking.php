@@ -18,6 +18,11 @@ class DashboardBooking extends Component
     public $todayGrowthOutgoing;  // معدل النمو اليومي للصادر
     public $importanceStats;
 
+    public $incomingInternalCount;
+    public $incomingExternalCount;
+    public $outgoingInternalCount;
+    public $outgoingExternalCount;
+
     public function mount()
     {
         $this->loadDailyStats();
@@ -83,9 +88,26 @@ class DashboardBooking extends Component
             ->whereDate('created_at', $today)
             ->count();
 
+        // إضافة إحصائيات تفصيلية للوارد
+        $this->incomingInternalCount = Incomingbooks::where('book_type', 'وارد')
+            ->where('sender_type', 'داخلي')
+            ->count();
+        $this->incomingExternalCount = Incomingbooks::where('book_type', 'وارد')
+            ->where('sender_type', 'خارجي')
+            ->count();
+
+        // إحصائيات الكتب الصادرة
         $this->totalOutgoing = Incomingbooks::where('book_type', 'صادر')->count();
         $this->todayGrowthOutgoing = Incomingbooks::where('book_type', 'صادر')
             ->whereDate('created_at', $today)
+            ->count();
+
+        // إضافة إحصائيات تفصيلية للصادر
+        $this->outgoingInternalCount = Incomingbooks::where('book_type', 'صادر')
+            ->where('sender_type', 'داخلي')
+            ->count();
+        $this->outgoingExternalCount = Incomingbooks::where('book_type', 'صادر')
+            ->where('sender_type', 'خارجي')
             ->count();
 
         $this->totalBooks = $this->totalIncoming + $this->totalOutgoing;
