@@ -55,6 +55,28 @@
                                             <small class='text-danger inputerror'> {{ $message }} </small>
                                         @enderror
                                     </div>
+                                    <div class="mb-3 col">
+                                        <div class="form-floating form-floating-outline">
+                                            <select wire:model.defer='related_book_id'
+                                                id="addIncomingbookrelated_book_id"
+                                                class="form-select @error('related_book_id') is-invalid is-filled @enderror">
+                                                <option value=""></option>
+                                                @foreach ($incomingbooks as $incomingbook)
+                                                    <option value="{{ $incomingbook->id }}">
+                                                        رقم الكتاب: {{ $incomingbook->book_number }} -
+                                                        {{ $incomingbook->book_type }} -
+                                                        {{ $incomingbook->sender_type }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            <label for="modalIncomingbookrelated_book_id">
+                                                {{ $book_type ? ($book_type == 'صادر' ? 'رقم الكتاب المرتبط الصادر' : 'رقم الكتاب المرتبط الوارد') : 'رقم الكتاب المرتبط' }}
+                                            </label>
+                                        </div>
+                                        @error('related_book_id')
+                                            <small class='text-danger inputerror'>{{ $message }}</small>
+                                        @enderror
+                                    </div>
                                 </div>
 
                                 <div class="row">
@@ -173,34 +195,15 @@
 
                                 <div class="row">
                                     <div class="mb-3 col">
-                                        <div class="form-floating form-floating-outline">
-                                            <select wire:model.defer='related_book_id'
-                                                id="addIncomingbookrelated_book_id"
-                                                class="form-select @error('related_book_id') is-invalid is-filled @enderror">
-                                                <option value=""></option>
-                                                @foreach ($incomingbooks as $incomingbook)
-                                                    <option value="{{ $incomingbook->id }}">
-                                                        رقم الكتاب: {{ $incomingbook->book_number }} -
-                                                        {{ $incomingbook->book_type }} -
-                                                        {{ $incomingbook->sender_type }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            <label for="modalIncomingbookrelated_book_id">
-                                                {{ $book_type ? ($book_type == 'صادر' ? 'رقم الكتاب المرتبط الصادر' : 'رقم الكتاب المرتبط الوارد') : 'رقم الكتاب المرتبط' }}
-                                            </label>
-                                        </div>
-                                        @error('related_book_id')
-                                            <small class='text-danger inputerror'>{{ $message }}</small>
-                                        @enderror
-                                    </div>
-
-                                    <div class="mb-3 col">
-                                        <div class="form-floating form-floating-outline">
+                                        <div wire:ignore class="form-floating form-floating-outline">
                                             <input wire:model.defer='keywords' type="text"
-                                                id="modalIncomingbookkeywords" placeholder="كلمات مفتاحية"
+                                                id="modalIncomingbookkeywords"
+                                                placeholder="اضف كلمات مفتاحية"
                                                 class="form-control @error('keywords') is-invalid is-filled @enderror" />
                                             <label for="modalIncomingbookkeywords">كلمات مفتاحية</label>
+                                            <small class="form-text text-muted">
+                                                اضغط Enter أو استخدم الفاصلة لإضافة كلمة مفتاحية (الحد الأقصى 6 كلمات)
+                                            </small>
                                         </div>
                                         @error('keywords')
                                             <small class='text-danger inputerror'> {{ $message }} </small>
@@ -259,7 +262,8 @@
 
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
                                             @if ($tempImageUrl)
-                                                <div class="preview-wrapper" style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                                <div class="preview-wrapper"
+                                                    style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
                                                     @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
                                                         <embed src="{{ $tempImageUrl }}" type="application/pdf"
                                                             style="width: 100%; height: 250px; object-fit: contain;" />

@@ -19,6 +19,7 @@
 
     <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.css') }}">
     <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.viewer.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
 
 @endsection
 @section('content')
@@ -50,6 +51,8 @@
     <script src="{{ asset('Resources/dynamsoft.webtwain.initiate.js') }}"></script>
     <script src="{{ asset('Resources/dynamsoft.webtwain.config.js') }}"></script>
     <script src="{{ asset('Resources/src/dynamsoft.webtwain.viewer.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 @endsection
 
 @section('page-script')
@@ -564,5 +567,135 @@
             }
         }
     });
+
+        // Add Tagify initialization
+        function initializeTagify() {
+            const inputs = ['#modalIncomingbookkeywords', '#editIncomingbookkeywords'];
+
+            inputs.forEach(selector => {
+                const input = document.querySelector(selector);
+                if (!input || input.tagify) return;
+
+                // تنظيف القيمة الأولية وتحويلها إلى مصفوفة
+                let initialValue = input.value;
+                let initialTags = [];
+
+                if (initialValue) {
+                    // إزالة المسافات الزائدة وتقسيم النص بالفواصل
+                    initialTags = initialValue.split(',')
+                        .map(tag => tag.trim())
+                        .filter(tag => tag.length > 0)
+                        .map(tag => ({ value: tag }));
+                }
+
+                const tagify = new Tagify(input, {
+                    delimiters: ",",
+                    maxTags: 6,
+                    trim: true,
+                    enforceWhitelist: false,
+                    editTags: false,
+                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
+                    dropdown: {
+                        enabled: 0,
+                        maxItems: 6,
+                        classname: "tags-look",
+                        closeOnSelect: false
+                    },
+                    validate: function(tag) {
+                        return tag.value.length <= 20;
+                    }
+                });
+
+                // تخزين مرجع Tagify في الحقل
+                input.tagify = tagify;
+
+                // إضافة التاجات الأولية
+                if (initialTags.length > 0) {
+                    tagify.addTags(initialTags);
+                }
+
+                // باقي الكود كما هو
+                tagify.on('add', function(e) {
+                    if (tagify.value.length > 6) {
+                        e.preventDefault();
+                        Toast.fire({
+                            icon: 'warning',
+                            title: 'لا يمكن إضافة أكثر من 6 كلمات مفتاحية'
+                        });
+                        return false;
+                    }
+                });
+
+                tagify.on('change', function(e) {
+                    const values = tagify.value.map(item => item.value).join(',');
+                    window.Livewire.find(input.closest('[wire\\:id]').getAttribute('wire:id'))
+                        .set('keywords', values);
+                });
+            });
+        }
+
+        // تحديث المستمعين
+        ['addincomingbookModal', 'editincomingbookModal'].forEach(modalId => {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.addEventListener('hidden.bs.modal', function () {
+                    const input = this.querySelector('input[id$="keywords"]');
+                    if (input?.tagify) {
+                        input.tagify.destroy();
+                        input.tagify = null;
+                    }
+                });
+
+                modal.addEventListener('shown.bs.modal', function () {
+                    setTimeout(initializeTagify, 100);
+                });
+            }
+        });
+
+        // Initialize Tagify on page load and after Livewire updates
+        document.addEventListener('DOMContentLoaded', initializeTagify);
+        window.Livewire.on('contentChanged', initializeTagify);
+
+        // تحديث كود تهيئة Tagify
+window.addEventListener('initKeywords', event => {
+    const input = document.querySelector(event.detail.selector);
+    if (input && input.tagify) {
+        input.tagify.destroy();
+    }
+
+    const tagify = new Tagify(input, {
+        delimiters: ",",
+        maxTags: 6,
+        trim: true,
+        enforceWhitelist: false,
+        editTags: false,
+        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
+        dropdown: {
+            enabled: 0,
+            maxItems: 6,
+            classname: "tags-look",
+            closeOnSelect: false
+        }
+    });
+
+    // تخزين مرجع Tagify في الحقل
+    input.tagify = tagify;
+
+    // إضافة التاجات المستردة
+    if (event.detail.tags && event.detail.tags.length > 0) {
+        const tags = event.detail.tags
+            .map(tag => tag.trim())
+            .filter(tag => tag.length > 0)
+            .map(tag => ({ value: tag }));
+        tagify.addTags(tags);
+    }
+
+    // إضافة مستمع للتغييرات
+    tagify.on('change', function(e) {
+        const values = tagify.value.map(item => item.value).join(',');
+        window.Livewire.find(input.closest('[wire\\:id]').getAttribute('wire:id'))
+            .set('keywords', values);
+    });
+});
     </script>
 @endsection

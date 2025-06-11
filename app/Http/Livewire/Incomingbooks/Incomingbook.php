@@ -319,6 +319,16 @@ class IncomingBook extends Component
         $this->book_type = $this->Incomingbook->book_type;
         $this->importance = $this->Incomingbook->importance;
 
+        // تنظيف وتهيئة الكلمات المفتاحية
+        if ($this->Incomingbook->keywords) {
+            $this->keywords = $this->Incomingbook->keywords;
+            // إرسال حدث لتحديث حقل Tagify
+            $this->dispatchBrowserEvent('initKeywords', [
+                'selector' => '#editIncomingbookkeywords',
+                'tags' => explode(',', $this->keywords)
+            ]);
+        }
+
         if ($this->Incomingbook->attachment) {
             $year = date('Y', strtotime($this->Incomingbook->book_date));
             $bookNumber = $this->Incomingbook->book_number;
@@ -483,13 +493,16 @@ class IncomingBook extends Component
             ];
         }, $this->sender_id);
 
+        // تنظيف الكلمات المفتاحية قبل الحفظ
+        $keywords = $this->keywords ? trim($this->keywords, ', ') : null;
+
         $incomingBook = Incomingbooks::create([
             'user_id' => Auth::User()->id,
             'book_number' => $this->book_number,
             'book_date' => $formatted_date,
             'subject' => $this->subject,
             'content' => $this->content,
-            'keywords' => $this->keywords,
+            'keywords' => $keywords,
             'related_book_id' => $this->related_book_id,
             'sender_type' => $this->sender_type,
             'sender_id' => json_encode($processed_sender_ids),
@@ -632,13 +645,16 @@ class IncomingBook extends Component
             ];
         }, $this->sender_id);
 
+        // تنظيف الكلمات المفتاحية قبل التحديث
+        $keywords = $this->keywords ? trim($this->keywords, ', ') : null;
+
         $Incomingbooks->update([
             'user_id' => Auth::User()->id,
             'book_number' => $this->book_number,
             'book_date' => $formatted_date,
             'subject' => $this->subject,
             'content' => $this->content,
-            'keywords' => $this->keywords,
+            'keywords' => $keywords,
             'related_book_id' => $this->related_book_id,
             'sender_type' => $this->sender_type,
             'sender_id' => json_encode($processed_sender_ids),
