@@ -1,5 +1,5 @@
 <div class="mt-n4">
-    @can('emaillist-list')
+    @can('emaillist-view')
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between">
@@ -25,84 +25,85 @@
                     </div>
                 </div>
             </div>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>ت</th>
-                            <th class="text-center">القسم / الدائرة</th>
-                            <th class="text-center">البريد الإلكتروني</th>
-                            <th class="text-center">ملاحظات</th>
-                            <th class="text-center">العملية</th>
-                        </tr>
-                        <tr>
-                            <th>#</th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.department"
-                                    class="form-control text-center" placeholder="بحث بالقسم / الدائرة">
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.email"
-                                    class="form-control text-center" placeholder="بحث بالبريد الإلكتروني">
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.notes"
-                                    class="form-control text-center" placeholder="بحث بالملاحظات">
-                            </th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $i = $links->perPage() * ($links->currentPage() - 1) + 1;
-                        @endphp
-                        @foreach ($Emaillists as $emaillist)
+            @can('emaillist-list')
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-light">
                             <tr>
-                                <td>{{ $i++ }}</td>
-                                <td class="text-center">
-                                    @if ($emaillist->type == 'section')
-                                        {{ $emaillist->Getsection ? $emaillist->Getsection->section_name : '' }}
-                                    @elseif($emaillist->type == 'department')
-                                        {{ $emaillist->Getdepartment ? $emaillist->Getdepartment->department_name : '' }}
-                                    @endif
-                                </td>
-                                <td class="text-center">{{ $emaillist->email }}</td>
-                                <td class="text-center">{{ $emaillist->notes }}</td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group" aria-label="First group">
-                                        @can('emaillist-edit')
-                                            <button wire:click="Getemaillist({{ $emaillist->id }})"
-                                                class="p-0 px-1 btn btn-text-primary waves-effect" data-bs-toggle="modal"
-                                                data-bs-target="#editemaillistModal">
-                                                <i class="mdi mdi-text-box-edit-outline fs-3"></i>
-                                            </button>
-                                        @endcan
-
-                                        @can('emaillist-delete')
-                                            <strong style="margin: 0 10px;">|</strong>
-                                            <button wire:click="Getemaillist({{ $emaillist->id }})"
-                                                class="p-0 px-1 btn btn-text-danger waves-effect {{ $emaillist->active ? 'disabled' : '' }}"
-                                                data-bs-toggle = "modal" data-bs-target="#removeemaillistModal">
-                                                <i class="tf-icons mdi mdi-delete-outline fs-3"></i>
-                                            </button>
-                                        @endcan
-                                    </div>
-                                </td>
+                                <th>ت</th>
+                                <th class="text-center">القسم / الدائرة</th>
+                                <th class="text-center">البريد الإلكتروني</th>
+                                <th class="text-center">ملاحظات</th>
+                                <th class="text-center">العملية</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="mt-2 d-flex justify-content-center">
-                    {{ $links->onEachSide(0)->links() }}
-                </div>
-            </div>
-            <!-- Modal -->
-            @include('livewire.emaillists.modals.edit-emaillist')
-            @include('livewire.emaillists.modals.remove-emaillist')
-            <!-- Modal -->
+                            <tr>
+                                <th>#</th>
+                                <th class="text-center">
+                                    <input type="text" wire:model.debounce.300ms="search.department"
+                                        class="form-control text-center" placeholder="بحث بالقسم / الدائرة">
+                                </th>
+                                <th class="text-center">
+                                    <input type="text" wire:model.debounce.300ms="search.email"
+                                        class="form-control text-center" placeholder="بحث بالبريد الإلكتروني">
+                                </th>
+                                <th class="text-center">
+                                    <input type="text" wire:model.debounce.300ms="search.notes"
+                                        class="form-control text-center" placeholder="بحث بالملاحظات">
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $i = $links->perPage() * ($links->currentPage() - 1) + 1;
+                            @endphp
+                            @foreach ($Emaillists as $emaillist)
+                                <tr>
+                                    <td>{{ $i++ }}</td>
+                                    <td class="text-center">
+                                        @if ($emaillist->type == 'section')
+                                            {{ $emaillist->Getsection ? $emaillist->Getsection->section_name : '' }}
+                                        @elseif($emaillist->type == 'department')
+                                            {{ $emaillist->Getdepartment ? $emaillist->Getdepartment->department_name : '' }}
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{ $emaillist->email }}</td>
+                                    <td class="text-center">{{ $emaillist->notes }}</td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group" aria-label="First group">
+                                            @can('emaillist-edit')
+                                                <button wire:click="Getemaillist({{ $emaillist->id }})"
+                                                    class="p-0 px-1 btn btn-text-primary waves-effect" data-bs-toggle="modal"
+                                                    data-bs-target="#editemaillistModal">
+                                                    <i class="mdi mdi-text-box-edit-outline fs-3"></i>
+                                                </button>
+                                            @endcan
 
-        </div>
+                                            @can('emaillist-delete')
+                                                <strong style="margin: 0 10px;">|</strong>
+                                                <button wire:click="Getemaillist({{ $emaillist->id }})"
+                                                    class="p-0 px-1 btn btn-text-danger waves-effect {{ $emaillist->active ? 'disabled' : '' }}"
+                                                    data-bs-toggle = "modal" data-bs-target="#removeemaillistModal">
+                                                    <i class="tf-icons mdi mdi-delete-outline fs-3"></i>
+                                                </button>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="mt-2 d-flex justify-content-center">
+                        {{ $links->onEachSide(0)->links() }}
+                    </div>
+                </div>
+                <!-- Modal -->
+                @include('livewire.emaillists.modals.edit-emaillist')
+                @include('livewire.emaillists.modals.remove-emaillist')
+                <!-- Modal -->
+
+            </div>
+        @endcan
     @else
         <div class="container-xxl">
             <div class="misc-wrapper">

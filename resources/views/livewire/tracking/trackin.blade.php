@@ -100,6 +100,15 @@
                                     @elseif($Trackin->operation_type === 'تصدير Excel')
                                         <i class="mdi mdi-file-excel-outline" style="color: #28a745;"></i>
                                         <span style="color: #28a745;">{{ $Trackin->operation_type }}</span>
+                                    @elseif($Trackin->operation_type === 'إنشاء نسخة احتياطية')
+                                        <i class="mdi mdi-backup-restore" style="color: #00bcd4;"></i>
+                                        <span style="color: #00bcd4;">{{ $Trackin->operation_type }}</span>
+                                    @elseif($Trackin->operation_type === 'تحميل نسخة احتياطية')
+                                        <i class="mdi mdi-download-outline" style="color: #3f51b5;"></i>
+                                        <span style="color: #3f51b5;">{{ $Trackin->operation_type }}</span>
+                                    @elseif($Trackin->operation_type === 'حذف نسخة احتياطية')
+                                        <i class="mdi mdi-delete-restore" style="color: #e91e63;"></i>
+                                        <span style="color: #e91e63;">{{ $Trackin->operation_type }}</span>
                                     @endif
                                 </td>
 
@@ -115,6 +124,9 @@
                                                 'حذف' => '#dc3545',
                                                 'طباعة' => '#9C27B0',
                                                 'تصدير Excel' => '#28a745',
+                                                'إنشاء نسخة احتياطية' => '#00bcd4',
+                                                'تحميل نسخة احتياطية' => '#3f51b5',
+                                                'حذف نسخة احتياطية' => '#e91e63',
                                                 default => '#000000'
                                             };
 

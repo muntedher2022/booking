@@ -5,6 +5,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Backup\BackupController;
+use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\Sections\SectionsController;
 use App\Http\Controllers\Tracking\TrackingController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -17,7 +19,6 @@ use App\Http\Controllers\PermissionsRoles\Roles\AccountRolesController;
 use App\Http\Controllers\Users\CustomersAccounts\CustomersAccountsController;
 use App\Http\Controllers\PermissionsRoles\Permissions\AccountPermissionsController;
 use App\Http\Controllers\Users\AdministratorsAccounts\AdministratorsAccountsController;
-use App\Http\Controllers\Report\ReportController;
 
 Route::middleware(['auth', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::GET('/', [DashboardController::class, 'index'])->name('Dashboard');
@@ -89,5 +90,9 @@ Route::get('/latest-scan', function () {
 // تحديث مسارات التقارير
 Route::GET('Reports', [ReportController::class, 'index'])->name('Reports');
 Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->name('Reports.generate');
+
+// مسار النسخ الاحتياطي
+Route::GET('Backup', [BackupController::class, 'index'])->name('Backup');
+
 
 

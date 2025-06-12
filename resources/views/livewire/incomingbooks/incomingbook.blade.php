@@ -1,5 +1,5 @@
 <div class="mt-n4">
-    @can('incomingbook-list')
+    @can('incomingbook-view')
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -113,162 +113,163 @@
                     </div>
                 </div>
             </div>
-
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" wire:model="selectAll" id="selectAll">
-                                </div>
-                            </th>
-                            <th>#</th>
-                            <th class="text-center">رقم الكتاب</th>
-                            <th class="text-center">تاريخ الكتاب</th>
-                            <th class="text-center">موضوع الكتاب</th>
-                            <th class="text-center">جزء من المتن</th>
-                            <th class="text-center">رقم الكتاب المرتبط</th>
-                            <th class="text-center">نوع الكتاب</th>
-                            <th class="text-center">نطاق الكتاب</th>
-                            <th class="text-center">درجة الاهمية</th>
-                            <th class="text-center">الجهة</th>
-                            <th class="text-center">العملية</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $i = $links->perPage() * ($links->currentPage() - 1) + 1;
-                        @endphp
-                        @foreach ($Incomingbooks as $Incomingbook)
+            @can('incomingbook-list')
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-light">
                             <tr>
-                                <td>
+                                <th>
                                     <div class="form-check">
-                                        <input type="checkbox" class="form-check-input" wire:model="selectedRows"
-                                            value="{{ $Incomingbook->id }}">
+                                        <input type="checkbox" class="form-check-input" wire:model="selectAll" id="selectAll">
                                     </div>
-                                </td>
-                                <td>{{ $i++ }}</td>
-                                <td class="text-center">{{ $Incomingbook->book_number }}</td>
-                                <td class="text-center text-nowrap">{{ $Incomingbook->book_date }}</td>
-                                <td class="text-center">{{ $Incomingbook->subject }}</td>
-                                <td class="text-center">{{ $Incomingbook->content }}</td>
-                                <td class="text-center">
-                                    @if ($Incomingbook->related_book_id)
-                                        <button wire:click="GetIncomingbook({{ $Incomingbook->related_book_id }})"
-                                            class="p-0 px-1 btn btn-text-primary waves-effect" data-bs-toggle="modal"
-                                            data-bs-target="#editincomingbookModal">
-                                            {{ $Incomingbook->relatedBook->book_number ?? $Incomingbook->related_book_id }}
-                                        </button>
-                                    @else
-                                        لا يوجد
-                                    @endif
-                                </td>
-                                <td class="text-center">{{ $Incomingbook->book_type }}</td>
-                                <td class="text-center">{{ $Incomingbook->sender_type }}</td>
-                                <td class="text-center">
-                                    @switch($Incomingbook->importance)
-                                        @case('عادي')
-                                            <span><i
-                                                    class="mdi mdi-circle-outline me-2"></i>{{ $Incomingbook->importance }}</span>
-                                        @break
-
-                                        @case('عاجل')
-                                            <span><i
-                                                    class="mdi mdi-alert me-2 text-warning"></i>{{ $Incomingbook->importance }}</span>
-                                        @break
-
-                                        @case('سري')
-                                            <span><i
-                                                    class="mdi mdi-lock me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
-                                        @break
-
-                                        @case('سري للغاية')
-                                            <span><i
-                                                    class="mdi mdi-lock-alert me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
-                                        @break
-
-                                        @default
-                                            {{ $Incomingbook->importance }}
-                                    @endswitch
-                                </td>
-                                <td class="text-center position-relative" style="max-width: 200px; min-width: 150px;">
-                                    @php
-                                        $departmentNames = $Incomingbook->Getdepartment()->pluck('department_name');
-                                        $sectionNames = $Incomingbook->Getsection()->pluck('section_name');
-                                        $badgeClasses = [
-                                            'bg-label-primary',
-                                            'bg-label-danger',
-                                            'bg-label-warning',
-                                            'bg-label-info',
-                                            'bg-label-success',
-                                        ];
-                                    @endphp
-                                    <ul class="list-unstyled m-0 d-flex flex-wrap gap-1 justify-content-center">
-                                        @forelse ($departmentNames as $name)
-                                            <li class="badge rounded-pill {{ $badgeClasses[$loop->index % count($badgeClasses)] }}"
-                                                style="white-space: normal; margin-bottom: 3px;">
-                                                <i class="mdi mdi-office-building-outline me-1"></i>{{ $name }}
-                                            </li>
-                                        @empty
-                                        @endforelse
-
-                                        @forelse ($sectionNames as $name)
-                                            <li class="badge rounded-pill {{ $badgeClasses[($loop->index + count($departmentNames)) % count($badgeClasses)] }}"
-                                                style="white-space: normal; margin-bottom: 3px;">
-                                                <i class="mdi mdi-domain me-1"></i>{{ $name }}
-                                            </li>
-                                        @empty
-                                        @endforelse
-
-                                        @if ($departmentNames->isEmpty() && $sectionNames->isEmpty())
-                                            <li class="badge rounded-pill bg-label-danger">لم يتم اختيار أي جهة.</li>
-                                        @endif
-                                    </ul>
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group" aria-label="First group">
-                                        @can('incomingbook-edit')
-                                            <button wire:click="GetIncomingbook({{ $Incomingbook->id }})"
+                                </th>
+                                <th>#</th>
+                                <th class="text-center">رقم الكتاب</th>
+                                <th class="text-center">تاريخ الكتاب</th>
+                                <th class="text-center">موضوع الكتاب</th>
+                                <th class="text-center">جزء من المتن</th>
+                                <th class="text-center">رقم الكتاب المرتبط</th>
+                                <th class="text-center">نوع الكتاب</th>
+                                <th class="text-center">نطاق الكتاب</th>
+                                <th class="text-center">درجة الاهمية</th>
+                                <th class="text-center">الجهة</th>
+                                <th class="text-center">العملية</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $i = $links->perPage() * ($links->currentPage() - 1) + 1;
+                            @endphp
+                            @foreach ($Incomingbooks as $Incomingbook)
+                                <tr>
+                                    <td>
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" wire:model="selectedRows"
+                                                value="{{ $Incomingbook->id }}">
+                                        </div>
+                                    </td>
+                                    <td>{{ $i++ }}</td>
+                                    <td class="text-center">{{ $Incomingbook->book_number }}</td>
+                                    <td class="text-center text-nowrap">{{ $Incomingbook->book_date }}</td>
+                                    <td class="text-center">{{ $Incomingbook->subject }}</td>
+                                    <td class="text-center">{{ $Incomingbook->content }}</td>
+                                    <td class="text-center">
+                                        @if ($Incomingbook->related_book_id)
+                                            <button wire:click="GetIncomingbook({{ $Incomingbook->related_book_id }})"
                                                 class="p-0 px-1 btn btn-text-primary waves-effect" data-bs-toggle="modal"
                                                 data-bs-target="#editincomingbookModal">
-                                                <i class="mdi mdi-text-box-edit-outline fs-3"></i>
+                                                {{ $Incomingbook->relatedBook->book_number ?? $Incomingbook->related_book_id }}
                                             </button>
-                                        @endcan
-                                        @can('incomingbook-delete')
-                                            <strong style="margin: 0 10px;">|</strong>
-                                            <button
-                                                @if ($Incomingbook->related_book_id) wire:click="$emit('showError')"
+                                        @else
+                                            لا يوجد
+                                        @endif
+                                    </td>
+                                    <td class="text-center">{{ $Incomingbook->book_type }}</td>
+                                    <td class="text-center">{{ $Incomingbook->sender_type }}</td>
+                                    <td class="text-center">
+                                        @switch($Incomingbook->importance)
+                                            @case('عادي')
+                                                <span><i
+                                                        class="mdi mdi-circle-outline me-2"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+
+                                            @case('عاجل')
+                                                <span><i
+                                                        class="mdi mdi-alert me-2 text-warning"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+
+                                            @case('سري')
+                                                <span><i
+                                                        class="mdi mdi-lock me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+
+                                            @case('سري للغاية')
+                                                <span><i
+                                                        class="mdi mdi-lock-alert me-2 text-danger"></i>{{ $Incomingbook->importance }}</span>
+                                            @break
+
+                                            @default
+                                                {{ $Incomingbook->importance }}
+                                        @endswitch
+                                    </td>
+                                    <td class="text-center position-relative" style="max-width: 200px; min-width: 150px;">
+                                        @php
+                                            $departmentNames = $Incomingbook->Getdepartment()->pluck('department_name');
+                                            $sectionNames = $Incomingbook->Getsection()->pluck('section_name');
+                                            $badgeClasses = [
+                                                'bg-label-primary',
+                                                'bg-label-danger',
+                                                'bg-label-warning',
+                                                'bg-label-info',
+                                                'bg-label-success',
+                                            ];
+                                        @endphp
+                                        <ul class="list-unstyled m-0 d-flex flex-wrap gap-1 justify-content-center">
+                                            @forelse ($departmentNames as $name)
+                                                <li class="badge rounded-pill {{ $badgeClasses[$loop->index % count($badgeClasses)] }}"
+                                                    style="white-space: normal; margin-bottom: 3px;">
+                                                    <i class="mdi mdi-office-building-outline me-1"></i>{{ $name }}
+                                                </li>
+                                            @empty
+                                            @endforelse
+
+                                            @forelse ($sectionNames as $name)
+                                                <li class="badge rounded-pill {{ $badgeClasses[($loop->index + count($departmentNames)) % count($badgeClasses)] }}"
+                                                    style="white-space: normal; margin-bottom: 3px;">
+                                                    <i class="mdi mdi-domain me-1"></i>{{ $name }}
+                                                </li>
+                                            @empty
+                                            @endforelse
+
+                                            @if ($departmentNames->isEmpty() && $sectionNames->isEmpty())
+                                                <li class="badge rounded-pill bg-label-danger">لم يتم اختيار أي جهة.</li>
+                                            @endif
+                                        </ul>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group" role="group" aria-label="First group">
+                                            @can('incomingbook-edit')
+                                                <button wire:click="GetIncomingbook({{ $Incomingbook->id }})"
+                                                    class="p-0 px-1 btn btn-text-primary waves-effect" data-bs-toggle="modal"
+                                                    data-bs-target="#editincomingbookModal">
+                                                    <i class="mdi mdi-text-box-edit-outline fs-3"></i>
+                                                </button>
+                                            @endcan
+                                            @can('incomingbook-delete')
+                                                <strong style="margin: 0 10px;">|</strong>
+                                                <button
+                                                    @if ($Incomingbook->related_book_id) wire:click="$emit('showError')"
                                                 @else
                                                     wire:click="GetIncomingbook({{ $Incomingbook->id }})"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#removeincomingbookModal" @endif
-                                                class="p-0 px-1 btn btn-text-danger waves-effect {{ $Incomingbook->active ? 'disabled' : '' }}">
-                                                <i class="tf-icons mdi mdi-delete-outline fs-3"></i>
-                                            </button>
-                                        @endcan
-                                        @can('incomingbook-print')
-                                            <strong style="margin: 0 10px;">|</strong>
-                                            <button wire:click="printIncomingBook({{ $Incomingbook->id }})"
-                                                class="p-0 px-1 btn btn-text-secondary waves-effect">
-                                                <span class="mdi mdi-printer-outline fs-3"></span>
-                                            </button>
-                                        @endcan
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="mt-2 d-flex justify-content-center">
-                    {{ $links->onEachSide(0)->links() }}
+                                                    class="p-0 px-1 btn btn-text-danger waves-effect {{ $Incomingbook->active ? 'disabled' : '' }}">
+                                                    <i class="tf-icons mdi mdi-delete-outline fs-3"></i>
+                                                </button>
+                                            @endcan
+                                            @can('incomingbook-print')
+                                                <strong style="margin: 0 10px;">|</strong>
+                                                <button wire:click="printIncomingBook({{ $Incomingbook->id }})"
+                                                    class="p-0 px-1 btn btn-text-secondary waves-effect">
+                                                    <span class="mdi mdi-printer-outline fs-3"></span>
+                                                </button>
+                                            @endcan
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="mt-2 d-flex justify-content-center">
+                        {{ $links->onEachSide(0)->links() }}
+                    </div>
                 </div>
+                <!-- Modal -->
+                @include('livewire.incomingbooks.modals.edit-incomingbook')
+                @include('livewire.incomingbooks.modals.remove-incomingbook')
+                <!-- Modal -->
             </div>
-            <!-- Modal -->
-            @include('livewire.incomingbooks.modals.edit-incomingbook')
-            @include('livewire.incomingbooks.modals.remove-incomingbook')
-            <!-- Modal -->
-        </div>
+        @endcan
     @else
         <div class="container-xxl">
             <div class="misc-wrapper">

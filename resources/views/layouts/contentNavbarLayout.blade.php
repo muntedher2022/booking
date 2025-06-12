@@ -103,7 +103,7 @@
                             @endcan
                             {{-- الاعدادات --}}
                             @can('Settings')
-                                <li class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking', 'reports') ? 'open active' : '' }}">
+                                <li class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking', 'Reports','Backup') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                         <span class="menu-title">الاعدادات</span>
@@ -150,6 +150,15 @@
                                                 <a href="{{ Route('Reports') }}" Class="menu-link">
                                                     <i Class=""></i>
                                                     <div>التقارير</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('Backups')
+                                            {{-- النسخ الاحتياطي --}}
+                                            <li Class="menu-item {{ request()->Is('Backup') ? 'active' : '' }}">
+                                                <a href="{{ Route('Backup') }}" Class="menu-link">
+                                                    <i Class=""></i>
+                                                    <div>النسخ الاحتياطي</div>
                                                 </a>
                                             </li>
                                         @endcan
