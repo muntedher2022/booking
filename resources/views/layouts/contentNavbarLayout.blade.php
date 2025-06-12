@@ -146,8 +146,8 @@
                                         @endcan
                                         @can('Reports')
                                             {{-- التقارير --}}
-                                            <li Class="menu-item {{ request()->Is('reports') ? 'active' : '' }}">
-                                                <a href="{{ Route('reports.index') }}" Class="menu-link">
+                                            <li Class="menu-item {{ request()->Is('Reports') ? 'active' : '' }}">
+                                                <a href="{{ Route('Reports') }}" Class="menu-link">
                                                     <i Class=""></i>
                                                     <div>التقارير</div>
                                                 </a>

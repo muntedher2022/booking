@@ -124,9 +124,10 @@
                             gap: 5px;
                         }
 
-                        .header-details i {
-                            visibility: visible;
-                            color: #696cff;
+                        .header-details img {
+                            visibility: visible !important;
+                            vertical-align: middle;
+                            display: inline-block;
                         }
 
                         /* تنسيق الجدول */
@@ -199,8 +200,14 @@
                             <div class="header-content">
                                 <h2>تقرير المخاطبات</h2>
                                 <div class="header-details">
-                                    <span><i class="mdi mdi-calendar"></i> تاريخ الطباعة: ${new Date().toLocaleDateString('ar-IQ')}</span>
-                                    <span><i class="mdi mdi-clock-outline"></i> وقت الطباعة: ${new Date().toLocaleTimeString('ar-IQ')}</span>
+                                    <span>
+                                        <img src="{{ asset('assets/img/logo/calendar.png') }}" alt="calendar" style="width: 20px; height: 20px; margin-left: 5px;">
+                                        تاريخ الطباعة: ${new Date().toLocaleDateString('ar-IQ')}
+                                    </span>
+                                    <span>
+                                        <img src="{{ asset('assets/img/logo/clock.png') }}" alt="clock" style="width: 20px; height: 20px; margin-left: 5px;">
+                                        وقت الطباعة: ${new Date().toLocaleTimeString('ar-IQ')}
+                                    </span>
                                 </div>
                             </div>
                         </div>

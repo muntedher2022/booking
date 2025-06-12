@@ -86,10 +86,7 @@ Route::get('/latest-scan', function () {
     ]);
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
-});
-// تحديث المسار
+// تحديث مسارات التقارير
 Route::GET('Reports', [ReportController::class, 'index'])->name('Reports');
 Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->name('Reports.generate');
 
