@@ -17,6 +17,7 @@ use App\Http\Controllers\PermissionsRoles\Roles\AccountRolesController;
 use App\Http\Controllers\Users\CustomersAccounts\CustomersAccountsController;
 use App\Http\Controllers\PermissionsRoles\Permissions\AccountPermissionsController;
 use App\Http\Controllers\Users\AdministratorsAccounts\AdministratorsAccountsController;
+use App\Http\Controllers\Report\ReportController;
 
 Route::middleware(['auth', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::GET('/', [DashboardController::class, 'index'])->name('Dashboard');
@@ -84,3 +85,12 @@ Route::get('/latest-scan', function () {
         'url' => Storage::url('uploads/' . $originalFileName)
     ]);
 });
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+});
+// تحديث المسار
+Route::GET('Reports', [ReportController::class, 'index'])->name('Reports');
+Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->name('Reports.generate');
+
+

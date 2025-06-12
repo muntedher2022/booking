@@ -103,8 +103,7 @@
                             @endcan
                             {{-- الاعدادات --}}
                             @can('Settings')
-                                <li
-                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking') ? 'open active' : '' }}">
+                                <li class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking', 'reports') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                         <span class="menu-title">الاعدادات</span>
@@ -142,6 +141,15 @@
                                                 <a href="{{ Route('Tracking') }}" Class="menu-link">
                                                     <i Class=""></i>
                                                     <div>التتبع</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('Reports')
+                                            {{-- التقارير --}}
+                                            <li Class="menu-item {{ request()->Is('reports') ? 'active' : '' }}">
+                                                <a href="{{ Route('reports.index') }}" Class="menu-link">
+                                                    <i Class=""></i>
+                                                    <div>التقارير</div>
                                                 </a>
                                             </li>
                                         @endcan
