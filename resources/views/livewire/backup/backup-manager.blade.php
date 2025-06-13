@@ -70,7 +70,7 @@
                                         @endswitch
                                     </td>
                                     <td class="text-center">{{ $backup->size }}</td>
-                                    <td class="text-center">{{ $backup->created_at->format('Y-m-d H:i:s') }}</td>
+                                    <td class="text-center">{{ $backup->created_at->timezone('Asia/Baghdad')->format('Y-m-d H:i:s') }}</td>
                                     <td class="text-center">{{ $backup->user->name }}</td>
                                     <td class="text-center">
                                         <div class="btn-group" role="group">
