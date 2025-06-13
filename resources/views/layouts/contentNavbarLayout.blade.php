@@ -84,7 +84,7 @@
                             @endcan
                             {{-- المخاطبات --}}
                             @can('Correspondence Management')
-                                <li class="menu-item {{ request()->is('Incomingbooks') ? 'open active' : '' }}">
+                                <li class="menu-item {{ request()->is('Incomingbooks', 'Reports') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-text-box-multiple-outline'></i>
                                         <span class="menu-title">ادارة المخاطبات</span>
@@ -92,7 +92,7 @@
                                     <ul class="menu-sub">
                                         {{-- الصادر والوارد --}}
                                         @can('Incomingbooks')
-                                            <li Class="menu-item {{ request()->Is('Incomingbooks', 'Reports') ? 'active' : '' }}">
+                                            <li Class="menu-item {{ request()->Is('Incomingbooks') ? 'active' : '' }}">
                                                 <a href = "{{ Route('Incomingbooks') }}" Class="menu-link">
                                                     <div>الصادر والوارد</div>
                                                 </a>
