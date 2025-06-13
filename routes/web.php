@@ -92,7 +92,7 @@ Route::GET('Reports', [ReportController::class, 'index'])->name('Reports');
 Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->name('Reports.generate');
 
 // مسار النسخ الاحتياطي
-Route::GET('Backup', [BackupController::class, 'index'])->name('Backup');
+Route::GET('Backup', [BackupController::class, 'index'])->name('Backup')->middleware('role:OWNER');
 
 
 

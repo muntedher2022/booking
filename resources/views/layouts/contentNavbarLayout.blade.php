@@ -92,9 +92,18 @@
                                     <ul class="menu-sub">
                                         {{-- الصادر والوارد --}}
                                         @can('Incomingbooks')
-                                            <li Class="menu-item {{ request()->Is('Incomingbooks') ? 'active' : '' }}">
+                                            <li Class="menu-item {{ request()->Is('Incomingbooks', 'Reports') ? 'active' : '' }}">
                                                 <a href = "{{ Route('Incomingbooks') }}" Class="menu-link">
                                                     <div>الصادر والوارد</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('Reports')
+                                            {{-- التقارير --}}
+                                            <li Class="menu-item {{ request()->Is('Reports') ? 'active' : '' }}">
+                                                <a href="{{ Route('Reports') }}" Class="menu-link">
+                                                    <i Class=""></i>
+                                                    <div>التقارير</div>
                                                 </a>
                                             </li>
                                         @endcan
@@ -103,7 +112,7 @@
                             @endcan
                             {{-- الاعدادات --}}
                             @can('Settings')
-                                <li class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking', 'Reports','Backup') ? 'open active' : '' }}">
+                                <li class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking','Backup') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                         <span class="menu-title">الاعدادات</span>
@@ -141,15 +150,6 @@
                                                 <a href="{{ Route('Tracking') }}" Class="menu-link">
                                                     <i Class=""></i>
                                                     <div>التتبع</div>
-                                                </a>
-                                            </li>
-                                        @endcan
-                                        @can('Reports')
-                                            {{-- التقارير --}}
-                                            <li Class="menu-item {{ request()->Is('Reports') ? 'active' : '' }}">
-                                                <a href="{{ Route('Reports') }}" Class="menu-link">
-                                                    <i Class=""></i>
-                                                    <div>التقارير</div>
                                                 </a>
                                             </li>
                                         @endcan
