@@ -43,16 +43,20 @@ Route::GET('Departments', [DepartmentsController::class, 'index'])->name('Depart
 Route::GET('Incomingbooks', [IncomingbooksController::class, 'index'])->name('Incomingbooks');
 // البريد الالكتروني للاقسام
 Route::GET('Emaillists', [EmaillistsController::class, 'index'])->name('Emaillists');
-
 // التتبع
 Route::GET('Tracking', [TrackingController::class, 'index'])->name('Tracking');
+// تحديث مسارات التقارير
+Route::GET('Reports', [ReportController::class, 'index'])->name('Reports');
+Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->name('Reports.generate');
+// مسار النسخ الاحتياطي
+Route::GET('Backup', [BackupController::class, 'index'])->name('Backup')->middleware('role:OWNER');
 
-
+//مسار جهاز المسح الضوئي لبرنامج Dynamsoft
 Route::get('/scan', function () {
     return view('scan');
 });
 
-
+//مسار جهاز المسح الضوئي لبرنامج NAPS2
 Route::get('/latest-scan', function () {
     $sourceDir = public_path('storage/uploads');
     $publicDir = public_path('storage/uploads');
@@ -86,13 +90,6 @@ Route::get('/latest-scan', function () {
         'url' => Storage::url('uploads/' . $originalFileName)
     ]);
 });
-
-// تحديث مسارات التقارير
-Route::GET('Reports', [ReportController::class, 'index'])->name('Reports');
-Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->name('Reports.generate');
-
-// مسار النسخ الاحتياطي
-Route::GET('Backup', [BackupController::class, 'index'])->name('Backup')->middleware('role:OWNER');
 
 
 
