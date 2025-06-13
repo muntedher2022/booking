@@ -268,8 +268,8 @@
                 @include('livewire.incomingbooks.modals.edit-incomingbook')
                 @include('livewire.incomingbooks.modals.remove-incomingbook')
                 <!-- Modal -->
-            </div>
-        @endcan
+            @endcan
+        </div>
     @else
         <div class="container-xxl">
             <div class="misc-wrapper">

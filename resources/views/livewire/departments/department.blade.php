@@ -83,8 +83,8 @@
                 @include('livewire.departments.modals.edit-department')
                 @include('livewire.departments.modals.remove-department')
                 <!-- Modal -->
-            </div>
-        @endcan
+            @endcan
+        </div>
     @else
         <div class="container-xxl">
             <div class="misc-wrapper">

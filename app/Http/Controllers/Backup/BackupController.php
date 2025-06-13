@@ -9,6 +9,6 @@ class BackupController extends Controller
 {
     public function index()
     {
-        return view('content.Backup.index'); 
+        return view('content.Backup.index');
     }
 }

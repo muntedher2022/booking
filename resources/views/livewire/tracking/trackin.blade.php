@@ -1,5 +1,5 @@
 <div class="mt-n4">
-    @can('tracking-list')
+    @can('tracking-view')
         <div class="card">
             <div class="card-header">
                 <div class="d-flex justify-content-between">
@@ -25,143 +25,157 @@
                     </div> --}}
                 </div>
             </div>
-            <div class="table-responsive">
-                <table class="table">
-                    <thead class="table-light">
-                        <tr>
-                            <th>#</th>
-                            <th class="text-center">اسم الموظف</th>
-                            <th class="text-center">اسم النافذة</th>
-                            <th class="text-center">نوع العملية</th>
-                            <th class="text-center">وقت العملية</th>
-                            <th class="text-center">تفاصيل العملية</th>
-                            {{-- <th class="text-center">العمليات</th> --}}
-                        </tr>
-
-                        <tr>
-                            <th></th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.user_id"
-                                    class="form-control text-center" placeholder="اسم الموظف" wire:key="search_user_id">
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.page_name"
-                                    class="form-control text-center" placeholder="اسم النافذة" wire:key="search_page_name">
-                            </th>
-                            <th class="text-center">
-                                <select wire:model.debounce.300ms="search.operation_type"
-                                    class="form-select text-center w-auto mx-auto" wire:key="search_operation_type">
-                                    <option value="">نوع العملية</option>
-                                    <option value="اضافة">اضافة</option>
-                                    <option value="تعديل">تعديل</option>
-                                    <option value="حذف">حذف</option>
-                                    <option value="طباعة">طباعة</option>
-                                    <option value="تصدير Excel">تصدير Excel</option>
-                                </select>
-                            </th>
-                            <th class="text-center">
-                                <div class="input-group">
-                                    <input type="date" wire:model.debounce.300ms="search.operation_time"
-                                        class="form-control text-center" placeholder="وقت العملية"
-                                        wire:key="search_operation_time">
-                                </div>
-                            </th>
-                            <th class="text-center">
-                                <input type="text" wire:model.debounce.300ms="search.details"
-                                    class="form-control text-center" placeholder="تفاصيل العملية" wire:key="search_details">
-                            </th>
-                            {{-- <th></th> --}}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $i = $links->perPage() * ($links->currentPage() - 1) + 1;
-                        @endphp
-                        @foreach ($Tracking as $Trackin)
+            @can('tracking-list')
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="table-light">
                             <tr>
+                                <th>#</th>
+                                <th class="text-center">اسم الموظف</th>
+                                <th class="text-center">اسم النافذة</th>
+                                <th class="text-center">نوع العملية</th>
+                                <th class="text-center">وقت العملية</th>
+                                <th class="text-center">تفاصيل العملية</th>
+                                {{-- <th class="text-center">العمليات</th> --}}
+                            </tr>
 
-                                <td class="text-center">{{ $i++ }}</td>
-                                <td class="text-center">{{ $Trackin->Getuser ? $Trackin->Getuser->name : '' }}</td>
-                                <td class="text-center">{{ $Trackin->page_name }}</td>
-
-                                <td class="text-center" style="padding: 10px; border-radius: 5px; font-size: 14px;">
-                                    @if ($Trackin->operation_type === 'اضافة')
-                                        <i class="mdi mdi-shield-plus-outline" style="color: #007bff;"></i>
-                                        <span style="color: #007bff;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'تعديل')
-                                        <i class="mdi mdi-shield-refresh-outline" style="color: #ffa500;"></i>
-                                        <span style="color: #ffa500;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'حذف')
-                                        <i class="mdi mdi-shield-remove-outline" style="color: #dc3545;"></i>
-                                        <span style="color: #dc3545;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'طباعة')
-                                        <i class="mdi mdi-shield-crown-outline" style="color: #9C27B0;"></i>
-                                        <span style="color: #9C27B0;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'تصدير Excel')
-                                        <i class="mdi mdi-file-excel-outline" style="color: #28a745;"></i>
-                                        <span style="color: #28a745;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'إنشاء نسخة احتياطية')
-                                        <i class="mdi mdi-backup-restore" style="color: #00bcd4;"></i>
-                                        <span style="color: #00bcd4;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'تحميل نسخة احتياطية')
-                                        <i class="mdi mdi-download-outline" style="color: #3f51b5;"></i>
-                                        <span style="color: #3f51b5;">{{ $Trackin->operation_type }}</span>
-                                    @elseif($Trackin->operation_type === 'حذف نسخة احتياطية')
-                                        <i class="mdi mdi-delete-restore" style="color: #e91e63;"></i>
-                                        <span style="color: #e91e63;">{{ $Trackin->operation_type }}</span>
-                                    @endif
-                                </td>
-
-                                <td class="text-center">{{ $Trackin->operation_time }}</td>
-                                <td class="text-center">
-                                    <div style="white-space: pre-line; max-width: 500px; margin: 0 auto; text-align: right; max-height: 150px; overflow-y: auto; padding: 10px; background-color: #f8f9fa; border-radius: 6px;">
-                                        @php
-                                            $details = $Trackin->details;
-                                            $lines = explode("\n", $details);
-                                            $color = match($Trackin->operation_type) {
-                                                'اضافة' => '#007bff',
-                                                'تعديل' => '#ffa500',
-                                                'حذف' => '#dc3545',
-                                                'طباعة' => '#9C27B0',
-                                                'تصدير Excel' => '#28a745',
-                                                'إنشاء نسخة احتياطية' => '#00bcd4',
-                                                'تحميل نسخة احتياطية' => '#3f51b5',
-                                                'حذف نسخة احتياطية' => '#e91e63',
-                                                default => '#000000'
-                                            };
-
-                                            // تحسين عرض عناصر التصدير
-                                            if ($Trackin->operation_type === 'تصدير Excel') {
-                                                echo '<div style="border-bottom: 1px solid #dee2e6; margin-bottom: 5px; padding-bottom: 5px;">';
-                                                foreach($lines as $line) {
-                                                    if (str_contains($line, '=======================')) {
-                                                        echo '</div><div style="border-bottom: 1px solid #dee2e6; margin-bottom: 5px; padding-bottom: 5px;">';
-                                                        continue;
-                                                    }
-                                                    $parts = explode(':', $line, 2);
-                                                    if (count($parts) == 2) {
-                                                        echo '<div style="margin-bottom: 3px;"><span style="color: ' . $color . '; font-weight: 600;">' . $parts[0] . ':</span>' . $parts[1] . '</div>';
-                                                    } else {
-                                                        echo '<div style="margin-bottom: 3px;">' . $line . '</div>';
-                                                    }
-                                                }
-                                                echo '</div>';
-                                            } else {
-                                                // عرض عادي لباقي العمليات
-                                                foreach($lines as $line) {
-                                                    $parts = explode(':', $line, 2);
-                                                    if (count($parts) == 2) {
-                                                        echo '<div style="margin-bottom: 3px;"><span style="color: ' . $color . '; font-weight: 600;">' . $parts[0] . ':</span>' . $parts[1] . '</div>';
-                                                    } else {
-                                                        echo '<div style="margin-bottom: 3px;">' . $line . '</div>';
-                                                    }
-                                                }
-                                            }
-                                        @endphp
+                            <tr>
+                                <th></th>
+                                <th class="text-center">
+                                    <input type="text" wire:model.debounce.300ms="search.user_id"
+                                        class="form-control text-center" placeholder="اسم الموظف" wire:key="search_user_id">
+                                </th>
+                                <th class="text-center">
+                                    <input type="text" wire:model.debounce.300ms="search.page_name"
+                                        class="form-control text-center" placeholder="اسم النافذة" wire:key="search_page_name">
+                                </th>
+                                <th class="text-center">
+                                    <select wire:model.debounce.300ms="search.operation_type"
+                                        class="form-select text-center w-auto mx-auto" wire:key="search_operation_type">
+                                        <option value="">نوع العملية</option>
+                                        <option value="اضافة">اضافة</option>
+                                        <option value="تعديل">تعديل</option>
+                                        <option value="حذف">حذف</option>
+                                        <option value="طباعة">طباعة</option>
+                                        <option value="تصدير Excel">تصدير Excel</option>
+                                    </select>
+                                </th>
+                                <th class="text-center">
+                                    <div class="input-group">
+                                        <input type="date" wire:model.debounce.300ms="search.operation_time"
+                                            class="form-control text-center" placeholder="وقت العملية"
+                                            wire:key="search_operation_time">
                                     </div>
-                                </td>
+                                </th>
+                                <th class="text-center">
+                                    <input type="text" wire:model.debounce.300ms="search.details"
+                                        class="form-control text-center" placeholder="تفاصيل العملية" wire:key="search_details">
+                                </th>
+                                {{-- <th></th> --}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $i = $links->perPage() * ($links->currentPage() - 1) + 1;
+                            @endphp
+                            @foreach ($Tracking as $Trackin)
+                                <tr>
 
-                                {{-- <td class="text-center">
+                                    <td class="text-center">{{ $i++ }}</td>
+                                    <td class="text-center">{{ $Trackin->Getuser ? $Trackin->Getuser->name : '' }}</td>
+                                    <td class="text-center">{{ $Trackin->page_name }}</td>
+
+                                    <td class="text-center" style="padding: 10px; border-radius: 5px; font-size: 14px;">
+                                        @if ($Trackin->operation_type === 'اضافة')
+                                            <i class="mdi mdi-shield-plus-outline" style="color: #007bff;"></i>
+                                            <span style="color: #007bff;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'تعديل')
+                                            <i class="mdi mdi-shield-refresh-outline" style="color: #ffa500;"></i>
+                                            <span style="color: #ffa500;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'حذف')
+                                            <i class="mdi mdi-shield-remove-outline" style="color: #dc3545;"></i>
+                                            <span style="color: #dc3545;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'طباعة')
+                                            <i class="mdi mdi-shield-crown-outline" style="color: #9C27B0;"></i>
+                                            <span style="color: #9C27B0;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'تصدير Excel')
+                                            <i class="mdi mdi-file-excel-outline" style="color: #28a745;"></i>
+                                            <span style="color: #28a745;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'إنشاء نسخة احتياطية')
+                                            <i class="mdi mdi-backup-restore" style="color: #00bcd4;"></i>
+                                            <span style="color: #00bcd4;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'تحميل نسخة احتياطية')
+                                            <i class="mdi mdi-download-outline" style="color: #3f51b5;"></i>
+                                            <span style="color: #3f51b5;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'حذف نسخة احتياطية')
+                                            <i class="mdi mdi-delete-restore" style="color: #e91e63;"></i>
+                                            <span style="color: #e91e63;">{{ $Trackin->operation_type }}</span>
+                                        @endif
+                                    </td>
+
+                                    <td class="text-center">{{ $Trackin->operation_time }}</td>
+                                    <td class="text-center">
+                                        <div
+                                            style="white-space: pre-line; max-width: 500px; margin: 0 auto; text-align: right; max-height: 150px; overflow-y: auto; padding: 10px; background-color: #f8f9fa; border-radius: 6px;">
+                                            @php
+                                                $details = $Trackin->details;
+                                                $lines = explode("\n", $details);
+                                                $color = match ($Trackin->operation_type) {
+                                                    'اضافة' => '#007bff',
+                                                    'تعديل' => '#ffa500',
+                                                    'حذف' => '#dc3545',
+                                                    'طباعة' => '#9C27B0',
+                                                    'تصدير Excel' => '#28a745',
+                                                    'إنشاء نسخة احتياطية' => '#00bcd4',
+                                                    'تحميل نسخة احتياطية' => '#3f51b5',
+                                                    'حذف نسخة احتياطية' => '#e91e63',
+                                                    default => '#000000',
+                                                };
+
+                                                // تحسين عرض عناصر التصدير
+                                                if ($Trackin->operation_type === 'تصدير Excel') {
+                                                    echo '<div style="border-bottom: 1px solid #dee2e6; margin-bottom: 5px; padding-bottom: 5px;">';
+                                                    foreach ($lines as $line) {
+                                                        if (str_contains($line, '=======================')) {
+                                                            echo '</div><div style="border-bottom: 1px solid #dee2e6; margin-bottom: 5px; padding-bottom: 5px;">';
+                                                            continue;
+                                                        }
+                                                        $parts = explode(':', $line, 2);
+                                                        if (count($parts) == 2) {
+                                                            echo '<div style="margin-bottom: 3px;"><span style="color: ' .
+                                                                $color .
+                                                                '; font-weight: 600;">' .
+                                                                $parts[0] .
+                                                                ':</span>' .
+                                                                $parts[1] .
+                                                                '</div>';
+                                                        } else {
+                                                            echo '<div style="margin-bottom: 3px;">' . $line . '</div>';
+                                                        }
+                                                    }
+                                                    echo '</div>';
+                                                } else {
+                                                    // عرض عادي لباقي العمليات
+                                                    foreach ($lines as $line) {
+                                                        $parts = explode(':', $line, 2);
+                                                        if (count($parts) == 2) {
+                                                            echo '<div style="margin-bottom: 3px;"><span style="color: ' .
+                                                                $color .
+                                                                '; font-weight: 600;">' .
+                                                                $parts[0] .
+                                                                ':</span>' .
+                                                                $parts[1] .
+                                                                '</div>';
+                                                        } else {
+                                                            echo '<div style="margin-bottom: 3px;">' . $line . '</div>';
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
+                                        </div>
+                                    </td>
+
+                                    {{-- <td class="text-center">
                                         <div class="btn-group" role="group" aria-label="First group">
                                             @can('tracking-edit')
                                                 <button wire:click="GetTrackin({{ $Trackin->id }})"
@@ -180,18 +194,19 @@
                                             @endcan
                                         </div>
                                     </td> --}}
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-                <div class="mt-2 d-flex justify-content-center">
-                    {{ $links->onEachSide(0)->links() }}
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    <div class="mt-2 d-flex justify-content-center">
+                        {{ $links->onEachSide(0)->links() }}
+                    </div>
                 </div>
-            </div>
-            <!-- Modal -->
-            {{-- @include('livewire.tracking.modals.edit-trackin')
+                <!-- Modal -->
+                {{-- @include('livewire.tracking.modals.edit-trackin')
                 @include('livewire.tracking.modals.remove-trackin') --}}
-            <!-- Modal -->
+                <!-- Modal -->
+            @endcan
         </div>
     @else
         <div class="container-xxl">

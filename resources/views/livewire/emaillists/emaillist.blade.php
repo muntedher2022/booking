@@ -101,9 +101,8 @@
                 @include('livewire.emaillists.modals.edit-emaillist')
                 @include('livewire.emaillists.modals.remove-emaillist')
                 <!-- Modal -->
-
-            </div>
-        @endcan
+            @endcan
+        </div>
     @else
         <div class="container-xxl">
             <div class="misc-wrapper">
