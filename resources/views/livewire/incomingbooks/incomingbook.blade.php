@@ -90,7 +90,7 @@
                             <option value="خارجي">خارجي</option>
                         </select>
                     </div>
-                    <div class="mb-3 col">
+                    {{-- <div class="mb-3 col">
                         <select wire:model.debounce.300ms="search.importance" class="form-select text-center"
                             wire:key="search_importance">
                             <option value="">درجة الاهمية</option>
@@ -99,7 +99,7 @@
                             <option value="سري">سري</option>
                             <option value="سري للغاية">سري للغاية</option>
                         </select>
-                    </div>
+                    </div> --}}
                     <div class="mb-3 col">
                         <input type="text" wire:model.debounce.300ms="search.related_book_id"
                             class="form-control text-center" placeholder=" ابحث عن الرقم الكتاب المرتبط.."
@@ -131,7 +131,7 @@
                                 <th class="text-center">رقم الكتاب المرتبط</th>
                                 <th class="text-center">نوع الكتاب</th>
                                 <th class="text-center">نطاق الكتاب</th>
-                                <th class="text-center">درجة الاهمية</th>
+                                {{-- <th class="text-center">درجة الاهمية</th> --}}
                                 <th class="text-center">الجهة</th>
                                 <th class="text-center">العملية</th>
                             </tr>
@@ -166,7 +166,7 @@
                                     </td>
                                     <td class="text-center">{{ $Incomingbook->book_type }}</td>
                                     <td class="text-center">{{ $Incomingbook->sender_type }}</td>
-                                    <td class="text-center">
+                                    {{-- <td class="text-center">
                                         @switch($Incomingbook->importance)
                                             @case('عادي')
                                                 <span><i
@@ -191,7 +191,7 @@
                                             @default
                                                 {{ $Incomingbook->importance }}
                                         @endswitch
-                                    </td>
+                                    </td> --}}
                                     <td class="text-center position-relative" style="max-width: 200px; min-width: 150px;">
                                         @php
                                             $departmentNames = $Incomingbook->Getdepartment()->pluck('department_name');

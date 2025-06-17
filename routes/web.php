@@ -41,6 +41,8 @@ Route::GET('Sections', [SectionsController::class, 'index'])->name('Sections');
 Route::GET('Departments', [DepartmentsController::class, 'index'])->name('Departments');
 //الكتب الواردة
 Route::GET('Incomingbooks', [IncomingbooksController::class, 'index'])->name('Incomingbooks');
+
+
 // البريد الالكتروني للاقسام
 Route::GET('Emaillists', [EmaillistsController::class, 'index'])->name('Emaillists');
 // التتبع
@@ -55,6 +57,11 @@ Route::GET('Backup', [BackupController::class, 'index'])->name('Backup')->middle
 Route::get('/scan', function () {
     return view('scan');
 });
+
+// مقترحات الكلمات المفتاحية
+Route::get('/keywords/suggestions', [IncomingbooksController::class, 'getKeywordSuggestions']);
+
+
 
 //مسار جهاز المسح الضوئي لبرنامج NAPS2
 Route::get('/latest-scan', function () {

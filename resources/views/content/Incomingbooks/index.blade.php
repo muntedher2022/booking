@@ -287,7 +287,8 @@
                                         const response = await fetch(data.url);
                                         const blob = await response.blob();
                                         const file = new File([blob], data.name, {
-                                            type: data.name.endsWith('.pdf') ? 'application/pdf' : 'image/jpeg'
+                                            type: data.name.endsWith('.pdf') ? 'application/pdf' :
+                                                'image/jpeg'
                                         });
 
                                         const dataTransfer = new DataTransfer();
@@ -297,7 +298,8 @@
 
                                         // تحديث Livewire باستخدام الحدث
                                         let component = window.Livewire.find(
-                                            document.getElementById('attachment').closest('[wire\\:id]').getAttribute('wire:id')
+                                            document.getElementById('attachment').closest('[wire\\:id]')
+                                            .getAttribute('wire:id')
                                         );
 
                                         // رفع الملف إلى Livewire
@@ -558,144 +560,66 @@
 
         // Reset file input and remove preview
         window.addEventListener('resetFileInput', event => {
-        const input = document.getElementById(event.detail.input);
-        if (input) {
-            input.value = '';
-            const previewContainer = document.querySelector('.preview-wrapper');
-            if (previewContainer) {
-                previewContainer.remove();
-            }
-        }
-    });
-
-        // Add Tagify initialization
-        function initializeTagify() {
-            const inputs = ['#modalIncomingbookkeywords', '#editIncomingbookkeywords'];
-
-            inputs.forEach(selector => {
-                const input = document.querySelector(selector);
-                if (!input || input.tagify) return;
-
-                // تنظيف القيمة الأولية وتحويلها إلى مصفوفة
-                let initialValue = input.value;
-                let initialTags = [];
-
-                if (initialValue) {
-                    // إزالة المسافات الزائدة وتقسيم النص بالفواصل
-                    initialTags = initialValue.split(',')
-                        .map(tag => tag.trim())
-                        .filter(tag => tag.length > 0)
-                        .map(tag => ({ value: tag }));
+            const input = document.getElementById(event.detail.input);
+            if (input) {
+                input.value = '';
+                const previewContainer = document.querySelector('.preview-wrapper');
+                if (previewContainer) {
+                    previewContainer.remove();
                 }
+            }
+        });
+
+        // اقترحات الكلمات المفتاحية باستخدام Tagify
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectors = ['#addIncomingbookkeywords', '#editIncomingbookkeywords'];
+
+            selectors.forEach(id => {
+                const input = document.querySelector(id);
+                if (!input) return;
 
                 const tagify = new Tagify(input, {
                     delimiters: ",",
                     maxTags: 6,
-                    trim: true,
-                    enforceWhitelist: false,
-                    editTags: false,
-                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
                     dropdown: {
-                        enabled: 0,
-                        maxItems: 6,
-                        classname: "tags-look",
-                        closeOnSelect: false
+                        enabled: 1,
+                        maxItems: 10,
+                        closeOnSelect: false,
+                        highlightFirst: true,
+                        classname: 'tags-look'
                     },
-                    validate: function(tag) {
-                        return tag.value.length <= 20;
-                    }
+                    enforceWhitelist: false,
+                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(
+                        ',')
                 });
 
-                // تخزين مرجع Tagify في الحقل
                 input.tagify = tagify;
 
-                // إضافة التاجات الأولية
-                if (initialTags.length > 0) {
-                    tagify.addTags(initialTags);
-                }
+                // جلب الاقتراحات عند الكتابة
+                tagify.on('input', function(e) {
+                    let value = e.detail.value.trim();
 
-                // باقي الكود كما هو
+                    if (value.length < 2) {
+                        tagify.dropdown.hide();
+                        return;
+                    }
+
+                    fetch(`/keywords/suggestions?keyword=${encodeURIComponent(value)}`)
+                        .then(res => res.json())
+                        .then(suggestions => {
+                            tagify.settings.whitelist = suggestions.map(item => item.value);
+                            tagify.dropdown.show.call(tagify, value);
+                        });
+                });
+
+                // منع إدخال أكثر من 6 كلمات
                 tagify.on('add', function(e) {
                     if (tagify.value.length > 6) {
-                        e.preventDefault();
-                        Toast.fire({
-                            icon: 'warning',
-                            title: 'لا يمكن إضافة أكثر من 6 كلمات مفتاحية'
-                        });
-                        return false;
+                        tagify.removeTag(e.detail.data.value);
+                        alert('لا يمكن إضافة أكثر من 6 كلمات مفتاحية');
                     }
-                });
-
-                tagify.on('change', function(e) {
-                    const values = tagify.value.map(item => item.value).join(',');
-                    window.Livewire.find(input.closest('[wire\\:id]').getAttribute('wire:id'))
-                        .set('keywords', values);
                 });
             });
-        }
-
-        // تحديث المستمعين
-        ['addincomingbookModal', 'editincomingbookModal'].forEach(modalId => {
-            const modal = document.getElementById(modalId);
-            if (modal) {
-                modal.addEventListener('hidden.bs.modal', function () {
-                    const input = this.querySelector('input[id$="keywords"]');
-                    if (input?.tagify) {
-                        input.tagify.destroy();
-                        input.tagify = null;
-                    }
-                });
-
-                modal.addEventListener('shown.bs.modal', function () {
-                    setTimeout(initializeTagify, 100);
-                });
-            }
         });
-
-        // Initialize Tagify on page load and after Livewire updates
-        document.addEventListener('DOMContentLoaded', initializeTagify);
-        window.Livewire.on('contentChanged', initializeTagify);
-
-        // تحديث كود تهيئة Tagify
-window.addEventListener('initKeywords', event => {
-    const input = document.querySelector(event.detail.selector);
-    if (input && input.tagify) {
-        input.tagify.destroy();
-    }
-
-    const tagify = new Tagify(input, {
-        delimiters: ",",
-        maxTags: 6,
-        trim: true,
-        enforceWhitelist: false,
-        editTags: false,
-        originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(','),
-        dropdown: {
-            enabled: 0,
-            maxItems: 6,
-            classname: "tags-look",
-            closeOnSelect: false
-        }
-    });
-
-    // تخزين مرجع Tagify في الحقل
-    input.tagify = tagify;
-
-    // إضافة التاجات المستردة
-    if (event.detail.tags && event.detail.tags.length > 0) {
-        const tags = event.detail.tags
-            .map(tag => tag.trim())
-            .filter(tag => tag.length > 0)
-            .map(tag => ({ value: tag }));
-        tagify.addTags(tags);
-    }
-
-    // إضافة مستمع للتغييرات
-    tagify.on('change', function(e) {
-        const values = tagify.value.map(item => item.value).join(',');
-        window.Livewire.find(input.closest('[wire\\:id]').getAttribute('wire:id'))
-            .set('keywords', values);
-    });
-});
     </script>
 @endsection

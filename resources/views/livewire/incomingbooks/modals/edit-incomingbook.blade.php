@@ -198,18 +198,16 @@
                                 </div>
                                 <div class="row">
                                     <div class="mb-3 col">
-                                        <div wire:ignore class="form-floating form-floating-outline">
-                                            <input wire:model.defer='keywords' type="text"
-                                                id="editIncomingbookkeywords" placeholder="اضف كلمات مفتاحية"
-                                                class="form-control @error('keywords') is-invalid is-filled @enderror" />
-                                            <label for="editIncomingbookkeywords">كلمات مفتاحية</label>
-                                            <small class="form-text text-muted">
-                                                اضغط Enter أو استخدم الفاصلة لإضافة كلمة مفتاحية (الحد الأقصى 6 كلمات)
-                                            </small>
+                                        <div class="form-floating form-floating-outline position-relative" wire:ignore>
+                                            <input type="text" id="editIncomingbookkeywords" class="form-control"
+                                                value="{{ old('keywords', $keywords ?? '') }}"
+                                                placeholder="أدخل كلمات مفتاحية" autocomplete="off">
+                                            <label for="modalIncomingbookkeywords">كلمات مفتاحية</label>
+                                            <i class="mdi mdi-information-outline position-absolute top-50 end-0 translate-middle-y me-2"
+                                                style="cursor: help;" data-bs-toggle="tooltip"
+                                                data-bs-placement="top" data-bs-custom-class="tooltip-white-grey"
+                                                data-bs-title="اضغط Enter أو استخدم الفاصلة لإضافة كلمة مفتاحية (الحد الأقصى 6 كلمات)"></i>
                                         </div>
-                                        @error('keywords')
-                                            <small class='text-danger inputerror'> {{ $message }} </small>
-                                        @enderror
                                     </div>
                                 </div>
                                 <div class="row">
@@ -225,38 +223,48 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="row">
+                                    <div class="mb-3 col">
+                                        <label class="switch switch-square">
+                                            <input wire:model="needs_reply" type="checkbox" class="switch-input"
+                                                id="needs_reply">
+                                            <span class="switch-toggle-slider">
+                                                <span class="switch-on"></span>
+                                                <span class="switch-off"></span>
+                                            </span>
+                                            <span class="switch-label">الكتاب يحتاج لإجابة</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="col-4 text-center">
                                 <div class="col mb-3">
                                     <div class="form-floating form-floating-outline">
-                                        <input wire:model.defer='attachment' type="file" id="attachment"
-                                            accept=".jpeg,.png,.jpg,.pdf"
-                                            class="form-control @error('attachment') is-invalid is-filled @enderror" />
-                                        <label for="addIncomingbooksender_id">
+                                        <small for="attachment">
                                             {{ $book_type ? ($book_type == 'صادر' ? 'صورة الكتاب الصادر' : 'صورة الكتاب الوارد') : 'صورة الكتاب' }}
-                                        </label>
-                                        @can('incomingbook-Scanner')
-                                            <div class="mt-2">
-                                                <div class="btn-group" role="group">
-                                                    <button type="button" class="btn btn-info"
-                                                        onclick="initializeNaps2Scanner()">
-                                                        <i class="mdi mdi-scanner me-1"></i>
-                                                        مسح ضوئي
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        @endcan
+                                        </small>
+                                        <div class="input-group">
+                                            <input wire:model.defer='attachment' type="file" id="attachment"
+                                                accept=".jpeg,.png,.jpg,.pdf"
+                                                class="form-control @error('attachment') is-invalid is-filled @enderror" />
+                                            @can('incomingbook-Scanner')
+                                                <button type="button" class="btn btn-info"
+                                                    onclick="initializeNaps2Scanner()">
+                                                    <i class="mdi mdi-scanner"></i>
+                                                </button>
+                                            @endcan
+                                        </div>
                                     </div>
                                     @error('attachment')
                                         <small class='text-danger inputerror'> {{ $message }} </small>
                                     @enderror
 
                                     <!-- إضافة منطقة المعاينة مع تنسيقات محسّنة -->
-                                    <div class="mt-3 preview-container" style="max-height: 400px; overflow: hidden;">
+                                    <div class="mt-3 preview-container" style="max-height: 150px; overflow: hidden;">
                                         <div wire:loading wire:target='attachment' class="mt-3">
                                             <img src="{{ asset('assets/img/gif/Cube-Loading-Animated-3D.gif') }}"
-                                                style="max-height: 300px; width: auto;" alt="Loading">
+                                                style="max-height: 150px; width: auto;" alt="Loading">
                                         </div>
 
                                         <div wire:loading.remove wire:target='attachment' class="mt-3">
@@ -265,10 +273,10 @@
                                                 @if ($tempImageUrl)
                                                     @if ($attachment && strtolower($attachment->getClientOriginalExtension()) === 'pdf')
                                                         <embed src="{{ $tempImageUrl }}" type="application/pdf"
-                                                            style="width: 100%; height: 250px; object-fit: contain;" />
+                                                            style="width: 100%; height: 200px; object-fit: contain;" />
                                                     @else
                                                         <img src="{{ $tempImageUrl }}" alt="معاينة المرفق"
-                                                            style="width: 100%; max-height: 250px; object-fit: contain;" />
+                                                            style="width: 100%; max-height: 200px; object-fit: contain;" />
                                                     @endif
                                                 @elseif ($previewIncomingbookImage)
                                                     @php
@@ -280,11 +288,72 @@
                                                     @if (strtolower($extension) === 'pdf')
                                                         <embed src="{{ Storage::url($previewIncomingbookImage) }}"
                                                             type="application/pdf"
-                                                            style="width: 100%; height: 250px; object-fit: contain;" />
+                                                            style="width: 100%; height: 200px; object-fit: contain;" />
                                                     @else
                                                         <img src="{{ Storage::url($previewIncomingbookImage) }}"
                                                             alt="معاينة المرفق"
-                                                            style="width: 100%; max-height: 250px; object-fit: contain;" />
+                                                            style="width: 100%; max-height: 200px; object-fit: contain;" />
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col mb-3">
+                                    <div class="form-floating form-floating-outline">
+                                        <small for="annotated_attachment">
+                                            {{ $book_type ? ($book_type == 'صادر' ? 'نسخة مؤشر عليها للكتاب الصادر' : 'نسخة مؤشر عليها للكتاب الوارد') : 'نسخة مؤشر عليها للكتاب' }}
+                                        </small>
+                                        <div class="input-group">
+                                            <input wire:model.defer='annotated_attachment' type="file"
+                                                id="annotated_attachment" accept=".jpeg,.png,.jpg,.pdf"
+                                                class="form-control @error('annotated_attachment') is-invalid is-filled @enderror" />
+                                            @can('incomingbook-Scanner')
+                                                <button type="button" class="btn btn-info"
+                                                    onclick="initializeNaps2ScannerAnnotated()">
+                                                    <i class="mdi mdi-scanner"></i>
+                                                </button>
+                                            @endcan
+                                        </div>
+                                    </div>
+                                    @error('annotated_attachment')
+                                        <small class='text-danger inputerror'> {{ $message }} </small>
+                                    @enderror
+                                    <!-- إضافة منطقة المعاينة مع تنسيقات محسّنة -->
+                                    <div class="mt-3 preview-container" style="max-height: 150px; overflow: hidden;">
+                                        <div wire:loading wire:target='annotated_attachment' class="mt-3">
+                                            <img src="{{ asset('assets/img/gif/Cube-Loading-Animated-3D.gif') }}"
+                                                style="max-height: 150px; width: auto;" alt="Loading">
+                                        </div>
+
+                                        <div wire:loading.remove wire:target='annotated_attachment' class="mt-3">
+                                            <div class="preview-wrapper"
+                                                style="border: 1px solid #ddd; border-radius: 4px; overflow: hidden;">
+                                                @if ($tempAnnotatedImageUrl)
+                                                    @if ($annotated_attachment && strtolower($annotated_attachment->getClientOriginalExtension()) === 'pdf')
+                                                        <embed src="{{ $tempAnnotatedImageUrl }}"
+                                                            type="application/pdf"
+                                                            style="width: 100%; height: 200px; object-fit: contain;" />
+                                                    @else
+                                                        <img src="{{ $tempAnnotatedImageUrl }}" alt="معاينة المرفق"
+                                                            style="width: 100%; max-height: 200px; object-fit: contain;" />
+                                                    @endif
+                                                @elseif ($previewAnnotatedIncomingbookImage)
+                                                    @php
+                                                        $extension = pathinfo(
+                                                            $previewAnnotatedIncomingbookImage,
+                                                            PATHINFO_EXTENSION,
+                                                        );
+                                                    @endphp
+                                                    @if (strtolower($extension) === 'pdf')
+                                                        <embed
+                                                            src="{{ Storage::url($previewAnnotatedIncomingbookImage) }}"
+                                                            type="application/pdf"
+                                                            style="width: 100%; height: 200px; object-fit: contain;" />
+                                                    @else
+                                                        <img src="{{ Storage::url($previewAnnotatedIncomingbookImage) }}"
+                                                            alt="معاينة المرفق"
+                                                            style="width: 100%; max-height: 200px; object-fit: contain;" />
                                                     @endif
                                                 @endif
                                             </div>
