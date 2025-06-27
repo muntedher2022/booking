@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
 
 
-    <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.css') }}">
-    <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.viewer.css') }}">
+    {{-- <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.css') }}">
+    <link rel="stylesheet" href="{{ asset('Resources/src/dynamsoft.webtwain.viewer.css') }}"> --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
 
 @endsection
@@ -46,11 +46,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js"></script>
 
 
-    <script src="{{ asset('Resources/dynamsoft.webtwain.js') }}"></script>
+    {{-- <script src="{{ asset('Resources/dynamsoft.webtwain.js') }}"></script>
     <script src="{{ asset('Resources/dynamsoft.webtwain.install.js') }}"></script>
     <script src="{{ asset('Resources/dynamsoft.webtwain.initiate.js') }}"></script>
     <script src="{{ asset('Resources/dynamsoft.webtwain.config.js') }}"></script>
-    <script src="{{ asset('Resources/src/dynamsoft.webtwain.viewer.js') }}"></script>
+    <script src="{{ asset('Resources/src/dynamsoft.webtwain.viewer.js') }}"></script> --}}
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
 @endsection

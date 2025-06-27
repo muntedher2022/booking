@@ -53,11 +53,11 @@ Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->na
 // مسار النسخ الاحتياطي
 Route::GET('Backup', [BackupController::class, 'index'])->name('Backup')->middleware('role:OWNER');
 
-//مسار جهاز المسح الضوئي لبرنامج Dynamsoft
+/* //مسار جهاز المسح الضوئي لبرنامج Dynamsoft
 Route::get('/scan', function () {
     return view('scan');
 });
-
+ */
 // مقترحات الكلمات المفتاحية
 Route::get('/keywords/suggestions', [IncomingbooksController::class, 'getKeywordSuggestions']);
 
