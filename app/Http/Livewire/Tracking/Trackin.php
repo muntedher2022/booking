@@ -7,6 +7,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Tracking\Tracking;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class Trackin extends Component
 {
@@ -17,6 +18,10 @@ class Trackin extends Component
     public $TrackinSearch, $Trackin, $TrackinId;
     public $user_id, $page_name, $operation_type, $operation_time, $details;
     public $search = ['user_id' => '', 'page_name' => '', 'operation_type' => '', 'operation_time' => '', 'details' => ''];
+    public $totalDaily = 0;
+    public $totalMonthly = 0;
+    public $totalYearly = 0;
+    public $totalAll = 0;
 
     public function updatedSearch($value, $key)
     {
@@ -56,9 +61,22 @@ class Trackin extends Component
 
         $links = $Tracking;
         $this->Tracking = collect($Tracking->items());
+
+        // حساب إجمالي العمليات
+        $this->totalDaily = Tracking::whereDate('operation_time', Carbon::today())->count();
+        $this->totalMonthly = Tracking::whereMonth('operation_time', Carbon::now()->month)
+            ->whereYear('operation_time', Carbon::now()->year)
+            ->count();
+        $this->totalYearly = Tracking::whereYear('operation_time', Carbon::now()->year)->count();
+        $this->totalAll = Tracking::count();
+
         return View('livewire.tracking.trackin', [
             'Tracking' => $Tracking,
-            'links' => $links
+            'links' => $links,
+            'totalDaily' => $this->totalDaily,
+            'totalMonthly' => $this->totalMonthly,
+            'totalYearly' => $this->totalYearly,
+            'totalAll' => $this->totalAll,
         ]);
     }
 

@@ -24,6 +24,95 @@
                         @endcan
                     </div> --}}
                 </div>
+                <div class="d-flex justify-content-between mt-3">
+                    <div>
+                        <h5 class="d-flex align-items-center gap-2">
+                            <span class="text-dark d-flex align-items-center">
+                                <i class="mdi mdi-account-eye fs-3"></i>
+                                <span class="ms-1">التتبع اليومي للمستخدمين</span>
+                            </span>
+                        </h5>
+                    </div>
+                    @livewire('tracking.tracking-users-operations-counter')
+                </div>
+                <div class="row g-4 mt-4">
+                    <!-- Daily Card -->
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card bg-white rounded-4 position-relative overflow-hidden border-0">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-3 me-3">
+                                        <i class="mdi mdi-calendar-today fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1 text-end">
+                                        <h2 class="mb-0 fw-bold text-dark">{{ $totalDaily }}</h2>
+                                        <span class="text-muted small">عمليات اليوم</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="wave-bg" style="background: rgba(33, 150, 243, 0.1);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Monthly Card -->
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card bg-white rounded-4 position-relative overflow-hidden border-0">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-3 me-3">
+                                        <i class="mdi mdi-calendar-month fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1 text-end">
+                                        <h2 class="mb-0 fw-bold text-dark">{{ $totalMonthly }}</h2>
+                                        <span class="text-muted small">عمليات الشهر</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="wave-bg" style="background: rgba(76, 175, 80, 0.1);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Yearly Card -->
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card bg-white rounded-4 position-relative overflow-hidden border-0">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-warning bg-opacity-10 rounded-3 p-3 me-3">
+                                        <i class="mdi mdi-calendar-range fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1 text-end">
+                                        <h2 class="mb-0 fw-bold text-dark">{{ $totalYearly }}</h2>
+                                        <span class="text-muted small">عمليات السنة</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="wave-bg" style="background: rgba(255, 193, 7, 0.1);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Total Card -->
+                    <div class="col-6 col-md-3">
+                        <div class="stats-card bg-white rounded-4 position-relative overflow-hidden border-0">
+                            <div class="card-body p-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-wrapper bg-danger bg-opacity-10 rounded-3 p-3 me-3">
+                                        <i class="mdi mdi-counter fs-3"></i>
+                                    </div>
+                                    <div class="flex-grow-1 text-end">
+                                        <h2 class="mb-0 fw-bold text-dark">{{ $totalAll }}</h2>
+                                        <span class="text-muted small">الإجمالي الكلي</span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <div class="wave-bg" style="background: rgba(103, 58, 183, 0.1);"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             @can('tracking-list')
                 <div class="table-responsive">
@@ -232,3 +321,52 @@
         </div>
     @endcan
 </div>
+<style>
+    .stats-card {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .icon-wrapper {
+        transition: all 0.3s ease;
+    }
+
+    .stats-card:hover .icon-wrapper {
+        transform: scale(1.1);
+    }
+
+    .wave-bg {
+        height: 4px;
+        width: 100%;
+        border-radius: 2px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .wave-bg::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+        animation: wave 1.5s linear infinite;
+    }
+
+    @keyframes wave {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+</style>
