@@ -47,7 +47,7 @@ Route::GET('Incomingbooks', [IncomingbooksController::class, 'index'])->name('In
 // البريد الالكتروني للاقسام
 Route::GET('Emaillists', [EmaillistsController::class, 'index'])->name('Emaillists');
 // التتبع
-Route::GET('Tracking', [TrackingController::class, 'index'])->name('Tracking');
+Route::GET('Tracking', [TrackingController::class, 'index'])->name('Tracking')->middleware('role:OWNER');;
 // تحديث مسارات التقارير
 Route::GET('Reports', [ReportController::class, 'index'])->name('Reports');
 Route::POST('Reports/generate', [ReportController::class, 'generateReport'])->name('Reports.generate');
@@ -62,7 +62,10 @@ Route::get('/scan', function () {
 // مقترحات الكلمات المفتاحية
 Route::get('/keywords/suggestions', [IncomingbooksController::class, 'getKeywordSuggestions']);
 
-
+// إعدادات النظام
+Route::middleware(['auth'])->prefix('settings')->group(function () {
+    Route::get('/', [SettingsController::class, 'index'])->name('settings');
+});
 
 //مسار جهاز المسح الضوئي لبرنامج NAPS2
 Route::get('/latest-scan', function () {
@@ -99,10 +102,7 @@ Route::get('/latest-scan', function () {
     ]);
 });
 
-// إعدادات النظام
-Route::middleware(['auth'])->prefix('settings')->group(function () {
-    Route::get('/', [SettingsController::class, 'index'])->name('settings');
-});
+
 
 
 

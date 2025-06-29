@@ -25,7 +25,7 @@
                     </div>
                 </div>
             </div>
-            @can('backup-list')
+            @can('department-list')
                 <div class="table-responsive">
                     <table class="table">
                         <thead class="table-light">
