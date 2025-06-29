@@ -74,11 +74,8 @@ class DashboardBooking extends Component
 
     private function loadRecentBooks()
     {
-        // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
         $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
-
-        // جلب جميع المستخدمين المرتبطين بنفس الأقسام
-        $usersInSameSections = User::whereHas('sections', function($q) use ($userSectionIds) {
+        $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
             $q->whereIn('sections.id', $userSectionIds);
         })->pluck('id')->unique()->toArray();
 
@@ -96,7 +93,7 @@ class DashboardBooking extends Component
         $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
 
         // جلب جميع المستخدمين المرتبطين بنفس الأقسام
-        $usersInSameSections = User::whereHas('sections', function($q) use ($userSectionIds) {
+        $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
             $q->whereIn('sections.id', $userSectionIds);
         })->pluck('id')->unique()->toArray();
 

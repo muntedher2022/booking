@@ -2,16 +2,17 @@
 
 namespace App\Http\Livewire\Report;
 
+use App\Models\User;
 use Livewire\Component;
-use App\Models\Incomingbooks\Incomingbooks;
-use App\Models\Departments\Departments;
-use App\Models\Sections\Sections;
 use App\Models\Report\Report;
+use App\Models\Sections\Sections;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Departments\Departments;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use App\Models\Incomingbooks\Incomingbooks;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class ReportComponent extends Component
 {
@@ -43,9 +44,18 @@ class ReportComponent extends Component
         }
 
         try {
+            // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
+            $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
+
+            // جلب جميع المستخدمين المرتبطين بنفس الأقسام
+            $usersInSameSections = User::whereHas('sections', function($q) use ($userSectionIds) {
+                $q->whereIn('sections.id', $userSectionIds);
+            })->pluck('id')->unique()->toArray();
+
             // إنشاء الاستعلام وجلب البيانات
             $query = Incomingbooks::query()
-                ->select($this->selectedColumns);
+                ->select($this->selectedColumns)
+                ->whereIn('user_id', $usersInSameSections); // إضافة فلتر المستخدمين
 
             // تطبيق الفلاتر
             if (!empty($this->filters['book_type'])) {

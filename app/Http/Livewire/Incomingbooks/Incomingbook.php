@@ -3,9 +3,10 @@
 namespace App\Http\Livewire\Incomingbooks;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Livewire\Component;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
 use Illuminate\Validation\Rule;
@@ -130,12 +131,8 @@ class IncomingBook extends Component
     public function render()
     {
         $this->updateEmailCounter();
-
-        // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
         $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
-
-        // جلب جميع المستخدمين المرتبطين بنفس الأقسام
-        $usersInSameSections = \App\Models\User::whereHas('sections', function($q) use ($userSectionIds) {
+        $usersInSameSections = User::whereHas('sections', function($q) use ($userSectionIds) {
             $q->whereIn('sections.id', $userSectionIds);
         })->pluck('id')->unique()->toArray();
 
