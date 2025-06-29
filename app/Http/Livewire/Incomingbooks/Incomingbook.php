@@ -131,6 +131,14 @@ class IncomingBook extends Component
     {
         $this->updateEmailCounter();
 
+        // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
+        $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
+
+        // جلب جميع المستخدمين المرتبطين بنفس الأقسام
+        $usersInSameSections = \App\Models\User::whereHas('sections', function($q) use ($userSectionIds) {
+            $q->whereIn('sections.id', $userSectionIds);
+        })->pluck('id')->unique()->toArray();
+
         $book_numberSearch = '%' . $this->search['book_number'] . '%';
         $book_dateSearch = '%' . $this->search['book_date'] . '%';
         $subjectSearch = '%' . $this->search['subject'] . '%';
@@ -142,6 +150,7 @@ class IncomingBook extends Component
         $importanceSearch = '%' . $this->search['importance'] . '%';
 
         $Incomingbooks = Incomingbooks::query()
+            ->whereIn('user_id', $usersInSameSections)
             ->when($this->search['book_number'], function ($query) use ($book_numberSearch) {
                 $query->where('book_number', 'LIKE', $book_numberSearch);
             })

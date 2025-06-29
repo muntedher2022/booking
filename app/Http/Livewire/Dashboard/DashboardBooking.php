@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Dashboard;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Facades\Log;
 use App\Models\Incomingbooks\Incomingbooks;
@@ -13,9 +14,9 @@ class DashboardBooking extends Component
     public $recentBooks;
     public $totalIncoming;
     public $totalOutgoing;
-    public $totalBooks;  // إجمالي الكتب
-    public $todayGrowthIncoming;  // معدل النمو اليومي للوارد
-    public $todayGrowthOutgoing;  // معدل النمو اليومي للصادر
+    public $totalBooks;
+    public $todayGrowthIncoming;
+    public $todayGrowthOutgoing;
     public $importanceStats;
 
     public $incomingInternalCount;
@@ -73,7 +74,16 @@ class DashboardBooking extends Component
 
     private function loadRecentBooks()
     {
-        $this->recentBooks = Incomingbooks::latest()
+        // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
+        $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
+
+        // جلب جميع المستخدمين المرتبطين بنفس الأقسام
+        $usersInSameSections = User::whereHas('sections', function($q) use ($userSectionIds) {
+            $q->whereIn('sections.id', $userSectionIds);
+        })->pluck('id')->unique()->toArray();
+
+        $this->recentBooks = Incomingbooks::whereIn('user_id', $usersInSameSections)
+            ->latest()
             ->take(10)
             ->get();
     }
@@ -82,44 +92,65 @@ class DashboardBooking extends Component
     {
         $today = Carbon::today();
 
-        // إحصائيات الكتب الواردة والصادرة
-        $this->totalIncoming = Incomingbooks::where('book_type', 'وارد')->count();
+        // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
+        $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
+
+        // جلب جميع المستخدمين المرتبطين بنفس الأقسام
+        $usersInSameSections = User::whereHas('sections', function($q) use ($userSectionIds) {
+            $q->whereIn('sections.id', $userSectionIds);
+        })->pluck('id')->unique()->toArray();
+
+        // إحصائيات الكتب الواردة والصادرة للمستخدمين المرتبطين بنفس الأقسام فقط
+        $this->totalIncoming = Incomingbooks::where('book_type', 'وارد')
+            ->whereIn('user_id', $usersInSameSections)
+            ->count();
         $this->todayGrowthIncoming = Incomingbooks::where('book_type', 'وارد')
+            ->whereIn('user_id', $usersInSameSections)
             ->whereDate('created_at', $today)
             ->count();
 
         // إضافة إحصائيات تفصيلية للوارد
         $this->incomingInternalCount = Incomingbooks::where('book_type', 'وارد')
             ->where('sender_type', 'داخلي')
+            ->whereIn('user_id', $usersInSameSections)
             ->count();
         $this->incomingExternalCount = Incomingbooks::where('book_type', 'وارد')
             ->where('sender_type', 'خارجي')
+            ->whereIn('user_id', $usersInSameSections)
             ->count();
 
         // إحصائيات الكتب الصادرة
-        $this->totalOutgoing = Incomingbooks::where('book_type', 'صادر')->count();
+        $this->totalOutgoing = Incomingbooks::where('book_type', 'صادر')
+            ->whereIn('user_id', $usersInSameSections)
+            ->count();
         $this->todayGrowthOutgoing = Incomingbooks::where('book_type', 'صادر')
+            ->whereIn('user_id', $usersInSameSections)
             ->whereDate('created_at', $today)
             ->count();
 
         // إضافة إحصائيات تفصيلية للصادر
         $this->outgoingInternalCount = Incomingbooks::where('book_type', 'صادر')
             ->where('sender_type', 'داخلي')
+            ->whereIn('user_id', $usersInSameSections)
             ->count();
         $this->outgoingExternalCount = Incomingbooks::where('book_type', 'صادر')
             ->where('sender_type', 'خارجي')
+            ->whereIn('user_id', $usersInSameSections)
             ->count();
 
         $this->totalBooks = $this->totalIncoming + $this->totalOutgoing;
 
-        // تحديث إحصائيات درجات الأهمية
+        // تحديث إحصائيات درجات الأهمية للمستخدمين المرتبطين بنفس الأقسام فقط
         $importanceLevels = ['عادي', 'عاجل', 'سري', 'سري للغاية'];
         $this->importanceStats = [];
 
         foreach ($importanceLevels as $level) {
             $this->importanceStats[$level] = [
-                'total' => Incomingbooks::where('importance', $level)->count(),
+                'total' => Incomingbooks::where('importance', $level)
+                    ->whereIn('user_id', $usersInSameSections)
+                    ->count(),
                 'today' => Incomingbooks::where('importance', $level)
+                    ->whereIn('user_id', $usersInSameSections)
                     ->whereDate('created_at', $today)
                     ->count()
             ];

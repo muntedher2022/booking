@@ -112,7 +112,8 @@
                             @endcan
                             {{-- الاعدادات --}}
                             @can('Settings')
-                                <li class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists','Tracking','Backup') ? 'open active' : '' }}">
+                                <li
+                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists', 'Tracking', 'Backup', 'settings') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                         <span class="menu-title">الاعدادات</span>
@@ -159,6 +160,15 @@
                                                 <a href="{{ Route('Backup') }}" Class="menu-link">
                                                     <i Class=""></i>
                                                     <div>النسخ الاحتياطي</div>
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('SettingSectionUser')
+                                            {{-- اعدادات النظام --}}
+                                            <li Class="menu-item {{ request()->Is('settings') ? 'active' : '' }}">
+                                                <a href="{{ Route('settings') }}" Class="menu-link">
+                                                    <i Class=""></i>
+                                                    <div>اعدادات النظام</div>
                                                 </a>
                                             </li>
                                         @endcan

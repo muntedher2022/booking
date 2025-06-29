@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Backup\BackupController;
 use App\Http\Controllers\Report\ReportController;
 use App\Http\Controllers\Sections\SectionsController;
+use App\Http\Controllers\Settings\SettingsController;
 use App\Http\Controllers\Tracking\TrackingController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Emaillists\EmaillistsController;
@@ -96,6 +97,11 @@ Route::get('/latest-scan', function () {
         'name' => $originalFileName,
         'url' => Storage::url('uploads/' . $originalFileName)
     ]);
+});
+
+// إعدادات النظام
+Route::middleware(['auth'])->prefix('settings')->group(function () {
+    Route::get('/', [SettingsController::class, 'index'])->name('settings');
 });
 
 

@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use App\Models\EmailSend\EmailSend;
 use App\Models\Stores\Stores;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Sections\Sections;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\EmailSend\EmailSend;
 use Laravel\Jetstream\HasProfilePhoto;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -60,4 +61,9 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_url',
     ];
+
+    public function sections()
+    {
+        return $this->belongsToMany(Sections::class, 'section_user', 'user_id', 'section_id');
+    }
 }

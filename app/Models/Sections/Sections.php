@@ -11,8 +11,12 @@ class Sections extends Model
     protected $table = "sections";
     protected $fillable = ['user_id', 'section_name'];
 
-    public function user()
+    /* public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    } */
+    public function user()
+    {
+        return $this->belongsToMany(User::class, 'section_user', 'section_id', 'user_id');
     }
 }
