@@ -45,37 +45,40 @@ class CustomersAccounts extends Component
     {
         $this->Roles = Role::all();
 
-        $SearchName = $this->SearchName . '%';
-        $SearchEmail = $this->SearchEmail . '%';
+        $SearchName = $this->SearchName.'%';
+        $SearchEmail = $this->SearchEmail.'%';
 
-        if ($this->RoleSelect != NULL) {
-            $AdministratorsByRole = DB::table('model_has_roles')->where('role_id', $this->RoleSelect)->pluck('model_id');
-        } else {
+        if($this->RoleSelect != NULL)
+        {
+            $AdministratorsByRole = DB::table('model_has_roles')->where('role_id',$this->RoleSelect)->pluck('model_id');
+        }else{
             $AdministratorsByRole = User::pluck('id');
         }
 
-        if ($this->StatusSelect != NULL) {
+        if($this->StatusSelect != NULL)
+        {
             $AdministratorsByStatus = User::where('status', $this->StatusSelect)->pluck('id');
-        } else {
+        }else{
             $AdministratorsByStatus = User::pluck('id');
         }
 
-        if (Auth::User()->hasRole(['OWNER', 'Supervisor'])) {
+        if (Auth::User()->hasRole(['OWNER', 'Supervisor']))
+        {
             $Users = User::where('plan', 'Customer')
-                ->where('name', 'LIKE', $SearchName)
-                ->where('email', 'LIKE', $SearchEmail)
-                ->whereIn('id', $AdministratorsByRole)
-                ->whereIn('id', $AdministratorsByStatus)
-                ->orderBy('id', 'ASC')
-                ->paginate(10);
-        } else {
+                    ->where('name','LIKE', $SearchName)
+                    ->where('email','LIKE', $SearchEmail)
+                    ->whereIn('id', $AdministratorsByRole)
+                    ->whereIn('id', $AdministratorsByStatus)
+                    ->orderBy('id','ASC')
+                    ->paginate(10);
+        }else{
             $Users = User::where('plan', 'Customer')
-                ->where('name', 'LIKE', $SearchName)
-                ->where('email', 'LIKE', $SearchEmail)
-                ->whereIn('id', $AdministratorsByRole)
-                ->whereIn('id', $AdministratorsByStatus)
-                ->orderBy('id', 'ASC')
-                ->paginate(10);
+                    ->where('name','LIKE', $SearchName)
+                    ->where('email','LIKE', $SearchEmail)
+                    ->whereIn('id', $AdministratorsByRole)
+                    ->whereIn('id', $AdministratorsByStatus)
+                    ->orderBy('id','ASC')
+                    ->paginate(10);
         }
 
         $links = $Users;
@@ -90,7 +93,8 @@ class CustomersAccounts extends Component
     {
         if ($AdministratorRolesId) {
             $this->RoleSelect = $AdministratorRolesId;
-        } else {
+        }
+        else{
             $this->reset('RoleSelect');
         }
     }
@@ -98,7 +102,8 @@ class CustomersAccounts extends Component
     {
         if ($AdministratorStatus) {
             $this->StatusSelect = $AdministratorStatus;
-        } else {
+        }
+        else{
             $this->reset('StatusSelect');
         }
     }
@@ -109,7 +114,7 @@ class CustomersAccounts extends Component
 
         $this->User = User::find($UserId);
         $this->UserId = $this->User->id;
-        $this->UserRolesName = $this->User->getRoleNames()->first();
+        $this->UserRolesName = $this->User->getRoleNames()->toArray();
         $this->UserRoles = $this->User->roles->pluck('id')->toArray();
 
         $this->name = $this->User->name;
@@ -174,35 +179,33 @@ class CustomersAccounts extends Component
     {
         $this->resetValidation();
 
-        $this->validate(
-            [
-                'name' => 'required|unique:users,name,' . $this->UserId,
-                'email' => 'required|email|unique:users,email,' . $this->UserId,
-                'password' => 'nullable|min:8|same:ConfirmPassword',
-                'UserRoles' => 'required',
-                'plan' => 'required',
-                'status' => 'required',
-            ],
-            [
-                'name.required' => 'أسم العميل مطلوب.',
-                'name.unique' => 'تم أخذ هذا الأسم بالفعل',
-                'email.required' => 'البريد الالكتروني مطلوب.',
-                'email.email' => 'يجب التأكد من البريد الالكتروني.',
-                'email.unique' => 'البريد الالكتروني مسجل سابقاً',
-                'password.min' => 'يجب ألا تقل كلمة المرور عن 8 أحرف',
-                'password.same' => 'يجب أن تتطابق كلمة المرور مع تأكيد كلمة المرور',
-                'UserRoles.required' => 'دور العميل مطلوب.',
-                'plan.required' => 'يجب تحديد خطة العميل.',
-                'status.required' => 'يجب تحديد حالة العميل.',
-            ]
-        );
+        $this->validate([
+            'name' => 'required|unique:users,name,'.$this->UserId,
+            'email' => 'required|email|unique:users,email,'.$this->UserId,
+            'password' => 'nullable|min:8|same:ConfirmPassword',
+            'UserRoles' => 'required',
+            'plan' => 'required',
+            'status' => 'required',
+        ],
+        [
+            'name.required' => 'أسم العميل مطلوب.',
+            'name.unique' => 'تم أخذ هذا الأسم بالفعل',
+            'email.required' => 'البريد الالكتروني مطلوب.',
+            'email.email' => 'يجب التأكد من البريد الالكتروني.',
+            'email.unique' => 'البريد الالكتروني مسجل سابقاً',
+            'password.min' => 'يجب ألا تقل كلمة المرور عن 8 أحرف',
+            'password.same' => 'يجب أن تتطابق كلمة المرور مع تأكيد كلمة المرور',
+            'UserRoles.required' => 'دور العميل مطلوب.',
+            'plan.required' => 'يجب تحديد خطة العميل.',
+            'status.required' => 'يجب تحديد حالة العميل.',
+        ]);
 
         $User = User::find($this->UserId);
 
-        if (!empty($this->password)) {
+        if(!empty($this->password)){
             $this->password =  Hash::make($this->password);
-        } else {
-            $this->password = $User->password;
+            } else {
+                $this->password = $User->password;
         }
 
         $User->update([
@@ -213,7 +216,7 @@ class CustomersAccounts extends Component
             'status' => $this->status,
         ]);
 
-        DB::table('model_has_roles')->where('model_id', $this->UserId)->delete();
+        DB::table('model_has_roles')->where('model_id',$this->UserId)->delete();
         $User->assignRole($this->UserRoles);
 
         $this->reset();
@@ -228,7 +231,8 @@ class CustomersAccounts extends Component
     public function destroy()
     {
         $User = User::find($this->UserId);
-        if (!$User->status) {
+        if(!$User->status)
+        {
             $User->delete();
 
             $this->reset();
@@ -237,7 +241,8 @@ class CustomersAccounts extends Component
                 'message' => 'تم حذف حساب العميل بنجاح',
                 'title' => 'حذف الحساب'
             ]);
-        } else {
+        }else
+        {
             $this->dispatchBrowserEvent('error', [
                 'message' => 'يجب ان تكون حالة حساب العميل "غير مفعل" لاتمام عملية الحذف ',
                 'title' => 'حذف الحساب'

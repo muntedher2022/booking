@@ -46,11 +46,6 @@
                         @include('livewire.users.customers-accounts.modals.add-customer')
                     @endcan
                 </div>
-                {{-- <div class="gap-3 py-3 d-flex justify-content-between align-items-center row gap-md-0">
-                <div class="col-md-4 user_role"></div>
-                <div class="col-md-4 user_plan"></div>
-                <div class="col-md-4 user_status"></div>
-            </div> --}}
             </div>
 
             <div class="card-header mt-n4">
