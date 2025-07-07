@@ -81,10 +81,9 @@
                                         <div class="stats-icon primary-light">
                                             <i class="mdi mdi-office-building mdi-24px text-primary"></i>
                                         </div>
-                                        <div class="stats-info">
+                                        <div class="stats-info d-flex align-items-center gap-2">
                                             <h6 class="mb-0 text-primary-subtle">الكتب الداخلية</h6>
-                                            <span
-                                                class="fs-4 fw-bold text-primary">{{ number_format($incomingInternalCount) }}</span>
+                                            <span class="fs-4 fw-bold text-primary">{{ number_format($incomingInternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -102,10 +101,9 @@
                                         <div class="stats-icon primary-light">
                                             <i class="mdi mdi-domain mdi-24px text-primary"></i>
                                         </div>
-                                        <div class="stats-info">
+                                        <div class="stats-info d-flex align-items-center gap-2">
                                             <h6 class="mb-0 text-primary-subtle">الكتب الخارجية</h6>
-                                            <span
-                                                class="fs-4 fw-bold text-primary">{{ number_format($incomingExternalCount) }}</span>
+                                            <span class="fs-4 fw-bold text-primary">{{ number_format($incomingExternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -168,10 +166,9 @@
                                         <div class="stats-icon success-light">
                                             <i class="mdi mdi-office-building mdi-24px text-success"></i>
                                         </div>
-                                        <div class="stats-info">
+                                        <div class="stats-info d-flex align-items-center gap-2">
                                             <h6 class="mb-0 text-success-subtle">الكتب الداخلية</h6>
-                                            <span
-                                                class="fs-4 fw-bold text-success">{{ number_format($outgoingInternalCount) }}</span>
+                                            <span class="fs-4 fw-bold text-success">{{ number_format($outgoingInternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -189,10 +186,9 @@
                                         <div class="stats-icon success-light">
                                             <i class="mdi mdi-domain mdi-24px text-success"></i>
                                         </div>
-                                        <div class="stats-info">
+                                        <div class="stats-info d-flex align-items-center gap-2">
                                             <h6 class="mb-0 text-success-subtle">الكتب الخارجية</h6>
-                                            <span
-                                                class="fs-4 fw-bold text-success">{{ number_format($outgoingExternalCount) }}</span>
+                                            <span class="fs-4 fw-bold text-success">{{ number_format($outgoingExternalCount) }}</span>
                                         </div>
                                     </div>
                                 </div>

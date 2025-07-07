@@ -26,28 +26,9 @@ class DashboardBooking extends Component
 
     public function mount()
     {
-        // **هذا هو الجزء الأهم لمنع الخطأ:**
-        // يتم استدعاء الدوال فقط إذا كان هناك مستخدم مسجل الدخول
-        if (auth()->check()) {
-            $this->loadDailyStats();
-            $this->loadRecentBooks();
-            $this->loadTotalStats();
-        } else {
-            // إذا لم يكن هناك مستخدم مسجل الدخول، قم بتهيئة المتغيرات بقيم افتراضية
-            // أو يمكنك توجيه المستخدم لصفحة تسجيل الدخول
-            $this->dailyStats = [];
-            $this->recentBooks = collect();
-            $this->totalIncoming = 0;
-            $this->totalOutgoing = 0;
-            $this->totalBooks = 0;
-            $this->todayGrowthIncoming = 0;
-            $this->todayGrowthOutgoing = 0;
-            $this->importanceStats = [];
-            $this->incomingInternalCount = 0;
-            $this->incomingExternalCount = 0;
-            $this->outgoingInternalCount = 0;
-            $this->outgoingExternalCount = 0;
-        }
+        $this->loadDailyStats();
+        $this->loadRecentBooks();
+        $this->loadTotalStats();
     }
 
     private function loadDailyStats()
@@ -55,6 +36,7 @@ class DashboardBooking extends Component
         $startDate = now()->subDays(6)->startOfDay();
         $endDate = now()->endOfDay();
 
+        // تهيئة مصفوفة البيانات لكل يوم
         $stats = [];
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $dateString = $date->format('Y-m-d');
@@ -65,20 +47,14 @@ class DashboardBooking extends Component
             ];
         }
 
-        // **الخطوة الثانية:** جلب معرفات أقسام المستخدم مع استخدام `?? []`
-        // هذا السطر لن يتم تنفيذه إلا إذا كان `auth()->check()` صحيحًا
-        $userSectionIds = auth()->user()->sections->pluck('id')->toArray() ?? [];
-        $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
-            $q->whereIn('sections.id', $userSectionIds);
-        })->pluck('id')->unique()->toArray();
-
+        // جلب البيانات من قاعدة البيانات
         $results = Incomingbooks::whereBetween('created_at', [$startDate, $endDate])
-            ->whereIn('user_id', $usersInSameSections)
             ->selectRaw('DATE(created_at) as date, book_type, COUNT(*) as count')
             ->groupBy('date', 'book_type')
             ->orderBy('date')
             ->get();
 
+        // تعبئة البيانات الفعلية
         foreach ($results as $result) {
             $dateStr = $result->date;
             if (isset($stats[$dateStr])) {
@@ -91,13 +67,14 @@ class DashboardBooking extends Component
         }
 
         $this->dailyStats = $stats;
+
+        // للتأكد من البيانات
         Log::info('Daily Stats:', $stats);
     }
 
     private function loadRecentBooks()
     {
-        // جلب معرفات أقسام المستخدم فقط إذا كانت الأقسام موجودة، وإلا فمصفوفة فارغة
-        $userSectionIds = auth()->user()->sections->pluck('id')->toArray() ?? [];
+        $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
         $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
             $q->whereIn('sections.id', $userSectionIds);
         })->pluck('id')->unique()->toArray();
@@ -112,20 +89,15 @@ class DashboardBooking extends Component
     {
         $today = Carbon::today();
 
-        // التأكد من وجود علاقة الأقسام قبل استدعاء pluck()، وإلا فمصفوفة فارغة
-        $userSectionIds = auth()->user()->sections->pluck('id')->toArray() ?? [];
+        // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
+        $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
 
-        // إذا لم تكن هناك معرفات أقسام، فلا داعي للاستعلام عن المستخدمين في نفس الأقسام؛
-        // يتم تعيينها افتراضيًا على معرف المستخدم الحالي لمنع وجود مصفوفة فارغة في whereIn
-        if (empty($userSectionIds)) {
-            $usersInSameSections = [auth()->id()];
-        } else {
-            $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
-                $q->whereIn('sections.id', $userSectionIds);
-            })->pluck('id')->unique()->toArray();
-        }
+        // جلب جميع المستخدمين المرتبطين بنفس الأقسام
+        $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
+            $q->whereIn('sections.id', $userSectionIds);
+        })->pluck('id')->unique()->toArray();
 
-        // إحصائيات الكتب الواردة
+        // إحصائيات الكتب الواردة والصادرة للمستخدمين المرتبطين بنفس الأقسام فقط
         $this->totalIncoming = Incomingbooks::where('book_type', 'وارد')
             ->whereIn('user_id', $usersInSameSections)
             ->count();
@@ -134,6 +106,7 @@ class DashboardBooking extends Component
             ->whereDate('created_at', $today)
             ->count();
 
+        // إضافة إحصائيات تفصيلية للوارد
         $this->incomingInternalCount = Incomingbooks::where('book_type', 'وارد')
             ->where('sender_type', 'داخلي')
             ->whereIn('user_id', $usersInSameSections)
@@ -152,6 +125,7 @@ class DashboardBooking extends Component
             ->whereDate('created_at', $today)
             ->count();
 
+        // إضافة إحصائيات تفصيلية للصادر
         $this->outgoingInternalCount = Incomingbooks::where('book_type', 'صادر')
             ->where('sender_type', 'داخلي')
             ->whereIn('user_id', $usersInSameSections)
@@ -163,7 +137,7 @@ class DashboardBooking extends Component
 
         $this->totalBooks = $this->totalIncoming + $this->totalOutgoing;
 
-        // إحصائيات درجات الأهمية
+        // تحديث إحصائيات درجات الأهمية للمستخدمين المرتبطين بنفس الأقسام فقط
         $importanceLevels = ['عادي', 'عاجل', 'سري', 'سري للغاية'];
         $this->importanceStats = [];
 
