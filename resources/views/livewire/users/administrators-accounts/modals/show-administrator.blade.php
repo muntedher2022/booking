@@ -34,7 +34,7 @@
                         </div>
                         <div class="mb-3 col-4">
                             <div class="text-primary">
-                                <label for="AdministratorRole" class="text-primary mb-n2">الدور</label>
+                                <label for="AdministratorRole" class="text-primary mb-n0">الدور</label>
                                 @if ($AdministratorAccount)
                                     @foreach ($AdministratorAccount->getRoleNames() as $RolesName)
                                         <div class="form-control-plaintext py-0">{{ $RolesName }}</div>
@@ -54,7 +54,9 @@
                         <div class="mb-3 col-6">
                             <div class="text-primary mt-3">
                                 <label for="AdministratorStatus">حالة المشرف</label>
-                                <div class="form-control-plaintext mt-n2 {{ $status ? 'text-success' : 'text-warning' }}">{{ $status ? 'مفعل' : 'غير مفعل' }}</div>
+                                <div
+                                    class="form-control-plaintext mt-n2 {{ $status ? 'text-success' : 'text-warning' }}">
+                                    {{ $status ? 'مفعل' : 'غير مفعل' }}</div>
                             </div>
                         </div>
                     </div>
@@ -69,6 +71,5 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 <!--/ Show Administrator Modal -->

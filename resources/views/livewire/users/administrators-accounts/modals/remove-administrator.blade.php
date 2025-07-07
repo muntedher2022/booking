@@ -46,12 +46,14 @@
                                 </div>
                             </div>
                             <div class="mb-3 col-4">
-                                <label for="AdministratorRole" class="text-danger mb-n5">الدور</label>
-                                @if ($AdministratorAccount)
-                                    @foreach ($AdministratorAccount->getRoleNames() as $RolesName)
-                                        <div class="form-control-plaintext py-0">{{ $RolesName }}</div>
-                                    @endforeach
-                                @endif
+                                <div class="text-danger">
+                                    <label for="AdministratorRole" class="text-danger mb-n0">الدور</label>
+                                    @if ($AdministratorAccount)
+                                        @foreach ($AdministratorAccount->getRoleNames() as $RolesName)
+                                            <div class="form-control-plaintext py-0">{{ $RolesName }}</div>
+                                        @endforeach
+                                    @endif
+                                </div>
                             </div>
                         </div>
 
