@@ -89,16 +89,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Sections::class, 'section_user', 'user_id', 'section_id');
     }
 
-    /* public function stores()
-    {
-        return $this->hasMany(Stores::class);
-    }
-
-    public function emailSends()
-    {
-        return $this->hasMany(EmailSend::class);
-    } */
-
     /* ------------------------ دوال حالة الحساب ------------------------ */
     public function getAccountStatusAttribute()
     {
