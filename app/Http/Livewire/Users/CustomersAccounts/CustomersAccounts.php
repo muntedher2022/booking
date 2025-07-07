@@ -62,7 +62,7 @@ class CustomersAccounts extends Component
             $AdministratorsByStatus = User::pluck('id');
         }
 
-        if (Auth::User()->hasRole(['OWNER', 'Supervisor']))
+        if (hasRole(Auth::user(), ['OWNER', 'Supervisor']))
         {
             $Users = User::where('plan', 'Customer')
                     ->where('name','LIKE', $SearchName)

@@ -23,7 +23,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use App\Models\Incomingbooks\Incomingbooks;
 
-class IncomingBook extends Component
+class Incomingbook extends Component
 {
     use WithPagination;
     use WithFileUploads;
