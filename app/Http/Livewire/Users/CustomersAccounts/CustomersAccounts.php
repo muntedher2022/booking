@@ -111,6 +111,7 @@ class CustomersAccounts extends Component
     public function GetUsersAccount($UserId)
     {
         $this->resetValidation();
+        $this->reset('name', 'email', 'plan', 'status', 'UserRolesName');
 
         $this->User = User::find($UserId);
         $this->UserId = $this->User->id;

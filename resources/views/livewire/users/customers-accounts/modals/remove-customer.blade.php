@@ -48,10 +48,12 @@
                             <div class="mb-3 col-4">
                                 <div class="text-danger">
                                     <label for="UserRolesName" class="text-danger mb-n0">الدور</label>
-                                    @if ($User)
-                                        @foreach ($User->getRoleNames() as $UserRolesName)
-                                            <div class="form-control-plaintext py-0">{{ $UserRolesName }}</div>
+                                    @if(is_array($UserRolesName))
+                                        @foreach($UserRolesName as $role)
+                                            <div class="form-control-plaintext py-0">{{ $role }}</div>
                                         @endforeach
+                                    @else
+                                        <div class="form-control-plaintext py-0">{{ $UserRolesName ?? 'بدون دور' }}</div>
                                     @endif
                                 </div>
                             </div>
