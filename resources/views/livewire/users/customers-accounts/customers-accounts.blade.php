@@ -65,23 +65,23 @@
                     <table class="{{-- datatables-users --}} table border">
                         <thead class="table-light">
                             <tr>
-                                <th>الاسم / البريد الألكتروني</th>
-                                <th>الدور</th>
-                                <th>تاريخ التسجيل</th>
-                                <th>حالة الحساب</th>
+                                <th class="text-center">الاسم / البريد الألكتروني</th>
+                                <th class="text-center">الدور</th>
+                                <th class="text-center">تاريخ التسجيل</th>
+                                <th class="text-center">حالة الحساب</th>
                                 <th class="text-center">الاجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($Users as $User)
                                 <tr>
-                                    <td>
+                                    <td class="text-center">
                                         {{ $User->name }}
                                         <div>
                                             <small>{{ $User->email }}</small>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         @php
                                             $roles_count = count($User->getRoleNames());
                                             $i = 0;
@@ -97,33 +97,38 @@
                                         @endforeach
                                         <br>
                                     </td>
-                                    <td>
-                                        {{ $User->created_at }}
-                                        <div dir="ltr">
-                                            {{ Carbon\Carbon::parse($User->created_at)->diffForHumans() }}
+                                    <td class="text-center">
+                                        <div>
+                                            {{ $User->created_at }}
+                                            <br>
+                                            <span dir="ltr">
+                                                {{ Carbon\Carbon::parse($User->created_at)->diffForHumans() }}
+                                            </span>
                                         </div>
                                     </td>
-                                    <td>
-                                        @php $Status = 'text-dark'; @endphp
-                                        @if ($User->status)
-                                            @php $Status = 'text-success'; @endphp
-                                        @else
-                                            @php $Status = 'text-danger'; @endphp
-                                        @endif
-                                        <small class="{{ $Status }}">{{ $User->status ? 'مفعل' : 'غير مفعل' }}</small>
+                                    <td class="text-center">
+                                        <!-- حالة الحساب -->
+                                        <small class="{{ $User->account_status['class'] }}">
+                                            {{ $User->account_status['text'] }}
+                                        </small>
 
-                                        @if (Cache::has('user-online' . $User->id))
-                                            <small class="text-success">متصل</small>
-                                        @else
-                                            <small class="text-danger">غير متصل</small>
+                                        <!-- حالة الاتصال -->
+                                        @if ($User->status)
+                                            <br>
+                                            <small class="{{ $User->connection_status['class'] }}">
+                                                {{ $User->connection_status['text'] }}
+                                            </small>
                                         @endif
+
+                                        <!-- آخر نشاط -->
                                         <div>
-                                            @if ($User->last_seen != null)
-                                                <span class=""
-                                                    dir="ltr">{{ Carbon\Carbon::parse($User->last_seen)->diffForHumans() }}</span>
-                                            @else
-                                                <small>لم يظهر ابداً</small>
-                                            @endif
+                                            <small class="text-muted">
+                                                @if ($User->last_seen)
+                                                    <span dir="ltr">{{ $User->last_seen->diffForHumans() }}</span>
+                                                @else
+                                                    لم يظهر أبداً
+                                                @endif
+                                            </small>
                                         </div>
                                     </td>
                                     <td class="text-center">

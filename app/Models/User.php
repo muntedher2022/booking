@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use App\Models\EmailSend\EmailSend;
 use App\Models\Stores\Stores;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\EmailSend\EmailSend;
+use App\Models\Sections\Sections;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Jetstream\HasProfilePhoto;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,7 +18,13 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, HasProfilePhoto, Notifiable, TwoFactorAuthenticatable, HasRoles, SoftDeletes;
+    use HasApiTokens,
+        HasFactory,
+        HasProfilePhoto,
+        Notifiable,
+        TwoFactorAuthenticatable,
+        HasRoles,
+        SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -29,6 +37,7 @@ class User extends Authenticatable
         'password',
         'plan',
         'status',
+        'last_seen',
     ];
 
     /**
@@ -50,6 +59,9 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'last_seen' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     /**
@@ -59,5 +71,74 @@ class User extends Authenticatable
      */
     protected $appends = [
         'profile_photo_url',
+        'account_status',
+        'connection_status',
     ];
+
+    /* ------------------------ العلاقات ------------------------ */
+    public function onlineSessions()
+    {
+        return $this->hasMany(OnlineSession::class);
+    }
+
+    /**
+     * Get the sections that belong to the user.
+     */
+    public function sections()
+    {
+        return $this->belongsToMany(Sections::class, 'section_user', 'user_id', 'section_id');
+    }
+
+    /* public function stores()
+    {
+        return $this->hasMany(Stores::class);
+    }
+
+    public function emailSends()
+    {
+        return $this->hasMany(EmailSend::class);
+    } */
+
+    /* ------------------------ دوال حالة الحساب ------------------------ */
+    public function getAccountStatusAttribute()
+    {
+        return [
+            'text' => $this->status ? 'مفعل' : 'غير مفعل',
+            'class' => $this->status ? 'text-success' : 'text-danger'
+        ];
+    }
+
+    /* ------------------------ دوال حالة الاتصال ------------------------ */
+    public function isOnline()
+    {
+        return $this->onlineSessions()
+            ->where('last_activity', '>=', now()->subMinutes(5))
+            ->exists();
+    }
+
+    public function getConnectionStatusAttribute()
+    {
+        if (!$this->status) {
+            return [
+                'text' => '',
+                'class' => ''
+            ];
+        }
+
+        return $this->isOnline() ? [
+            'text' => 'متصل',
+            'class' => 'text-success'
+        ] : [
+            'text' => 'غير متصل',
+            'class' => 'text-danger'
+        ];
+    }
+
+    /* ------------------------ دوال مساعدة ------------------------ */
+    public function getLastActivityTextAttribute()
+    {
+        return $this->last_seen
+            ? $this->last_seen->diffForHumans()
+            : 'لم يظهر أبداً';
+    }
 }

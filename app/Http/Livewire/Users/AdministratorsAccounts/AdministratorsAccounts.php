@@ -22,6 +22,12 @@ class AdministratorsAccounts extends Component
     public $AdministratorId, $name, $email, $password, $ConfirmPassword, $status, $plan;
     public $SearchName, $SearchEmail, $SearchRole, $SearchStatus;
     public $RoleSelect, $StatusSelect;
+    public $search = [
+        'name' => '',
+        'email' => '',
+        'role' => '',
+        'status' => null
+    ];
 
     protected $listeners = [
         'SelectAdministratorRoles',
@@ -37,30 +43,55 @@ class AdministratorsAccounts extends Component
         //
     }
 
+    public function updatedSearch($value, $key)
+    {
+        if (in_array($key, ['name', 'email', 'role', 'status'])) {
+            $this->resetPage();
+        }
+    }
+
     public function render()
     {
         $this->Roles = Role::all();
 
-        $SearchName = $this->SearchName . '%';
-        $SearchEmail = $this->SearchEmail . '%';
-
-        if ($this->RoleSelect != NULL) {
-            $AdministratorsByRole = DB::table('model_has_roles')->where('role_id', $this->RoleSelect)->pluck('model_id');
-        } else {
-            $AdministratorsByRole = User::pluck('id');
-        }
-
-        if ($this->StatusSelect != NULL) {
-            $AdministratorsByStatus = User::where('status', $this->StatusSelect)->pluck('id');
-        } else {
-            $AdministratorsByStatus = User::pluck('id');
-        }
-
-        $Administrators = User::whereIn('plan', ['Supervisor', 'Employee'])
-            ->where('name', 'LIKE', $SearchName)
-            ->where('email', 'LIKE', $SearchEmail)
-            ->whereIn('id', $AdministratorsByRole)
-            ->whereIn('id', $AdministratorsByStatus)
+        $Administrators = User::whereIn('plan', ['Supervisor', 'Employee', 'OWNER'])
+            ->when($this->search['name'], function ($query) {
+                $query->where('name', 'LIKE', '%' . $this->search['name'] . '%');
+            })
+            ->when($this->search['email'], function ($query) {
+                $query->where('email', 'LIKE', '%' . $this->search['email'] . '%');
+            })
+            ->when($this->search['role'], function ($query) {
+                $roleIds = DB::table('model_has_roles')
+                    ->where('role_id', $this->search['role'])
+                    ->pluck('model_id');
+                $query->whereIn('id', $roleIds);
+            })
+            ->when(!is_null($this->search['status']), function ($query) {
+                if ($this->search['status'] === 'متصل') {
+                    $query->where('status', 1)
+                        ->whereHas('onlineSessions', function ($q) {
+                            $q->where('last_activity', '>=', now()->subMinutes(5));
+                        });
+                } elseif ($this->search['status'] === 'غير متصل') {
+                    $query->where('status', 1)
+                        ->whereDoesntHave('onlineSessions', function ($q) {
+                            $q->where('last_activity', '>=', now()->subMinutes(5));
+                        });
+                } elseif ($this->search['status'] === 'مفعل - متصل') {
+                    $query->where('status', 1)
+                        ->whereHas('onlineSessions', function ($q) {
+                            $q->where('last_activity', '>=', now()->subMinutes(5));
+                        });
+                } elseif ($this->search['status'] === 'مفعل - غير متصل') {
+                    $query->where('status', 1)
+                        ->whereDoesntHave('onlineSessions', function ($q) {
+                            $q->where('last_activity', '>=', now()->subMinutes(5));
+                        });
+                } elseif (in_array($this->search['status'], [1, 0, '1', '0'])) {
+                    $query->where('status', $this->search['status']);
+                }
+            })
             ->orderBy('id', 'ASC')
             ->paginate(10);
 

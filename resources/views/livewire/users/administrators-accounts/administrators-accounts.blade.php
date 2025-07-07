@@ -108,33 +108,38 @@
             </div>
 
             <div class="card-header d-flex align-items-center mt-n4">
-                <div class="col">
-                    <input wire:model='SearchName' type="text" class="form-control" id="SearchName"
-                        placeholder="أسم المشرف">
-                </div>
-                <div class="col">
-                    <input wire:model='SearchEmail' type="text" class="form-control" id="SearchEmail"
-                        placeholder="البريد الالكتروني">
-                </div>
-                <div class="col">
-                    <select class="form-select" id="SearchRole">
-                        <option value="0" {{ 0 == $RoleSelect ? 'selected' : '' }}>Any</option>
-                        @foreach ($Roles as $Role)
-                            <option value="{{ $Role->id }}" {{ $Role->id == $RoleSelect ? 'selected' : '' }}>
-                                {{ $Role->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col">
-                    <select class="form-select" id="SearchStatus">
-                        <option value="0" {{ 0 == $StatusSelect ? 'selected' : '' }}>Any</option>
-                        <option value="مفعل" {{ 'مفعل' == $StatusSelect ? 'selected' : '' }}>مفعل </option>
-                        <option value="غير مفعل" {{ 'غير مفعل' == $StatusSelect ? 'selected' : '' }}>غير مفعل</option>
-                        {{-- <option value="متصل" {{ 'متصل' == $StatusSelect?"selected":'' }}>متصل </option>
-                    <option value="غير متصل" {{ 'غير متصل' == $StatusSelect?"selected":'' }}>غير متصل</option>
-                    <option value="مفعل - متصل" {{ 'مفعل - متصل' == $StatusSelect?"selected":'' }}>مفعل - متصل</option>
-                    <option value="مفعل - غير متصل" {{ 'مفعل - غير متصل' == $StatusSelect?"selected":'' }}>مفعل - غير متصل</option> --}}
-                    </select>
+                <div class="row w-100">
+                    <div class="mb-3 col">
+                        <input type="text" wire:model.debounce.300ms="search.name" class="form-control text-center"
+                            placeholder="أسم المشرف" wire:key="search_name">
+                    </div>
+                    <div class="mb-3 col">
+                        <input type="text" wire:model.debounce.300ms="search.email" class="form-control text-center"
+                            placeholder="البريد الالكتروني" wire:key="search_email">
+                    </div>
+                    <div class="mb-3 col">
+                        <select wire:model.debounce.300ms="search.role" class="form-select text-center"
+                            wire:key="search_role">
+                            <option value="">الصلاحية</option>
+                            @foreach ($Roles as $Role)
+                                <option value="{{ $Role->id }}">
+                                    {{ $Role->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="mb-3 col">
+                        <select wire:model.debounce.300ms="search.status" class="form-select text-center"
+                            wire:key="search_status">
+                            <option value="">كل الحالات</option>
+                            <option value="1">مفعل</option>
+                            <option value="0">غير مفعل</option>
+                            <option value="متصل">متصل</option>
+                            <option value="غير متصل">غير متصل</option>
+                            <option value="مفعل - متصل">مفعل - متصل</option>
+                            <option value="مفعل - غير متصل">مفعل - غير متصل</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -144,23 +149,23 @@
                     <table class="{{-- datatables-users --}} table border">
                         <thead class="table-light">
                             <tr>
-                                <th>الاسم</th>
-                                <th>الدور / خطة العمل</th>
-                                <th>تاريخ التسجيل</th>
-                                <th>حالة الحساب</th>
+                                <th class="text-center">الاسم</th>
+                                <th class="text-center">الدور / خطة العمل</th>
+                                <th class="text-center">تاريخ التسجيل</th>
+                                <th class="text-center">حالة الحساب</th>
                                 <th class="text-center">الاجراءات</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($Administrators as $Administrator)
                                 <tr>
-                                    <td>
+                                    <td class="text-center">
                                         {{ $Administrator->name }}
                                         <div>
                                             <small>{{ $Administrator->email }}</small>
                                         </div>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         @php
                                             $roles_count = count($Administrator->getRoleNames());
                                             $i = 0;
@@ -176,33 +181,35 @@
                                         @endforeach
                                         <div>{{ $Administrator->plan }}</div>
                                     </td>
-                                    <td>
-                                        {{ $Administrator->created_at }}
-                                        <div dir="ltr">
-                                            {{ Carbon\Carbon::parse($Administrator->created_at)->diffForHumans() }}
+                                    <td class="text-center">
+                                        <div>
+                                            {{ $Administrator->created_at }}
+                                            <br>
+                                            <span dir="ltr">
+                                                {{ Carbon\Carbon::parse($Administrator->created_at)->diffForHumans() }}
+                                            </span>
                                         </div>
                                     </td>
-                                    <td>
-                                        @php $Status = 'text-dark'; @endphp
-                                        @if ($Administrator->status)
-                                            @php $Status = 'text-success'; @endphp
-                                        @else
-                                            @php $Status = 'text-danger'; @endphp
-                                        @endif
-                                        <small
-                                            class="{{ $Status }}">{{ $Administrator->status ? 'مفعل' : 'غير مفعل' }}</small>
+                                    <td class="text-center">
+                                        <!-- حالة الحساب -->
+                                        <small class="{{ $Administrator->status ? 'text-success' : 'text-danger' }}">
+                                            {{ $Administrator->status ? 'مفعل' : 'غير مفعل' }}
+                                        </small>
 
-                                        @if (Cache::has('user-online' . $Administrator->id))
-                                            <small class="text-success">متصل</small>
-                                        @else
-                                            <small class="text-danger">غير متصل</small>
+                                        <!-- حالة الاتصال -->
+                                        @if ($Administrator->status)
+                                            <br>
+                                            <small class="{{ $Administrator->isOnline() ? 'text-success' : 'text-danger' }}">
+                                                {{ $Administrator->isOnline() ? 'متصل' : 'غير متصل' }}
+                                            </small>
                                         @endif
+
+                                        <!-- آخر نشاط -->
                                         <div>
-                                            @if ($Administrator->last_seen != null)
-                                                <span class=""
-                                                    dir="ltr">{{ Carbon\Carbon::parse($Administrator->last_seen)->diffForHumans() }}</span>
+                                            @if ($Administrator->last_seen)
+                                                <span dir="ltr">{{ $Administrator->last_seen->diffForHumans() }}</span>
                                             @else
-                                                <small>لم يظهر ابداً</small>
+                                                <small>لم يظهر أبداً</small>
                                             @endif
                                         </div>
                                     </td>
