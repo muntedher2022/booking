@@ -102,6 +102,15 @@ Route::get('/latest-scan', function () {
     ]);
 });
 
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+    // روتات أخرى موجودة...
+
+    // روت المساعد الذكي
+    Route::get('/ai-assistant', function () {
+        return view('content.ai-assistant.index');
+    })->name('ai-assistant');
+});
+
 
 
 

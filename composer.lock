@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e0d0436ad603c9d1cadbaa0b3a80b8f2",
+    "content-hash": "4e91ede185f51915c6fa130b9bf066bb",
     "packages": [
         {
             "name": "alkoumi/laravel-arabic-numbers",

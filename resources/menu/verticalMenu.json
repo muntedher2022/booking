@@ -111,6 +111,12 @@
       "slug": "app-email"
     },
     {
+      "name": "المساعد الذكي",
+      "icon": "menu-icon tf-icons mdi mdi-robot",
+      "slug": "ai-assistant",
+      "url": "ai-assistant"
+    },
+    {
       "url": "app/chat",
       "name": "Chat",
       "icon": "menu-icon tf-icons mdi mdi-message-outline",
@@ -132,10 +138,7 @@
       "name": "Invoice",
       "icon": "menu-icon tf-icons mdi mdi-file-document-outline",
       "slug": "app-invoice",
-      "badge": [
-        "danger",
-        "4"
-      ],
+      "badge": ["danger", "4"],
       "submenu": [
         {
           "url": "app/invoice/list",
@@ -489,10 +492,7 @@
       "name": "Cards",
       "icon": "menu-icon tf-icons mdi mdi-credit-card-outline",
       "slug": "cards",
-      "badge": [
-        "primary",
-        "6"
-      ],
+      "badge": ["primary", "6"],
       "submenu": [
         {
           "url": "cards/basic",

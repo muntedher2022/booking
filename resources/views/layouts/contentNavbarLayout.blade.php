@@ -172,6 +172,12 @@
                                                 </a>
                                             </li>
                                         @endcan
+                                        <li class="nav-item me-1 me-xl-0">
+                                            <a class="nav-link btn btn-text-secondary rounded-pill btn-icon hide-arrow"
+                                                href="{{ route('ai-assistant') }}" title="المساعد الذكي">
+                                                <i class="mdi mdi-robot mdi-24px"></i>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                             @endcan
