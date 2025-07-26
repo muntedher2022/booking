@@ -113,7 +113,7 @@
                             {{-- الاعدادات --}}
                             @can('Settings')
                                 <li
-                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists', 'Tracking', 'Backup', 'settings') ? 'open active' : '' }}">
+                                    class="menu-item {{ request()->is('Sections', 'Departments', 'Emaillists', 'Tracking', 'Backup', 'settings','ai-assistant') ? 'open active' : '' }}">
                                     <a href="javascript:void(0);" class="menu-link menu-toggle">
                                         <i class='menu-icon tf-icons mdi mdi-cog-outline'></i>
                                         <span class="menu-title">الاعدادات</span>
@@ -172,12 +172,15 @@
                                                 </a>
                                             </li>
                                         @endcan
-                                        <li class="nav-item me-1 me-xl-0">
-                                            <a class="nav-link btn btn-text-secondary rounded-pill btn-icon hide-arrow"
-                                                href="{{ route('ai-assistant') }}" title="المساعد الذكي">
-                                                <i class="mdi mdi-robot mdi-24px"></i>
-                                            </a>
-                                        </li>
+                                        @can('AiAssistant')
+                                            {{-- المساعد الذكي --}}
+                                            <li Class="menu-item {{ request()->Is('ai-assistant') ? 'active' : '' }}">
+                                                <a href="{{ Route('ai-assistant') }}" Class="menu-link">
+                                                    <i Class=""></i>
+                                                    <div>المساعد الذكي</div>
+                                                </a>
+                                            </li>
+                                        @endcan
                                     </ul>
                                 </li>
                             @endcan
