@@ -45,6 +45,7 @@ class Incomingbook extends Component
     public $selectedRows = [];
     public $selectAll = false;
     public $needs_reply = false;
+    public $allIncomingbooks = [];
 
     protected $listeners = [
         'GetSenderId',
@@ -78,6 +79,16 @@ class Incomingbook extends Component
         $this->sections = Sections::all();
         $this->departments = Departments::all();
         $this->updateEmailCounter();
+
+        // جلب كل الكبات بدون pagination
+        $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
+        $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
+            $q->whereIn('sections.id', $userSectionIds);
+        })->pluck('id')->unique()->toArray();
+
+        $this->allIncomingbooks = Incomingbooks::whereIn('user_id', $usersInSameSections)
+            ->orderBy('id', 'DESC')
+            ->get();
     }
 
     private function updateEmailCounter()

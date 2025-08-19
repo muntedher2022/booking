@@ -177,7 +177,7 @@
                                                 id="addIncomingbookrelated_book_id"
                                                 class="form-select @error('related_book_id') is-invalid is-filled @enderror">
                                                 <option value=""></option>
-                                                @foreach ($incomingbooks as $incomingbook)
+                                                @foreach ($allIncomingbooks as $incomingbook)
                                                     <option value="{{ $incomingbook->id }}">
                                                         رقم الكتاب: {{ $incomingbook->book_number }} -
                                                         {{ $incomingbook->book_type }} -
