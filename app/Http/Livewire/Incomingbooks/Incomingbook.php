@@ -132,7 +132,7 @@ class Incomingbook extends Component
     {
         $this->updateEmailCounter();
         $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
-        $usersInSameSections = User::whereHas('sections', function($q) use ($userSectionIds) {
+        $usersInSameSections = User::whereHas('sections', function ($q) use ($userSectionIds) {
             $q->whereIn('sections.id', $userSectionIds);
         })->pluck('id')->unique()->toArray();
 
@@ -520,7 +520,10 @@ class Incomingbook extends Component
 
         $year = date('Y', strtotime($formatted_date));
         $this->attachment->store('public/Incomingbooks/' . $year . '/' . $this->book_number);
-        $this->annotated_attachment->store('public/Incomingbooks/' . $year . '/' . $this->book_number);
+        //$this->annotated_attachment->store('public/Incomingbooks/' . $year . '/' . $this->book_number);
+        if ($this->annotated_attachment) {
+            $this->annotated_attachment->store('public/Incomingbooks/' . $year . '/' . $this->book_number);
+        }
 
         // معالجة sender_id قبل الحفظ
         $processed_sender_ids = array_map(function ($id) {
@@ -545,7 +548,8 @@ class Incomingbook extends Component
             'sender_type' => $this->sender_type,
             'sender_id' => json_encode($processed_sender_ids),
             'attachment' => $this->attachment->hashName(),
-            'annotated_attachment' => $this->annotated_attachment->hashName(),
+            //'annotated_attachment' => $this->annotated_attachment->hashName(),
+            'annotated_attachment' => $this->annotated_attachment ? $this->annotated_attachment->hashName() : null,
             'book_type' => $this->book_type,
             'importance' => $this->importance,
             'needs_reply' => $this->needs_reply,
