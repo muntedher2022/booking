@@ -589,8 +589,7 @@
                         classname: 'tags-look'
                     },
                     enforceWhitelist: false,
-                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(
-                        ',')
+                    originalInputValueFormat: valuesArr => valuesArr.map(item => item.value).join(',')
                 });
 
                 input.tagify = tagify;
@@ -617,9 +616,42 @@
                     if (tagify.value.length > 6) {
                         tagify.removeTag(e.detail.data.value);
                         alert('لا يمكن إضافة أكثر من 6 كلمات مفتاحية');
+                        return;
                     }
+                    // إرسال البيانات إلى Livewire عند الإضافة
+                    updateLivewireKeywords(tagify);
                 });
+
+                // إرسال البيانات إلى Livewire عند الحذف
+                tagify.on('remove', function(e) {
+                    updateLivewireKeywords(tagify);
+                });
+
+                // دالة لإرسال البيانات إلى Livewire
+                function updateLivewireKeywords(tagifyInstance) {
+                    const keywords = tagifyInstance.value.map(item => item.value).join(',');
+                    window.livewire.emit('updateKeywords', keywords);
+                }
             });
+        });
+
+        // استماع لحدث تحديث الكلمات المفتاحية من Livewire
+        window.addEventListener('initKeywords', event => {
+            const selector = event.detail.selector;
+            const tags = event.detail.tags;
+            const input = document.querySelector(selector);
+
+            if (input && input.tagify) {
+                // تنظيف الكلمات المفتاحية وتحويلها للتنسيق المطلوب
+                const formattedTags = tags.map(tag => ({ value: tag.trim() }));
+                input.tagify.removeAllTags();
+                input.tagify.addTags(formattedTags);
+            }
+        });
+
+        // مستمع لرسائل console.log
+        window.addEventListener('console-log', event => {
+            console.log(event.detail.message);
         });
     </script>
 @endsection

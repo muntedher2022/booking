@@ -53,6 +53,7 @@ class Incomingbook extends Component
         'showIncomingbookbook' => 'handleBookDateUpdated',
         'showError',
         'updatedSelectAll',
+        'updateKeywords',
     ];
 
     public function hydrate()
@@ -137,6 +138,13 @@ class Incomingbook extends Component
         if (in_array($key, ['book_number', 'book_date', 'subject', 'content', 'related_book_id', 'sender_type', 'sender_id', 'book_type', 'importance'])) {
             $this->resetPage();
         }
+    }
+
+    public function updateKeywords($keywords)
+    {
+        $this->keywords = $keywords;
+        // رسالة تصحيح أخطاء مؤقتة
+        $this->dispatchBrowserEvent('console-log', ['message' => 'Keywords updated: ' . $keywords]);
     }
 
     public function render()
@@ -317,6 +325,12 @@ class Incomingbook extends Component
         $this->dispatchBrowserEvent('IncomingbookModalShow');
         $this->dispatchBrowserEvent('resetFileInput', ['input' => 'attachment']);
         $this->dispatchBrowserEvent('resetFileInput', ['input' => 'annotated_attachment']);
+
+        // تنظيف حقل الكلمات المفتاحية
+        $this->dispatchBrowserEvent('initKeywords', [
+            'selector' => '#addIncomingbookkeywords',
+            'tags' => []
+        ]);
     }
 
     public function GetIncomingbook($IncomingbookId)
@@ -635,6 +649,12 @@ class Incomingbook extends Component
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'annotated_attachment', 'book_type', 'importance');
 
+        // تنظيف حقل الكلمات المفتاحية
+        $this->dispatchBrowserEvent('initKeywords', [
+            'selector' => '#addIncomingbookkeywords',
+            'tags' => []
+        ]);
+
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم الاضافه بنجاح',
             'title' => 'اضافه'
@@ -771,6 +791,13 @@ class Incomingbook extends Component
         ]);
 
         $this->reset('book_number', 'book_date', 'subject', 'content', 'keywords', 'related_book_id', 'sender_type', 'sender_id', 'attachment', 'annotated_attachment', 'book_type', 'importance');
+
+        // تنظيف حقل الكلمات المفتاحية
+        $this->dispatchBrowserEvent('initKeywords', [
+            'selector' => '#editIncomingbookkeywords',
+            'tags' => []
+        ]);
+
         $this->dispatchBrowserEvent('success', [
             'message' => 'تم التعديل بنجاح',
             'title' => 'تعديل'
