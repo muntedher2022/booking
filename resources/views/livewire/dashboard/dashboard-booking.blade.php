@@ -35,8 +35,8 @@
                         </div>
                         <div class="card-body position-relative p-4">
                             <div class="d-flex flex-column align-items-center text-{{ $config['color'] }}">
-                                <div class="icon-wrapper mb-3">
-                                    <i class="mdi {{ $config['icon'] }} mdi-48px"></i>
+                                <div class="icon-wrapper mb-3 importance-{{ $config['color'] }}">
+                                    <i class="mdi {{ $config['icon'] }} mdi-48px importance-icon-{{ $config['color'] }}"></i>
                                 </div>
                                 <h6 class="mb-3 fw-bold">{{ $type }}</h6>
                                 <h3 class="fw-bold mb-2">{{ $importanceStats[$type]['total'] }}</h3>
@@ -645,6 +645,515 @@
                 transform: scale(1.1);
             }
 
+            /* تأثيرات حيوية متقدمة لأيقونات درجات الأهمية */
+
+            /* أيقونة عادي - تأثير نبض هادئ */
+            .importance-icon-info {
+                animation: gentlePulse 3s ease-in-out infinite;
+            }
+
+            .icon-wrapper.importance-info {
+                position: relative;
+                overflow: visible;
+            }
+
+            .icon-wrapper.importance-info::before {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                background: rgba(13, 202, 240, 0.3);
+                animation: rippleInfo 2s infinite;
+            }
+
+            @keyframes gentlePulse {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+            }
+
+            @keyframes rippleInfo {
+                0% {
+                    transform: translate(-50%, -50%) scale(0.8);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1.4);
+                    opacity: 0;
+                }
+            }
+
+            /* أيقونة عاجل - تأثير اهتزاز وتوهج */
+            .importance-icon-warning {
+                animation: urgentShake 0.8s ease-in-out infinite, urgentGlow 2s ease-in-out infinite;
+                filter: drop-shadow(0 0 8px rgba(255, 193, 7, 0.5));
+            }
+
+            .icon-wrapper.importance-warning {
+                position: relative;
+                overflow: visible;
+            }
+
+            .icon-wrapper.importance-warning::before {
+                content: '';
+                position: absolute;
+                top: -10px;
+                left: -10px;
+                right: -10px;
+                bottom: -10px;
+                border-radius: 50%;
+                background: radial-gradient(circle, rgba(255, 193, 7, 0.4) 0%, transparent 70%);
+                animation: warningPulse 1s ease-in-out infinite;
+            }
+
+            @keyframes urgentShake {
+                0%, 100% { transform: translateX(0) rotate(0deg); }
+                25% { transform: translateX(-2px) rotate(-1deg); }
+                75% { transform: translateX(2px) rotate(1deg); }
+            }
+
+            @keyframes urgentGlow {
+                0%, 100% { filter: drop-shadow(0 0 8px rgba(255, 193, 7, 0.5)); }
+                50% { filter: drop-shadow(0 0 20px rgba(255, 193, 7, 0.8)); }
+            }
+
+            @keyframes warningPulse {
+                0%, 100% {
+                    transform: scale(1);
+                    opacity: 0.6;
+                }
+                50% {
+                    transform: scale(1.2);
+                    opacity: 0.3;
+                }
+            }
+
+            /* أيقونة سري - تأثير اهتزاز خفيف وتوهج أحمر */
+            .importance-icon-danger {
+                animation: dangerGlow 1.5s ease-in-out infinite, secretShake 3s ease-in-out infinite;
+                filter: drop-shadow(0 0 10px rgba(220, 53, 69, 0.6));
+            }
+
+            .icon-wrapper.importance-danger {
+                position: relative;
+                overflow: visible;
+            }
+
+            .icon-wrapper.importance-danger::before,
+            .icon-wrapper.importance-danger::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                border-radius: 50%;
+                animation: dangerRipple 2s infinite;
+            }
+
+            .icon-wrapper.importance-danger::before {
+                width: 120%;
+                height: 120%;
+                background: rgba(220, 53, 69, 0.2);
+                animation-delay: 0s;
+            }
+
+            .icon-wrapper.importance-danger::after {
+                width: 140%;
+                height: 140%;
+                background: rgba(220, 53, 69, 0.1);
+                animation-delay: 0.5s;
+            }
+
+            @keyframes secretShake {
+                0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+                25% { transform: translateX(-1px) translateY(-1px) rotate(-2deg); }
+                50% { transform: translateX(1px) translateY(1px) rotate(1deg); }
+                75% { transform: translateX(-1px) translateY(1px) rotate(-1deg); }
+            }
+
+            @keyframes dangerGlow {
+                0%, 100% { filter: drop-shadow(0 0 10px rgba(220, 53, 69, 0.6)); }
+                50% { filter: drop-shadow(0 0 25px rgba(220, 53, 69, 0.9)); }
+            }
+
+            @keyframes dangerRipple {
+                0% {
+                    transform: translate(-50%, -50%) scale(0.5);
+                    opacity: 0.8;
+                }
+                100% {
+                    transform: translate(-50%, -50%) scale(1.5);
+                    opacity: 0;
+                }
+            }
+
+            /* أيقونة سري للغاية - تأثير متقدم مع ومضات */
+            .importance-icon-dark {
+                animation: topSecretFlash 0.5s ease-in-out infinite alternate,
+                           darkPulse 2s ease-in-out infinite,
+                           darkSway 4s ease-in-out infinite;
+                filter: drop-shadow(0 0 15px rgba(33, 37, 41, 0.8));
+            }            .icon-wrapper.importance-dark {
+                position: relative;
+                overflow: visible;
+                background: radial-gradient(circle, rgba(33, 37, 41, 0.15) 0%, rgba(33, 37, 41, 0.05) 70%);
+            }
+
+            .icon-wrapper.importance-dark::before {
+                content: '';
+                position: absolute;
+                top: -15px;
+                left: -15px;
+                right: -15px;
+                bottom: -15px;
+                border-radius: 50%;
+                background:
+                    radial-gradient(circle at 30% 30%, rgba(33, 37, 41, 0.4) 0%, transparent 50%),
+                    radial-gradient(circle at 70% 70%, rgba(33, 37, 41, 0.3) 0%, transparent 50%);
+                animation: darkAura 3s ease-in-out infinite;
+            }
+
+            @keyframes topSecretFlash {
+                0% { opacity: 0.8; transform: scale(1); }
+                100% { opacity: 1; transform: scale(1.02); }
+            }
+
+            @keyframes darkPulse {
+                0%, 100% {
+                    filter: drop-shadow(0 0 15px rgba(33, 37, 41, 0.8));
+                    transform: scale(1);
+                }
+                50% {
+                    filter: drop-shadow(0 0 30px rgba(33, 37, 41, 1));
+                    transform: scale(1.05);
+                }
+            }
+
+            @keyframes darkSway {
+                0%, 100% { transform: translateX(0) translateY(0) rotate(0deg); }
+                25% { transform: translateX(-2px) translateY(-1px) rotate(-3deg); }
+                50% { transform: translateX(2px) translateY(2px) rotate(2deg); }
+                75% { transform: translateX(-1px) translateY(1px) rotate(-1deg); }
+            }
+
+            @keyframes darkAura {
+                0%, 100% {
+                    opacity: 0.3;
+                    transform: rotate(0deg) scale(1);
+                }
+                50% {
+                    opacity: 0.6;
+                    transform: rotate(180deg) scale(1.1);
+                }
+            }
+
+            /* تأثيرات إضافية عند التحويم على البطاقات */
+            .card:hover .importance-icon-info {
+                animation-duration: 1s;
+            }
+
+            .card:hover .importance-icon-warning {
+                animation-duration: 0.3s, 1s;
+            }
+
+            .card:hover .importance-icon-danger {
+                animation-duration: 2s, 0.8s;
+            }
+
+            .card:hover .importance-icon-dark {
+                animation-duration: 0.2s, 1s, 4s;
+            }
+
+            /* تأثيرات الخلفية للبطاقات حسب نوع الأهمية */
+            .card:has(.importance-info) {
+                background: linear-gradient(145deg, rgba(13, 202, 240, 0.02) 0%, rgba(255, 255, 255, 0.98) 100%);
+                border: 1px solid rgba(13, 202, 240, 0.1);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .card:has(.importance-info)::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(13, 202, 240, 0.03), transparent);
+                animation: gradientRotate 8s linear infinite;
+                z-index: 0;
+            }
+
+            .card:has(.importance-warning) {
+                background: linear-gradient(145deg, rgba(255, 193, 7, 0.03) 0%, rgba(255, 255, 255, 0.98) 100%);
+                border: 1px solid rgba(255, 193, 7, 0.2);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .card:has(.importance-warning)::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(255, 193, 7, 0.05), transparent);
+                animation: gradientRotate 4s linear infinite;
+                z-index: 0;
+            }
+
+            .card:has(.importance-danger) {
+                background: linear-gradient(145deg, rgba(220, 53, 69, 0.03) 0%, rgba(255, 255, 255, 0.98) 100%);
+                border: 1px solid rgba(220, 53, 69, 0.2);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .card:has(.importance-danger)::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background:
+                    radial-gradient(circle, rgba(220, 53, 69, 0.04) 0%, transparent 70%),
+                    linear-gradient(45deg, transparent, rgba(220, 53, 69, 0.03), transparent);
+                animation: gradientRotate 3s linear infinite, pulseGradient 2s ease-in-out infinite;
+                z-index: 0;
+            }
+
+            .card:has(.importance-dark) {
+                background: linear-gradient(145deg, rgba(33, 37, 41, 0.05) 0%, rgba(255, 255, 255, 0.95) 100%);
+                border: 1px solid rgba(33, 37, 41, 0.3);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .card:has(.importance-dark)::before {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background:
+                    conic-gradient(from 0deg, transparent, rgba(33, 37, 41, 0.06), transparent, rgba(33, 37, 41, 0.04), transparent);
+                animation: gradientRotate 6s linear infinite, darkPulseGradient 3s ease-in-out infinite;
+                z-index: 0;
+            }
+
+            @keyframes gradientRotate {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            @keyframes pulseGradient {
+                0%, 100% { opacity: 0.3; }
+                50% { opacity: 0.7; }
+            }
+
+            @keyframes darkPulseGradient {
+                0%, 100% {
+                    opacity: 0.2;
+                    transform: rotate(0deg) scale(1);
+                }
+                50% {
+                    opacity: 0.6;
+                    transform: rotate(180deg) scale(1.1);
+                }
+            }
+
+            /* ضمان أن محتوى البطاقة يظهر فوق التدرجات */
+            .card-body {
+                position: relative;
+                z-index: 1;
+            }
+
+            /* تأثيرات الظل المحسنة عند التحويم */
+            .card:has(.importance-info):hover {
+                box-shadow: 0 15px 35px rgba(13, 202, 240, 0.25) !important;
+            }
+
+            .card:has(.importance-warning):hover {
+                box-shadow: 0 15px 35px rgba(255, 193, 7, 0.3) !important;
+            }
+
+            .card:has(.importance-danger):hover {
+                box-shadow: 0 15px 35px rgba(220, 53, 69, 0.3) !important;
+            }
+
+            .card:has(.importance-dark):hover {
+                box-shadow: 0 15px 35px rgba(33, 37, 41, 0.4) !important;
+            }
+
+            /* تأثيرات الجسيمات والتألق */
+            @keyframes sparkle {
+                0%, 100% {
+                    opacity: 0;
+                    transform: scale(0) rotate(0deg);
+                }
+                50% {
+                    opacity: 1;
+                    transform: scale(1) rotate(180deg);
+                }
+            }
+
+            .importance-warning::after {
+                content: '✨';
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                font-size: 12px;
+                animation: sparkle 2s ease-in-out infinite;
+                animation-delay: 0.5s;
+            }
+
+            .importance-danger::after {
+                content: '⚡';
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                font-size: 14px;
+                animation: sparkle 1.5s ease-in-out infinite;
+                animation-delay: 0.3s;
+            }
+
+            .importance-dark::after {
+                content: '🔒';
+                position: absolute;
+                top: -10px;
+                right: -10px;
+                font-size: 10px;
+                animation: sparkle 3s ease-in-out infinite;
+                animation-delay: 1s;
+            }
+
+            /* تأثير البريق المتحرك */
+            @keyframes shimmer {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(100%); }
+            }
+
+            .icon-wrapper.importance-warning::before {
+                background:
+                    linear-gradient(90deg,
+                        transparent,
+                        rgba(255, 193, 7, 0.4),
+                        transparent
+                    );
+                animation: shimmer 2s ease-in-out infinite, warningPulse 1s ease-in-out infinite;
+            }
+
+            /* تأثير الطاقة النابضة للسري */
+            .icon-wrapper.importance-danger::before {
+                background:
+                    radial-gradient(circle,
+                        rgba(220, 53, 69, 0.3) 0%,
+                        rgba(220, 53, 69, 0.1) 40%,
+                        transparent 70%
+                    );
+                animation: dangerRipple 2s infinite, energyPulse 1s ease-in-out infinite;
+            }
+
+            @keyframes energyPulse {
+                0%, 100% {
+                    filter: blur(0px);
+                    transform: translate(-50%, -50%) scale(0.8);
+                }
+                50% {
+                    filter: blur(2px);
+                    transform: translate(-50%, -50%) scale(1.2);
+                }
+            }
+
+            /* تأثير الضباب للسري للغاية */
+            .icon-wrapper.importance-dark::after {
+                background:
+                    radial-gradient(circle,
+                        rgba(33, 37, 41, 0.2) 0%,
+                        rgba(33, 37, 41, 0.1) 30%,
+                        transparent 60%
+                    );
+                filter: blur(3px);
+                animation: darkAura 3s ease-in-out infinite, mistEffect 4s linear infinite;
+            }
+
+            @keyframes mistEffect {
+                0%, 100% {
+                    opacity: 0.2;
+                    filter: blur(3px);
+                }
+                50% {
+                    opacity: 0.5;
+                    filter: blur(1px);
+                }
+            }
+
+            /* تأثيرات الحركة المتقدمة عند التحميل */
+            .importance-info {
+                animation-delay: 0.1s;
+            }
+
+            .importance-warning {
+                animation-delay: 0.2s;
+            }
+
+            .importance-danger {
+                animation-delay: 0.3s;
+            }
+
+            .importance-dark {
+                animation-delay: 0.4s;
+            }
+
+            /* تأثير التلاشي والظهور عند التحميل */
+            @keyframes fadeInScale {
+                0% {
+                    opacity: 0;
+                    transform: scale(0.3) rotate(-10deg);
+                }
+                100% {
+                    opacity: 1;
+                    transform: scale(1) rotate(0deg);
+                }
+            }
+
+            .icon-wrapper {
+                animation: fadeInScale 0.8s ease-out;
+            }
+
+            /* تحسينات الأداء */
+            .importance-icon-info,
+            .importance-icon-warning,
+            .importance-icon-danger,
+            .importance-icon-dark {
+                will-change: transform, filter;
+                backface-visibility: hidden;
+                perspective: 1000px;
+            }
+
+            /* تأثيرات التحريك ثلاثي الأبعاد */
+            .card:hover .icon-wrapper.importance-info {
+                transform: perspective(100px) rotateX(15deg) rotateY(15deg) scale(1.1);
+            }
+
+            .card:hover .icon-wrapper.importance-warning {
+                transform: perspective(100px) rotateX(-10deg) rotateY(10deg) scale(1.15);
+            }
+
+            .card:hover .icon-wrapper.importance-danger {
+                transform: perspective(100px) rotateX(10deg) rotateY(-15deg) scale(1.1);
+            }
+
+            .card:hover .icon-wrapper.importance-dark {
+                transform: perspective(100px) rotateX(-15deg) rotateY(-10deg) scale(1.2);
+            }
+
             .trend-indicator-alt {
                 padding: 0.5rem 1rem;
                 border-radius: 1rem;
@@ -739,6 +1248,113 @@
                         requestAnimationFrame(updateNumber);
                     }, 100); // تم تقليل وقت التأخير من 800 إلى 300
                 });
+
+                // تأثيرات تفاعلية للأيقونات
+                const importanceCards = document.querySelectorAll('.card:has([class*="importance-"])');
+
+                importanceCards.forEach(card => {
+                    const iconWrapper = card.querySelector('.icon-wrapper');
+                    const importanceType = Array.from(iconWrapper.classList).find(cls => cls.startsWith('importance-'));
+
+                    // إضافة تأثير النقر
+                    card.addEventListener('click', () => {
+                        iconWrapper.style.animation = 'none';
+
+                        if (importanceType === 'importance-warning') {
+                            iconWrapper.style.animation = 'urgentShake 0.1s ease-in-out 5, urgentGlow 2s ease-in-out infinite';
+                        } else if (importanceType === 'importance-danger') {
+                            iconWrapper.style.animation = 'secretShake 0.2s ease-in-out 8, dangerGlow 1.5s ease-in-out infinite';
+                        } else if (importanceType === 'importance-dark') {
+                            iconWrapper.style.animation = 'topSecretFlash 0.1s ease-in-out 10 alternate, darkPulse 2s ease-in-out infinite, darkSway 1s ease-in-out infinite';
+                        } else {
+                            iconWrapper.style.animation = 'gentlePulse 0.5s ease-in-out 3';
+                        }
+
+                        // إعادة تعيين الأنيميشن بعد فترة
+                        setTimeout(() => {
+                            iconWrapper.style.animation = '';
+                        }, 2000);
+                    });
+
+                    // تأثير التحويم المحسن
+                    card.addEventListener('mouseenter', () => {
+                        const icon = iconWrapper.querySelector('i');
+                        icon.style.transform = 'scale(1.2) rotate(10deg)';
+                        icon.style.transition = 'all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+
+                        // إضافة ذبذبة خفيفة
+                        if (importanceType === 'importance-warning') {
+                            card.style.animation = 'shake 0.5s ease-in-out';
+                        }
+                    });
+
+                    card.addEventListener('mouseleave', () => {
+                        const icon = iconWrapper.querySelector('i');
+                        icon.style.transform = 'scale(1) rotate(0deg)';
+                        card.style.animation = '';
+                    });
+                });
+
+                // إنشاء جسيمات متحركة للسري للغاية
+                const darkCards = document.querySelectorAll('.importance-dark');
+                darkCards.forEach(darkIcon => {
+                    createFloatingParticles(darkIcon.parentElement);
+                });
+
+                // دالة إنشاء الجسيمات
+                function createFloatingParticles(container) {
+                    const particles = ['•', '⋆', '✦', '◦', '∘'];
+
+                    setInterval(() => {
+                        const particle = document.createElement('div');
+                        particle.textContent = particles[Math.floor(Math.random() * particles.length)];
+                        particle.style.position = 'absolute';
+                        particle.style.color = 'rgba(33, 37, 41, 0.3)';
+                        particle.style.fontSize = Math.random() * 8 + 4 + 'px';
+                        particle.style.pointerEvents = 'none';
+                        particle.style.zIndex = '0';
+
+                        // موضع عشوائي
+                        particle.style.left = Math.random() * 100 + '%';
+                        particle.style.top = '100%';
+
+                        container.appendChild(particle);
+
+                        // حركة الجسيم
+                        let position = 100;
+                        const speed = Math.random() * 2 + 1;
+                        const drift = (Math.random() - 0.5) * 2;
+
+                        const animateParticle = () => {
+                            position -= speed;
+                            particle.style.top = position + '%';
+                            particle.style.transform = `translateX(${Math.sin(position / 10) * drift * 10}px)`;
+                            particle.style.opacity = position / 100;
+
+                            if (position > -10) {
+                                requestAnimationFrame(animateParticle);
+                            } else {
+                                container.removeChild(particle);
+                            }
+                        };
+
+                        requestAnimationFrame(animateParticle);
+                    }, 3000);
+                }
+
+                // إضافة CSS للاهتزاز
+                if (!document.querySelector('#shake-animation')) {
+                    const style = document.createElement('style');
+                    style.id = 'shake-animation';
+                    style.textContent = `
+                        @keyframes shake {
+                            0%, 100% { transform: translateX(0) translateY(-5px); }
+                            25% { transform: translateX(-2px) translateY(-3px); }
+                            75% { transform: translateX(2px) translateY(-7px); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
             });
         </script>
 
