@@ -5,7 +5,6 @@ namespace App\Models\IncomingBooks;
 use App\Models\Sections\Sections;
 use App\Models\Departments\Departments;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Outgoingbooks\OutgoingBooks;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class IncomingBooks extends Model
@@ -44,6 +43,6 @@ class IncomingBooks extends Model
 
     public function relatedBook()
     {
-        return $this->belongsTo(Incomingbooks::class, 'related_book_id');
+        return $this->belongsTo(IncomingBooks::class, 'related_book_id', 'id');
     }
 }

@@ -7,11 +7,12 @@ use Livewire\Component;
 use App\Models\Report\Report;
 use App\Models\Sections\Sections;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Models\Departments\Departments;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
-use App\Models\Incomingbooks\Incomingbooks;
+use App\Models\IncomingBooks\IncomingBooks;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class ReportComponent extends Component
@@ -33,7 +34,8 @@ class ReportComponent extends Component
         'sender_type' => 'نطاق الكتاب',
         'book_type' => 'نوع الكتاب',
         'importance' => 'درجة الأهمية',
-        // ... باقي الأعمدة
+        'sender_id' => 'الجهة المرسلة',
+        'related_book_id' => 'الكتاب المرتبط',
     ];
 
     public function generateReport()
@@ -44,6 +46,9 @@ class ReportComponent extends Component
         }
 
         try {
+            // إضافة تسجيل للأخطاء للتحقق من البيانات
+            Log::info('Report Filters', ['filters' => $this->filters]);
+
             // جلب معرفات الأقسام المرتبط بها المستخدم الحالي
             $userSectionIds = auth()->user()->sections->pluck('id')->toArray();
 
@@ -53,8 +58,8 @@ class ReportComponent extends Component
             })->pluck('id')->unique()->toArray();
 
             // إنشاء الاستعلام وجلب البيانات
-            $query = Incomingbooks::query()
-                ->select($this->selectedColumns)
+            $query = IncomingBooks::query()
+                ->with(['relatedBook'])
                 ->whereIn('user_id', $usersInSameSections); // إضافة فلتر المستخدمين
 
             // تطبيق الفلاتر
@@ -76,20 +81,73 @@ class ReportComponent extends Component
             if (!empty($this->filters['keywords'])) {
                 $query->where('keywords', 'like', '%' . $this->filters['keywords'] . '%');
             }
-            if (!empty($this->filters['sender_id'])) {
-                $query->where(function($q) {
-                    foreach ($this->filters['sender_id'] as $sender) {
-                        $q->orWhere('sender_id', 'like', '%' . $sender . '%');
-                    }
-                });
+            if (!empty($this->filters['related_book_id'])) {
+                $query->where('related_book_id', $this->filters['related_book_id']);
             }
 
-            // تنفيذ الاستعلام وتحضير البيانات
-            $this->reportData = $query->get()->map(function($item) {
-                return collect($item->toArray())
+            // تنفيذ الاستعلام الأساسي
+            $results = $query->get();
+
+            // تطبيق فلتر الجهة المرسلة باستخدام PHP (لأن JSON معقد في SQL)
+            if (!empty($this->filters['sender_id'])) {
+                Log::info('Applying sender filter', ['sender_ids' => $this->filters['sender_id']]);
+                Log::info('Results before filter', ['count' => $results->count()]);
+
+                $results = $results->filter(function($item) {
+                    return $this->matchesSenderFilter($this->filters['sender_id'], $item->sender_id);
+                });
+
+                Log::info('Results after filter', ['count' => $results->count()]);
+            }
+
+            // تحضير البيانات للعرض
+            $this->reportData = $results->map(function($item) {
+                $data = collect($item->toArray())
                     ->only($this->selectedColumns)
                     ->toArray();
+
+                // معالجة الجهة المرسلة
+                if (in_array('sender_id', $this->selectedColumns)) {
+                    $senderData = json_decode($item->sender_id, true);
+                    $senderNames = [];
+
+                    if (is_array($senderData)) {
+                        foreach ($senderData as $sender) {
+                            if ($sender['type'] === 'dep') {
+                                $department = Departments::find($sender['id']);
+                                if ($department) {
+                                    $senderNames[] = $department->department_name;
+                                }
+                            } elseif ($sender['type'] === 'sec') {
+                                $section = Sections::find($sender['id']);
+                                if ($section) {
+                                    $senderNames[] = $section->section_name;
+                                }
+                            }
+                        }
+                    }
+
+                    $data['sender_id'] = implode(', ', $senderNames);
+                }
+
+                // معالجة الكتاب المرتبط
+                if (in_array('related_book_id', $this->selectedColumns)) {
+                    $data['related_book_id'] = $item->relatedBook ?
+                        $item->relatedBook->book_number . ' - ' . $item->relatedBook->subject :
+                        'لا يوجد';
+                }
+
+                return $data;
             })->toArray();
+
+            // تسجيل عدد النتائج
+            Log::info('Report Data Count', ['count' => count($this->reportData)]);
+
+            if (empty($this->reportData)) {
+                session()->flash('warning', 'لا توجد بيانات مطابقة للفلاتر المحددة');
+                $this->showResults = false;
+                return;
+            }
 
             // حفظ التقرير في قاعدة البيانات
             Report::create([
@@ -155,6 +213,7 @@ class ReportComponent extends Component
             'importance' => 'mdi-star-outline',
             'created_at' => 'mdi-clock-outline',
             'sender_id' => 'mdi-account-group',
+            'related_book_id' => 'mdi-file-link-outline',
             'attachment' => 'mdi-paperclip',
             'status' => 'mdi-checkbox-marked-circle-outline'
         ];
@@ -170,6 +229,54 @@ class ReportComponent extends Component
     public function getSections()
     {
         return Sections::orderBy('section_name')->get();
+    }
+
+    public function getAvailableBooks()
+    {
+        return IncomingBooks::select('id', 'book_number', 'subject')
+            ->orderBy('book_number')
+            ->get();
+    }
+
+    /**
+     * فحص ما إذا كانت الجهة المرسلة تطابق المعايير المحددة
+     */
+    private function matchesSenderFilter($senderIds, $senderJsonData)
+    {
+        if (empty($senderIds) || empty($senderJsonData)) {
+            return true; // لا توجد فلاتر أو بيانات
+        }
+
+        $senderData = json_decode($senderJsonData, true);
+        if (!is_array($senderData)) {
+            Log::info('Invalid JSON data:', ['data' => $senderJsonData]);
+            return false;
+        }
+
+        // تسجيل عينة للتشخيص
+        if (rand(1, 100) <= 5) { // تسجيل 5% من الحالات
+            Log::info('Sender filter debug:', [
+                'filter_ids' => $senderIds,
+                'sender_data' => $senderData
+            ]);
+        }
+
+        foreach ($senderIds as $filterId) {
+            $parts = explode('_', $filterId);
+            if (count($parts) == 2) {
+                $filterType = $parts[0]; // dep أو sec
+                $filterId = $parts[1];   // المعرف
+
+                foreach ($senderData as $sender) {
+                    if (isset($sender['type']) && isset($sender['id']) &&
+                        $sender['type'] === $filterType && $sender['id'] == $filterId) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public function exportToExcel()

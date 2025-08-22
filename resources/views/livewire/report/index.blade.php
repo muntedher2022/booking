@@ -18,6 +18,31 @@
             @endcan
 
             <div class="card-body">
+                <!-- عرض الرسائل -->
+                @if (session()->has('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="mdi mdi-alert-circle-outline me-2"></i>
+                        {{ session('error') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @if (session()->has('warning'))
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="mdi mdi-alert-outline me-2"></i>
+                        {{ session('warning') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
+                @if (session()->has('success'))
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="mdi mdi-check-circle-outline me-2"></i>
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                @endif
+
                 <!-- الأعمدة المطلوبة -->
                 <div class="card shadow-sm mb-4">
                     <div class="card-header bg-light d-flex justify-content-between align-items-center">
@@ -151,6 +176,22 @@
                                                 </option>
                                             @endforeach
                                         </optgroup>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- الكتاب المرتبط -->
+                            <div class="col-md-6">
+                                <label class="form-label">الكتاب المرتبط</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="mdi mdi-file-link-outline"></i></span>
+                                    <select wire:model="filters.related_book_id" class="form-select">
+                                        <option value="">الكل</option>
+                                        @foreach ($this->getAvailableBooks() as $book)
+                                            <option value="{{ $book->id }}">
+                                                {{ $book->book_number }} - {{ Str::limit($book->subject, 50) }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -377,4 +418,66 @@
             }
         }
     </style>
+@endpush
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Select2 for entities
+            $('#entities').select2({
+                dir: 'rtl',
+                placeholder: 'اختر الدوائر والأقسام',
+                allowClear: true
+            });
+
+            // Handle Select2 change event
+            $('#entities').on('change', function(e) {
+                let selectedValues = $(this).val() || [];
+                console.log('Selected entities:', selectedValues); // للتحقق من البيانات
+                @this.set('filters.sender_id', selectedValues);
+            });
+
+            // استماع لأحداث Livewire لإعادة تهيئة Select2
+            window.addEventListener('livewire:load', function () {
+                $('#entities').select2({
+                    dir: 'rtl',
+                    placeholder: 'اختر الدوائر والأقسام',
+                    allowClear: true
+                });
+            });
+        });
+
+        function printReport() {
+            var printContents = document.getElementById('reportTable').innerHTML;
+            var originalContents = document.body.innerHTML;
+
+            // Create print container with header
+            var printContainer = `
+                <div class="print-container">
+                    <div class="print-header">
+                        <div class="header-logo">
+                            <i class="mdi mdi-file-chart-outline"></i>
+                        </div>
+                        <div class="header-content">
+                            <h2>تقرير المخاطبات</h2>
+                            <div class="header-details">
+                                <span><i class="mdi mdi-calendar"></i> تاريخ الإنشاء: ${new Date().toLocaleDateString('ar-SA')}</span>
+                                <span><i class="mdi mdi-clock"></i> الوقت: ${new Date().toLocaleTimeString('ar-SA')}</span>
+                                <span><i class="mdi mdi-account"></i> المستخدم: {{ auth()->user()->name ?? 'غير محدد' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    ${printContents}
+                    <div class="print-footer">
+                        <p>تم إنشاء هذا التقرير بواسطة نظام إدارة المخاطبات - جميع الحقوق محفوظة</p>
+                    </div>
+                </div>
+            `;
+
+            document.body.innerHTML = printContainer;
+            window.print();
+            document.body.innerHTML = originalContents;
+            location.reload();
+        }
+    </script>
 @endpush
