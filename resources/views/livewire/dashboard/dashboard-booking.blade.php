@@ -757,26 +757,26 @@
                             <table class="table table-hover align-middle mb-0">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="border-0 px-4">رقم الكتاب</th>
-                                        <th class="border-0">التاريخ</th>
-                                        <th class="border-0">الموضوع</th>
-                                        <th class="border-0">النوع</th>
-                                        <th class="border-0">الأهمية</th>
+                                        <th class="border-0 px-4 text-center">رقم الكتاب</th>
+                                        <th class="border-0 text-center">التاريخ</th>
+                                        <th class="border-0 text-center">الموضوع</th>
+                                        <th class="border-0 text-center">النوع</th>
+                                        <th class="border-0 text-center">الأهمية</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($recentBooks as $book)
                                         <tr>
-                                            <td class="px-4">{{ $book->book_number }}</td>
-                                            <td>{{ Carbon\Carbon::parse($book->book_date)->format('Y-m-d') }}</td>
-                                            <td>{{ Str::limit($book->subject, 30) }}</td>
-                                            <td>
+                                            <td class="px-4 text-center">{{ $book->book_number }}</td>
+                                            <td class="text-center">{{ Carbon\Carbon::parse($book->book_date)->format('Y-m-d') }}</td>
+                                            <td class="text-center">{{ Str::limit($book->subject, 30) }}</td>
+                                            <td class="text-center">
                                                 <span
                                                     class="badge bg-{{ $book->book_type == 'وارد' ? 'soft-primary' : 'soft-success' }} rounded-pill px-3">
                                                     {{ $book->book_type }}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <td class="text-center">
                                                 @php
                                                     $importanceClass = match ($book->importance) {
                                                         'عاجل' => 'soft-danger',
