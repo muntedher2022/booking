@@ -448,6 +448,9 @@
         });
 
         function printReport() {
+            // تسجيل عملية الطباعة في التتبع أولاً
+            @this.call('logPrintReport');
+
             var printContents = document.getElementById('reportTable').innerHTML;
             var originalContents = document.body.innerHTML;
 

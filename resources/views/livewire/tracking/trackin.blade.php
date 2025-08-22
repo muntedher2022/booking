@@ -199,6 +199,9 @@
                                         @elseif($Trackin->operation_type === 'حذف نسخة احتياطية')
                                             <i class="mdi mdi-delete-restore" style="color: #e91e63;"></i>
                                             <span style="color: #e91e63;">{{ $Trackin->operation_type }}</span>
+                                        @elseif($Trackin->operation_type === 'إنشاء تقرير')
+                                            <i class="mdi mdi-file-document-plus-outline" style="color: #17a2b8;"></i>
+                                            <span style="color: #17a2b8;">{{ $Trackin->operation_type }}</span>
                                         @endif
                                     </td>
 
@@ -218,11 +221,12 @@
                                                     'إنشاء نسخة احتياطية' => '#00bcd4',
                                                     'تحميل نسخة احتياطية' => '#3f51b5',
                                                     'حذف نسخة احتياطية' => '#e91e63',
+                                                    'إنشاء تقرير' => '#17a2b8',
                                                     default => '#000000',
                                                 };
 
                                                 // تحسين عرض عناصر التصدير
-                                                if ($Trackin->operation_type === 'تصدير Excel') {
+                                                if ($Trackin->operation_type === 'تصدير Excel' || $Trackin->operation_type === 'إنشاء تقرير') {
                                                     echo '<div style="border-bottom: 1px solid #dee2e6; margin-bottom: 5px; padding-bottom: 5px;">';
                                                     foreach ($lines as $line) {
                                                         if (str_contains($line, '=======================')) {

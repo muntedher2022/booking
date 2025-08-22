@@ -6,6 +6,7 @@ use App\Models\User;
 use Livewire\Component;
 use App\Models\Report\Report;
 use App\Models\Sections\Sections;
+use App\Models\Tracking\Tracking;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Departments\Departments;
@@ -23,7 +24,7 @@ class ReportComponent extends Component
     public $showResults = false;
     protected $originalData = null;
 
-    protected $listeners = ['refreshComponent' => '$refresh', 'refreshReport' => 'generateReport'];
+    protected $listeners = ['refreshComponent' => '$refresh', 'refreshReport' => 'generateReport', 'logPrintReport' => 'logPrintReport'];
 
     public $availableColumns = [
         'book_number' => 'رقم الكتاب',
@@ -150,13 +151,51 @@ class ReportComponent extends Component
             }
 
             // حفظ التقرير في قاعدة البيانات
-            Report::create([
+            $report = Report::create([
                 'title' => 'تقرير المخاطبات - ' . now()->format('Y-m-d H:i:s'),
                 'source' => 'incomingbooks',
                 'filters' => $this->filters,
                 'columns' => $this->selectedColumns,
                 'created_by' => Auth::id(),
                 'status' => 'active'
+            ]);
+
+            // حفظ السجل في ملف التتبع
+            $selectedColumnsNames = array_map(function($column) {
+                return $this->availableColumns[$column] ?? $column;
+            }, $this->selectedColumns);
+
+            $filterDetails = [];
+            if (!empty($this->filters['book_type'])) {
+                $filterDetails[] = "نوع الكتاب: " . $this->filters['book_type'];
+            }
+            if (!empty($this->filters['date_from'])) {
+                $filterDetails[] = "من تاريخ: " . $this->filters['date_from'];
+            }
+            if (!empty($this->filters['date_to'])) {
+                $filterDetails[] = "إلى تاريخ: " . $this->filters['date_to'];
+            }
+            if (!empty($this->filters['sender_id'])) {
+                $filterDetails[] = "الجهة المرسلة: مُحدد";
+            }
+
+            $trackingDetails = "إنشاء تقرير جديد:\n";
+            $trackingDetails .= "=====================\n";
+            $trackingDetails .= "عنوان التقرير: " . $report->title . "\n";
+            $trackingDetails .= "الأعمدة المحددة: " . implode(', ', $selectedColumnsNames) . "\n";
+            $trackingDetails .= "عدد النتائج: " . count($this->reportData) . "\n";
+            if (!empty($filterDetails)) {
+                $trackingDetails .= "الفلاتر المطبقة:\n" . implode("\n", $filterDetails) . "\n";
+            }
+            $trackingDetails .= "=====================\n";
+            $trackingDetails .= "تم إنشاء التقرير بنجاح";
+
+            Tracking::create([
+                'user_id' => Auth::id(),
+                'page_name' => 'التقارير',
+                'operation_type' => 'إنشاء تقرير',
+                'operation_time' => now(),
+                'details' => $trackingDetails
             ]);
 
             $this->showResults = true;
@@ -366,7 +405,58 @@ class ReportComponent extends Component
         $filePath = $path . '/' . $fileName;
         $writer->save($filePath);
 
+        // حفظ السجل في ملف التتبع لعملية التصدير
+        $selectedColumnsNames = array_map(function($column) {
+            return $this->availableColumns[$column] ?? $column;
+        }, $this->selectedColumns);
+
+        $trackingDetails = "تصدير تقرير إلى Excel:\n";
+        $trackingDetails .= "=====================\n";
+        $trackingDetails .= "اسم الملف: " . $fileName . "\n";
+        $trackingDetails .= "عدد الصفوف المصدرة: " . count($this->reportData) . "\n";
+        $trackingDetails .= "الأعمدة المصدرة: " . implode(', ', $selectedColumnsNames) . "\n";
+        $trackingDetails .= "مسار الحفظ: " . $path . "\n";
+        $trackingDetails .= "=====================\n";
+        $trackingDetails .= "تم تصدير التقرير بنجاح";
+
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'التقارير',
+            'operation_type' => 'تصدير Excel',
+            'operation_time' => now(),
+            'details' => $trackingDetails
+        ]);
+
         return response()->download($filePath)->deleteFileAfterSend();
+    }
+
+    public function logPrintReport()
+    {
+        // حفظ السجل في ملف التتبع لعملية الطباعة
+        $selectedColumnsNames = array_map(function($column) {
+            return $this->availableColumns[$column] ?? $column;
+        }, $this->selectedColumns);
+
+        $trackingDetails = "طباعة تقرير:\n";
+        $trackingDetails .= "=====================\n";
+        $trackingDetails .= "عدد الصفوف المطبوعة: " . count($this->reportData) . "\n";
+        $trackingDetails .= "الأعمدة المطبوعة: " . implode(', ', $selectedColumnsNames) . "\n";
+        $trackingDetails .= "تاريخ الطباعة: " . now()->format('Y-m-d H:i:s') . "\n";
+        $trackingDetails .= "=====================\n";
+        $trackingDetails .= "تم طباعة التقرير بنجاح";
+
+        Tracking::create([
+            'user_id' => Auth::id(),
+            'page_name' => 'التقارير',
+            'operation_type' => 'طباعة',
+            'operation_time' => now(),
+            'details' => $trackingDetails
+        ]);
+
+        $this->dispatchBrowserEvent('success', [
+            'title' => 'تم تسجيل الطباعة',
+            'message' => 'تم تسجيل عملية الطباعة في التتبع'
+        ]);
     }
 
     public function render()
