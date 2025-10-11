@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('daily_email_counts', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->integer('count')->default(0);
+            $table->date('date')->comment('تاريخ اليوم');
+            $table->integer('count')->default(0)->comment('عدد الرسائل المرسلة');
             $table->timestamps();
         });
     }
