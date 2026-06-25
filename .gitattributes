@@ -218,3 +218,6 @@ Procfile          text
 
 # Ignore files (like .npmignore or .gitignore)
 *.*ignore         text
+
+# Force GitHub Linguist to treat all .php files as PHP
+*.php linguist-language=PHP
