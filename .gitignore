@@ -31,3 +31,6 @@ yarn.lock
 
 public/FCM.json
 app/Helpers/FCM.php
+
+# Local credentials documentation
+USERS_CREDENTIALS.md
