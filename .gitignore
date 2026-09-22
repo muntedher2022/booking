@@ -34,3 +34,6 @@ app/Helpers/FCM.php
 
 # Local credentials documentation
 USERS_CREDENTIALS.md
+
+.env
+.env.production
