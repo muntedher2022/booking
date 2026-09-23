@@ -21,7 +21,13 @@ use App\Http\Controllers\Users\CustomersAccounts\CustomersAccountsController;
 use App\Http\Controllers\PermissionsRoles\Permissions\AccountPermissionsController;
 use App\Http\Controllers\Users\AdministratorsAccounts\AdministratorsAccountsController;
 
-Route::middleware(['auth', config('jetstream.auth_session'), 'verified'])->group(function () {
+Route::middleware(['auth', config('jetstream.auth_session')])->group(function () {
+    Route::get('/otp-verify', [\App\Http\Controllers\Auth\OtpVerificationController::class, 'show'])->name('otp.verify');
+    Route::post('/otp-verify', [\App\Http\Controllers\Auth\OtpVerificationController::class, 'verify'])->name('otp.verify.submit');
+    Route::post('/otp-resend', [\App\Http\Controllers\Auth\OtpVerificationController::class, 'resend'])->name('otp.resend');
+});
+
+Route::middleware(['auth', config('jetstream.auth_session'), 'verified', \App\Http\Middleware\VerifyAdminOtp::class])->group(function () {
     Route::GET('/', [DashboardController::class, 'index'])->name('Dashboard');
     // Middleware Owners
     Route::middleware(['role:OWNER|Administrator|Supervisor'])->group(function () {
@@ -115,3 +121,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
 
 
+
+
+// مسارات تفعيل التراخيص والتحقق والـ OTP
+Route::match(['get', 'post'], '/api/license/status', [\App\Licensing\LicenseController::class, 'status']);
+Route::match(['get', 'post'], '/api/license/activate', [\App\Licensing\LicenseController::class, 'activate']);
+Route::match(['get', 'post'], '/api/license/request-otp-phone', [\App\Licensing\LicenseController::class, 'requestPhoneOtp']);
+Route::match(['get', 'post'], '/api/license/verify-otp-phone', [\App\Licensing\LicenseController::class, 'verifyPhoneOtp']);
+Route::match(['get', 'post'], '/api/license/reset', [\App\Licensing\LicenseController::class, 'reset']);
+Route::match(['get', 'post'], '/api/license/deactivate', [\App\Licensing\LicenseController::class, 'reset']);
+Route::match(['get', 'post'], '/license/reset', [\App\Licensing\LicenseController::class, 'reset']);

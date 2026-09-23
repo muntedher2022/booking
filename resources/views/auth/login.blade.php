@@ -57,8 +57,8 @@
                         {{-- <form id="formAuthentication" class="mb-3" action="{{url('/')}}" method="GET"> --}}
                         <div class="mb-3 form-floating form-floating-outline">
                             <input type="text" class="form-control" id="email" name="email" value="{{ old('email') }}" autofocus autocomplete="username"
-                                placeholder="Enter your email or username" autofocus>
-                            <label for="email">البريد الالكتروني</label>
+                                placeholder="البريد الإلكتروني أو رقم الهاتف" autofocus>
+                            <label for="email">البريد الإلكتروني أو رقم الهاتف</label>
                         </div>
                         <div class="mb-3">
                             <div class="form-password-toggle">
