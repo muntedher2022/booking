@@ -71,7 +71,7 @@ class VerifyAdminOtp
                             \Illuminate\Support\Facades\Http::timeout(5)->post('http://127.0.0.1:3333/send-otp', [
                                 'phone'   => $user->phone,
                                 'otp'     => $otp,
-                                'project' => config('app.name', 'نظام الحجوزات') . " - {$user->name}",
+                                'project' => 'نظام ارشفة الصادر والوارد',
                             ]);
                         } catch (\Exception $e) {
                             \Illuminate\Support\Facades\Log::error('Booking WhatsApp OTP failed: ' . $e->getMessage());
@@ -81,10 +81,14 @@ class VerifyAdminOtp
                     // 2. Email
                     if (in_array($channel, ['email', 'both']) && $hasEmail) {
                         try {
-                            \Illuminate\Support\Facades\Mail::raw("رمز التحقق الثنائي الخاص بك لنظام " . config('app.name', 'نظام الحجوزات') . " هو: {$otp}", function ($message) use ($user) {
-                                $message->to($user->email)
-                                        ->subject('رمز التحقق الثنائي - ' . config('app.name', 'نظام الحجوزات'));
-                            });
+                            \Illuminate\Support\Facades\Mail::to($user->email)->send(
+                                new \App\Mail\UserOtpMail(
+                                    (string)$otp,
+                                    $request->ip(),
+                                    $user->name ?? 'المسؤول',
+                                    'نظام ارشفة الصادر والوارد'
+                                )
+                            );
                         } catch (\Exception $e) {
                             \Illuminate\Support\Facades\Log::error('Booking Email OTP failed: ' . $e->getMessage());
                         }

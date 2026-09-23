@@ -96,7 +96,7 @@ class OtpVerificationController extends Controller
                 $response = Http::timeout(5)->post('http://127.0.0.1:3333/send-otp', [
                     'phone'   => $user->phone,
                     'otp'     => $otp,
-                    'project' => config('app.name', 'نظام الحجوزات') . " - {$user->name}",
+                    'project' => 'نظام ارشفة الصادر والوارد',
                 ]);
                 if ($response->successful()) {
                     $sentChannels[] = 'الواتساب';
@@ -109,10 +109,14 @@ class OtpVerificationController extends Controller
         // 2. Email
         if (in_array($channel, ['email', 'both']) && $hasEmail) {
             try {
-                Mail::raw("رمز التحقق الثنائي الجديد الخاص بك لنظام " . config('app.name', 'نظام الحجوزات') . " هو: {$otp}", function ($message) use ($user) {
-                    $message->to($user->email)
-                            ->subject('رمز التحقق الثنائي - ' . config('app.name', 'نظام الحجوزات'));
-                });
+                \Illuminate\Support\Facades\Mail::to($user->email)->send(
+                    new \App\Mail\UserOtpMail(
+                        (string)$otp,
+                        $request->ip(),
+                        $user->name ?? 'المسؤول',
+                        'نظام ارشفة الصادر والوارد'
+                    )
+                );
                 $sentChannels[] = 'البريد الإلكتروني';
             } catch (\Exception $e) {
                 Log::error('Booking Resend Email OTP failed: ' . $e->getMessage());
