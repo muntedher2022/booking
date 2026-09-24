@@ -111,6 +111,23 @@
                         </div>
                         </div>
 
+                        <!-- خيار إلزام المصادقة بتطبيق الهاتف (TOTP) -->
+                        <div class="mb-3 col-12 text-start" style="direction: rtl;">
+                            <div class="p-3" style="background: rgba(99, 102, 241, 0.05); border: 1px solid rgba(99, 102, 241, 0.2); border-radius: 10px;">
+                                <div class="form-check form-switch d-flex align-items-center justify-content-between p-0 m-0">
+                                    <div>
+                                        <label class="form-check-label fw-bold text-dark d-block" for="edit_is_totp_required" style="font-size: 0.95rem;">
+                                            📱 إلزام المصادقة بتطبيق الهاتف (TOTP)
+                                        </label>
+                                        <small class="text-muted d-block" style="font-size: 0.8rem; margin-top: 2px;">
+                                            عند التفعيل، سيُطالب هذا المستخدم بربط تطبيق Google أو Microsoft Authenticator وإدخال الرمز عند كل تسجيل دخول.
+                                        </small>
+                                    </div>
+                                    <input wire:model.defer="is_totp_required" class="form-check-input ms-0 me-3" type="checkbox" id="edit_is_totp_required" style="width: 2.8em; height: 1.5em; cursor: pointer;">
+                                </div>
+                            </div>
+                        </div>
+
                         <hr class="text-primary mt-n2">
 
                         <div class="text-center col-12 mb-n4">

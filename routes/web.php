@@ -25,7 +25,18 @@ Route::middleware(['auth', config('jetstream.auth_session')])->group(function ()
     Route::get('/otp-verify', [\App\Http\Controllers\Auth\OtpVerificationController::class, 'show'])->name('otp.verify');
     Route::post('/otp-verify', [\App\Http\Controllers\Auth\OtpVerificationController::class, 'verify'])->name('otp.verify.submit');
     Route::post('/otp-resend', [\App\Http\Controllers\Auth\OtpVerificationController::class, 'resend'])->name('otp.resend');
+
+    // إعداد وقراءة باركود المصادقة الثنائية (TOTP)
+    Route::get('/user/two-factor-setup', [\App\Http\Controllers\Auth\TwoFactorSetupController::class, 'show'])->name('two-factor.setup');
+    Route::post('/user/two-factor-setup/confirm', [\App\Http\Controllers\Auth\TwoFactorSetupController::class, 'confirm'])->name('two-factor.confirm');
+    Route::delete('/user/two-factor-setup/disable', [\App\Http\Controllers\Auth\TwoFactorSetupController::class, 'disable'])->name('two-factor.disable');
+    Route::post('/user/two-factor-setup/recovery-codes', [\App\Http\Controllers\Auth\TwoFactorSetupController::class, 'regenerateRecoveryCodes'])->name('two-factor.recovery-codes');
 });
+
+// توجيه تلقائي لأي طلب قديم لـ two-factor-challenge إلى شاشة التحقق الموحدة
+Route::any('/two-factor-challenge', function () {
+    return auth()->check() ? redirect()->route('otp.verify') : redirect()->route('login');
+})->name('two-factor.login');
 
 Route::middleware(['auth', config('jetstream.auth_session'), 'verified', \App\Http\Middleware\VerifyAdminOtp::class])->group(function () {
     Route::GET('/', [DashboardController::class, 'index'])->name('Dashboard');

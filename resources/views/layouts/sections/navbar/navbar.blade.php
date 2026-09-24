@@ -426,9 +426,16 @@
                     <div class="dropdown-divider"></div>
                 </li>
                 <li>
-                    <a class="dropdown-item" {{-- href="{{ Route::has('profile.show') ? route('profile.show') : url('pages/profile-user') }}" --}}>
-                        <i class="mdi mdi-account-outline me-2"></i>
-                        <span class="align-middle">ملفي الخاص</span>
+                    <a class="dropdown-item d-flex align-items-center justify-content-between" href="{{ route('two-factor.setup') }}">
+                        <div class="d-flex align-items-center">
+                            <i class="mdi mdi-shield-key-outline me-2 text-primary fs-5"></i>
+                            <span class="align-middle fw-semibold">إعداد تطبيق المصادقة (TOTP)</span>
+                        </div>
+                        @if (Auth::check() && Auth::user()->hasTotpSetup())
+                            <span class="badge bg-success ms-2" style="font-size: 0.72rem;">مفعل</span>
+                        @else
+                            <span class="badge bg-secondary ms-2" style="font-size: 0.72rem;">غير مفعل</span>
+                        @endif
                     </a>
                 </li>
                 @if (Auth::check() && Laravel\Jetstream\Jetstream::hasApiFeatures())

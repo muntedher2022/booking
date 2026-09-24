@@ -20,6 +20,7 @@ class AdministratorsAccounts extends Component
     public $AdministratorRoles = [];
     public $AdministratorAccount;
     public $AdministratorId, $name, $email, $password, $ConfirmPassword, $status, $plan;
+    public $is_totp_required = false;
     public $SearchName, $SearchEmail, $SearchRole, $SearchStatus;
     public $RoleSelect, $StatusSelect;
     public $search = [
@@ -134,12 +135,13 @@ class AdministratorsAccounts extends Component
         $this->email = $this->AdministratorAccount->email;
         $this->status = $this->AdministratorAccount->status;
         $this->plan = $this->AdministratorAccount->plan;
+        $this->is_totp_required = (bool)$this->AdministratorAccount->is_totp_required;
     }
 
     public function AdministratorsAccountAdd()
     {
         $this->resetValidation();
-        $this->reset('name', 'email', 'password', 'status', 'AdministratorRoles');
+        $this->reset('name', 'email', 'password', 'status', 'AdministratorRoles', 'is_totp_required');
         $this->mount();
     }
 
@@ -175,6 +177,7 @@ class AdministratorsAccounts extends Component
             'password' => Hash::make($this->password),
             'status' => $this->status,
             'plan' => $this->plan,
+            'is_totp_required' => $this->is_totp_required ? 1 : 0,
         ]);
 
         $User->assignRole($this->AdministratorRoles);
@@ -229,6 +232,7 @@ class AdministratorsAccounts extends Component
             'password' => $this->password,
             'status' => $this->status,
             'plan' => $this->plan,
+            'is_totp_required' => $this->is_totp_required ? 1 : 0,
         ]);
 
         DB::table('model_has_roles')->where('model_id', $this->AdministratorId)->delete();

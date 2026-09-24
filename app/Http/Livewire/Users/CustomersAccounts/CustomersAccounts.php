@@ -23,6 +23,7 @@ class CustomersAccounts extends Component
     public $User;
     public $stores_id, $store_name;
     public $UserId, $name, $email, $password, $ConfirmPassword, $status, $plan;
+    public $is_totp_required = false;
     public $SearchName, $SearchEmail, $SearchRole, $SearchStatus;
     public $RoleSelect, $StatusSelect;
 
@@ -122,12 +123,13 @@ class CustomersAccounts extends Component
         $this->email = $this->User->email;
         $this->status = $this->User->status;
         $this->plan = $this->User->plan;
+        $this->is_totp_required = (bool)$this->User->is_totp_required;
     }
 
     public function UsersAccountAdd()
     {
         $this->resetValidation();
-        $this->reset('name', 'email', 'password', 'status', 'plan', 'stores_id', 'UserRoles');
+        $this->reset('name', 'email', 'password', 'status', 'plan', 'stores_id', 'UserRoles', 'is_totp_required');
         $this->mount();
     }
 
@@ -163,6 +165,7 @@ class CustomersAccounts extends Component
             'password' => Hash::make($this->password),
             'plan' => $this->plan,
             'status' => $this->status,
+            'is_totp_required' => $this->is_totp_required ? 1 : 0,
         ]);
 
         $User->assignRole($this->UserRoles);
@@ -215,6 +218,7 @@ class CustomersAccounts extends Component
             'password' => $this->password,
             'plan' => $this->plan,
             'status' => $this->status,
+            'is_totp_required' => $this->is_totp_required ? 1 : 0,
         ]);
 
         DB::table('model_has_roles')->where('model_id',$this->UserId)->delete();

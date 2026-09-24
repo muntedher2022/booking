@@ -3,21 +3,40 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Services\AdminOtpService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
+use PragmaRX\Google2FA\Google2FA;
 
 class OtpVerificationController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
         if (!auth()->check()) {
             return redirect()->route('login');
         }
 
-        if (session('admin_otp_verified') === true) {
+        if (session('admin_otp_verified') === true || session('totp_verified') === true) {
             return redirect()->intended('/');
+        }
+
+        $user = auth()->user();
+        $check = \App\Licensing\LicensingService::check();
+        $adminOtpEnabled = $check['valid'] && ($check['license']['admin_otp_enabled'] ?? false);
+        $hasTotpSetup = $user && method_exists($user, 'hasTotpSetup') && $user->hasTotpSetup();
+
+        if (!$adminOtpEnabled && !$hasTotpSetup) {
+            return redirect()->intended('/');
+        }
+
+        $licenseChannel = $adminOtpEnabled ? ($check['license']['admin_otp_channel'] ?? 'both') : 'totp';
+
+        // التأكد من إرسال رمز التحقق إن لم يكن مرسلاً بعد
+        if ($licenseChannel !== 'totp') {
+            $sessionOtp = session('admin_otp');
+            $expires = session('admin_otp_expires');
+            if (!$sessionOtp || !session('admin_otp_dispatched_at') || now()->isAfter($expires)) {
+                AdminOtpService::generateAndSend($user, $request->ip(), force: true);
+            }
         }
 
         $expires = session('admin_otp_expires');
@@ -27,20 +46,53 @@ class OtpVerificationController extends Controller
             $countdown = $diff > 0 ? (int)$diff : 0;
         }
 
-        $channel = session('admin_otp_channel', 'both');
+        $hasTotpSetup = $user && method_exists($user, 'hasTotpSetup') && $user->hasTotpSetup();
 
         return view('auth.otp-verify', [
-            'countdown' => $countdown,
-            'channel'   => $channel,
+            'countdown'      => $countdown,
+            'channel'        => session('admin_otp_channel', 'both'),
+            'licenseChannel' => $licenseChannel,
+            'hasTotpSetup'   => $hasTotpSetup,
         ]);
     }
 
     public function verify(Request $request)
     {
         $request->validate([
-            'code' => 'required|string|size:6',
+            'code'   => 'required|string|size:6',
+            'method' => 'nullable|string|in:whatsapp,totp',
         ]);
 
+        $user = auth()->user();
+        $code = trim($request->input('code'));
+        $method = $request->input('method', 'whatsapp');
+
+        // 1. التحقق عبر تطبيق المصادقة TOTP
+        if ($method === 'totp') {
+            if (!$user || !method_exists($user, 'hasTotpSetup') || !$user->hasTotpSetup()) {
+                return back()->withErrors(['code' => 'لم تقم بربط تطبيق المصادقة بحسابك بعد. يرجى التحقق برمز الواتساب/البريد.']);
+            }
+
+            try {
+                $google2fa = new Google2FA();
+                $secret = decrypt($user->two_factor_secret);
+                $valid = $google2fa->verifyKey($secret, $code, 8);
+            } catch (\Exception $e) {
+                $valid = false;
+            }
+
+            if ($valid) {
+                session([
+                    'admin_otp_verified' => true,
+                    'totp_verified'      => true,
+                ]);
+                return redirect()->intended('/');
+            }
+
+            return back()->withErrors(['code' => 'رمز تطبيق المصادقة غير صحيح أو انتهت صلاحيته. يرجى المحاولة مجدداً.']);
+        }
+
+        // 2. التحقق عبر الواتساب والبريد الإلكتروني OTP
         $sessionOtp = session('admin_otp');
         $expires = session('admin_otp_expires');
 
@@ -48,8 +100,11 @@ class OtpVerificationController extends Controller
             return back()->withErrors(['code' => 'انتهت صلاحية رمز التحقق. يرجى طلب رمز جديد.']);
         }
 
-        if (trim($request->input('code')) === (string)$sessionOtp) {
-            session(['admin_otp_verified' => true]);
+        if ($code === (string)$sessionOtp) {
+            session([
+                'admin_otp_verified' => true,
+                'totp_verified'      => true,
+            ]);
             return redirect()->intended('/');
         }
 
@@ -59,74 +114,16 @@ class OtpVerificationController extends Controller
     public function resend(Request $request)
     {
         $user = auth()->user();
-        if (!$user || (empty($user->email) && empty($user->phone))) {
-            return back()->withErrors(['code' => 'لا يوجد رقم هاتف أو بريد إلكتروني مسجل في حسابك.']);
+        if (!$user) {
+            return back()->withErrors(['code' => 'المستخدم غير موجود.']);
         }
 
-        $otp = mt_rand(100000, 999999);
-        $expires = now()->addMinutes(5);
+        $result = AdminOtpService::generateAndSend($user, $request->ip(), force: true);
 
-        $hasPhone = !empty($user->phone);
-        $hasEmail = !empty($user->email);
-
-        $check = \App\Licensing\LicensingService::check();
-        $licenseChannel = $check['license']['admin_otp_channel'] ?? 'both';
-
-        if ($licenseChannel === 'whatsapp' && $hasPhone) {
-            $channel = 'whatsapp';
-        } elseif ($licenseChannel === 'email' && $hasEmail) {
-            $channel = 'email';
-        } elseif ($licenseChannel === 'both') {
-            $channel = ($hasPhone && $hasEmail) ? 'both' : ($hasPhone ? 'whatsapp' : ($hasEmail ? 'email' : 'none'));
-        } else {
-            $channel = $hasPhone ? 'whatsapp' : ($hasEmail ? 'email' : 'none');
+        if (!empty($result['channels'])) {
+            return back()->with('status', 'تم إرسال رمز تحقق جديد بنجاح إلى ' . implode(' و ', $result['channels']) . '.');
         }
 
-        session([
-            'admin_otp' => $otp,
-            'admin_otp_expires' => $expires,
-            'admin_otp_channel' => $channel,
-        ]);
-
-        $sentChannels = [];
-
-        // 1. WhatsApp
-        if (in_array($channel, ['whatsapp', 'both']) && $hasPhone) {
-            try {
-                $response = Http::timeout(5)->post('http://127.0.0.1:3333/send-otp', [
-                    'phone'   => $user->phone,
-                    'otp'     => $otp,
-                    'project' => 'نظام ارشفة الصادر والوارد',
-                ]);
-                if ($response->successful()) {
-                    $sentChannels[] = 'الواتساب';
-                }
-            } catch (\Exception $e) {
-                Log::error('Booking Resend WhatsApp OTP failed: ' . $e->getMessage());
-            }
-        }
-
-        // 2. Email
-        if (in_array($channel, ['email', 'both']) && $hasEmail) {
-            try {
-                \Illuminate\Support\Facades\Mail::to($user->email)->send(
-                    new \App\Mail\UserOtpMail(
-                        (string)$otp,
-                        $request->ip(),
-                        $user->name ?? 'المسؤول',
-                        'نظام ارشفة الصادر والوارد'
-                    )
-                );
-                $sentChannels[] = 'البريد الإلكتروني';
-            } catch (\Exception $e) {
-                Log::error('Booking Resend Email OTP failed: ' . $e->getMessage());
-            }
-        }
-
-        $msg = !empty($sentChannels) 
-            ? 'تم إرسال رمز تحقق جديد إلى ' . implode(' و ', $sentChannels) . '.'
-            : 'تم تجديد الرمز بنجاح.';
-
-        return back()->with('status', $msg);
+        return back()->withErrors(['code' => 'تعذر إرسال الرمز حالياً، يرجى مراجعة مسؤول النظام.']);
     }
 }

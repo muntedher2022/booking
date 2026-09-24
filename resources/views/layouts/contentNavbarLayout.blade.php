@@ -181,6 +181,13 @@
                                                 </a>
                                             </li>
                                         @endcan
+                                        {{-- إعداد تطبيق المصادقة --}}
+                                        <li class="menu-item {{ request()->is('user/two-factor-setup') ? 'active' : '' }}">
+                                            <a href="{{ route('two-factor.setup') }}" class="menu-link">
+                                                <i class="mdi mdi-shield-key-outline me-2 text-primary"></i>
+                                                <div>المصادقة الثنائية (TOTP)</div>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </li>
                             @endcan
@@ -244,6 +251,23 @@
                                         </ul>
                                     </li>
                                 @endcan
+                            @endif
+
+                            {{-- المصادقة الثنائية (TOTP) --}}
+                            @if (Auth::check())
+                                <li class="menu-item {{ request()->is('user/two-factor-setup') ? 'active' : '' }}">
+                                    <a href="{{ route('two-factor.setup') }}" class="menu-link">
+                                        <i class="menu-icon tf-icons mdi mdi-shield-key-outline text-primary"></i>
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <span>المصادقة الثنائية (TOTP)</span>
+                                            @if(Auth::user()->hasTotpSetup())
+                                                <span class="badge bg-success rounded-pill" style="font-size: 0.65rem;">مفعل</span>
+                                            @else
+                                                <span class="badge bg-secondary rounded-pill" style="font-size: 0.65rem;">غير مفعل</span>
+                                            @endif
+                                        </div>
+                                    </a>
+                                </li>
                             @endif
                         </ul>
                     </aside>

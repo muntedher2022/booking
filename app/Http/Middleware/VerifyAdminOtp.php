@@ -14,12 +14,10 @@ class VerifyAdminOtp
     public function handle(Request $request, Closure $next): Response
     {
         if (auth()->check()) {
+            $user = auth()->user();
             $check = \App\Licensing\LicensingService::check();
             $adminOtpEnabled = $check['valid'] && ($check['license']['admin_otp_enabled'] ?? false);
-
-            if (!$adminOtpEnabled) {
-                return $next($request);
-            }
+            $isTotpRequired = $user && method_exists($user, 'isTotpRequired') && $user->isTotpRequired();
 
             $routeName = $request->route() ? $request->route()->getName() : '';
 
@@ -27,75 +25,30 @@ class VerifyAdminOtp
                 'otp.verify',
                 'otp.verify.submit',
                 'otp.resend',
+                'two-factor.setup',
+                'two-factor.confirm',
+                'two-factor.disable',
+                'two-factor.recovery-codes',
+                'profile.show',
                 'logout',
             ];
 
-            $isExcludedRoute = in_array($routeName, $excludedRoutes);
-
-            if ($isExcludedRoute) {
+            if (in_array($routeName, $excludedRoutes)) {
                 return $next($request);
             }
 
-            if (session('admin_otp_verified') !== true) {
-                $sessionOtp = session('admin_otp');
-                $expires = session('admin_otp_expires');
-
-                if (!$sessionOtp || now()->isAfter($expires)) {
-                    $otp = mt_rand(100000, 999999);
-                    $newExpires = now()->addMinutes(5);
-
-                    $user = auth()->user();
-                    $hasPhone = $user && !empty($user->phone);
-                    $hasEmail = $user && !empty($user->email);
-
-                    $licenseChannel = $check['license']['admin_otp_channel'] ?? 'both';
-                    if ($licenseChannel === 'whatsapp' && $hasPhone) {
-                        $channel = 'whatsapp';
-                    } elseif ($licenseChannel === 'email' && $hasEmail) {
-                        $channel = 'email';
-                    } elseif ($licenseChannel === 'both') {
-                        $channel = ($hasPhone && $hasEmail) ? 'both' : ($hasPhone ? 'whatsapp' : ($hasEmail ? 'email' : 'none'));
-                    } else {
-                        $channel = $hasPhone ? 'whatsapp' : ($hasEmail ? 'email' : 'none');
-                    }
-
-                    session([
-                        'admin_otp' => $otp,
-                        'admin_otp_expires' => $newExpires,
-                        'admin_otp_channel' => $channel,
-                    ]);
-
-                    // 1. WhatsApp
-                    if (in_array($channel, ['whatsapp', 'both']) && $hasPhone) {
-                        try {
-                            \Illuminate\Support\Facades\Http::timeout(5)->post('http://127.0.0.1:3333/send-otp', [
-                                'phone'   => $user->phone,
-                                'otp'     => $otp,
-                                'project' => 'نظام ارشفة الصادر والوارد',
-                            ]);
-                        } catch (\Exception $e) {
-                            \Illuminate\Support\Facades\Log::error('Booking WhatsApp OTP failed: ' . $e->getMessage());
-                        }
-                    }
-
-                    // 2. Email
-                    if (in_array($channel, ['email', 'both']) && $hasEmail) {
-                        try {
-                            \Illuminate\Support\Facades\Mail::to($user->email)->send(
-                                new \App\Mail\UserOtpMail(
-                                    (string)$otp,
-                                    $request->ip(),
-                                    $user->name ?? 'المسؤول',
-                                    'نظام ارشفة الصادر والوارد'
-                                )
-                            );
-                        } catch (\Exception $e) {
-                            \Illuminate\Support\Facades\Log::error('Booking Email OTP failed: ' . $e->getMessage());
-                        }
-                    }
+            // 1. إذا كان الـ OTP أو الـ TOTP مطلوباً ولم يتم التحقق بعد في هذه الجلسة
+            $hasTotp = $user && method_exists($user, 'hasTotpSetup') && $user->hasTotpSetup();
+            if ($adminOtpEnabled || $hasTotp) {
+                if (session('admin_otp_verified') !== true && session('totp_verified') !== true) {
+                    \App\Services\AdminOtpService::generateAndSend($user, $request->ip(), force: false);
+                    return redirect()->route('otp.verify');
                 }
+            }
 
-                return redirect()->route('otp.verify');
+            // 2. إذا كان المستخدم ملزماً بالمصادقة الثنائية ولم يقم بربط التطبيق بعد، نوجهه لموقع قراءة الباركود
+            if ($isTotpRequired && !$user->hasTotpSetup()) {
+                return redirect()->route('two-factor.setup')->with('warning', 'حسابك ملزم بالمصادقة الثنائية. يرجى مسح رمز الاستجابة السريعة (QR Code) وتأكيد الرمز للمتابعة.');
             }
         }
 

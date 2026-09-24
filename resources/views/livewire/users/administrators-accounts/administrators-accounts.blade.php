@@ -101,8 +101,6 @@
                     @can('user-create')
                         <button wire:click='AdministratorsAccountAdd' class="mb-3 add-new btn btn-primary mb-md-0"
                             data-bs-toggle="modal" data-bs-target="#addAdministratorModal">أضف مشرفاً</button>
-
-                        @include('livewire.users.administrators-accounts.modals.add-administrator')
                     @endcan
                 </div>
             </div>
@@ -258,6 +256,9 @@
                 </div>
 
                 <!-- Administrators Modal -->
+                @can('user-create')
+                    @include('livewire.users.administrators-accounts.modals.add-administrator')
+                @endcan
                 @include('livewire.users.administrators-accounts.modals.show-administrator')
                 @include('livewire.users.administrators-accounts.modals.edit-administrator')
                 @include('livewire.users.administrators-accounts.modals.remove-administrator')

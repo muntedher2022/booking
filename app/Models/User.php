@@ -39,6 +39,7 @@ class User extends Authenticatable
         'plan',
         'status',
         'last_seen',
+        'is_totp_required',
     ];
 
     /**
@@ -63,6 +64,7 @@ class User extends Authenticatable
         'last_seen' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'is_totp_required' => 'boolean',
     ];
 
     /**
@@ -132,4 +134,29 @@ class User extends Authenticatable
             ? $this->last_seen->diffForHumans()
             : 'لم يظهر أبداً';
     }
+
+    public function hasTotpSetup(): bool
+    {
+        return !empty($this->two_factor_secret) && !empty($this->two_factor_confirmed_at);
+    }
+
+    public function isTotpRequired(): bool
+    {
+        return (bool) ($this->is_totp_required ?? false);
+    }
+
+
+    public function isAdmin(): bool
+    {
+        if (method_exists($this, 'hasRole')) {
+            return $this->hasRole('super_admin') || $this->hasRole('admin');
+        }
+        return (bool) ($this->is_admin ?? false);
+    }
+
+    public function hasTotpEnabled(): bool
+    {
+        return $this->hasTotpSetup();
+    }
+
 }

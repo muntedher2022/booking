@@ -42,8 +42,6 @@
                     @can('customer-create')
                         <button wire:click='UsersAccountAdd' class="mb-3 add-new btn btn-primary mb-md-0" data-bs-toggle="modal"
                             data-bs-target="#addCustomerModal">اضافة مستخدم</button>
-
-                        @include('livewire.users.customers-accounts.modals.add-customer')
                     @endcan
                 </div>
             </div>
@@ -172,6 +170,9 @@
                 </div>
 
                 <!-- Administrators Modal -->
+                @can('customer-create')
+                    @include('livewire.users.customers-accounts.modals.add-customer')
+                @endcan
                 @include('livewire.users.customers-accounts.modals.show-customer')
                 @include('livewire.users.customers-accounts.modals.edit-customer')
                 @include('livewire.users.customers-accounts.modals.remove-customer')

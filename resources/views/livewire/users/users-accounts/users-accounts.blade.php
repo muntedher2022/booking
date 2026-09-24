@@ -97,8 +97,6 @@
                @can('user-create')
                     <button wire:click='UsersAccountAdd' class="mb-3 add-new btn btn-primary mb-md-0"
                         data-bs-toggle="modal" data-bs-target="#addUserModal">اضافة مستخدم</button>
-
-                        @include('livewire.users.users-accounts.modals.add-user')
                 @endcan
             </div>
             {{-- <div class="gap-3 py-3 d-flex justify-content-between align-items-center row gap-md-0">
@@ -230,6 +228,9 @@
         </div>
 
         <!-- Administrators Modal -->
+        @can('user-create')
+            @include('livewire.users.users-accounts.modals.add-user')
+        @endcan
         @include('livewire.users.users-accounts.modals.show-user')
         @include('livewire.users.users-accounts.modals.edit-user')
         @include('livewire.users.users-accounts.modals.remove-user')
